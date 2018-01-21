@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core">
+<h:head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title>Create new User</title>
+</h:head>
+<h:body>
+	<h:form>
+		<p:messages id="messages" showSummary="true" showDetail="true"  autoUpdate="true" closable="true" />
+		
+		<h:panelGrid style="margin:0 auto;">
+			<p:outputLabel  value="Create User"/>
+		</h:panelGrid>
+		<br/>
+		<br/>
+		<h:panelGrid id="userInfoGrid" columns="2" cellpadding="4" style="background: aliceblue;margin: 0 auto;width:380px;">
+			
+				<p:outputLabel value="Firstname:"/>
+				<p:inputText value="#{newUserBean.newUser.firstname}"/>
+				
+				<p:outputLabel value="Lastname:"/>
+				<p:inputText value="#{newUserBean.newUser.lastname}"/>
+				
+				<p:outputLabel value="Username:*"/>
+				<p:inputText value="#{newUserBean.newUser.username}" required="true" requiredMessage="Please enter a new user name" />
+				
+				<p:outputLabel value="Password:*"/>
+				<p:password value="#{newUserBean.newUser.password}" required="true" requiredMessage="Please enter a new user password"/>
+			
+				<p:outputLabel value="User Role:*" />
+       			<p:selectOneMenu required="true" requiredMessage="An User role must be selected for new User!" value="#{newUserBean.selectedrole}" style="width:250px;">
+        			<f:selectItem itemValue="#{null}" itemLabel="-- select one --" />
+        			<f:selectItems value="#{newUserBean.roles}" />
+        			<f:ajax 	/>
+    			</p:selectOneMenu>
+				
+		</h:panelGrid>
+		<h:panelGrid id="buttonsGrid" style="margin: 0 auto;margin-top:50px; " columns="2"> 
+			
+			<p:commandButton value="Create User" action="#{newUserBean.processCreateUser}" style="background-color:aliceblue"/>
+		
+		</h:panelGrid>
+	
+	</h:form>
+	
+	<h:form>
+		<h:panelGrid id="buttonsGrid" style="margin: 0 auto;" columns="2"> 
+			<p:commandButton value="Back" action="#{newUserBean.processBack()}" style="background-color:aliceblue"/>
+		</h:panelGrid>
+	</h:form>
+</h:body>
+</html>

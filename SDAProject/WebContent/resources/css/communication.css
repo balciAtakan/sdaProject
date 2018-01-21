@@ -1,0 +1,30 @@
+.communication_layout_west{
+	margin-top :48px!important;
+	padding:0px!important;
+	width:20%!important;
+	
+}
+.communication_layout_center{
+	margin-top :48px!important;
+	margin-left: -6px!important;
+	padding:0px!important;
+	border:none!important;
+	width:55%!important;
+}
+.communication_layout_east{
+	margin-top :48px!important;
+	padding:0px!important;
+	border:none!important;
+	width:25%!important;
+}
+.div_west .ui-layout-unit-content{padding:0;}
+.div_west .ui-accordion-content{padding:8px;}
+.div_west .ui-datatable{border:none;}
+.accordion_channel{
+	
+}
+.person_panel{border:none;}
+
+.test{
+	color:red;
+}

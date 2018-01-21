@@ -1,0 +1,22 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:composite="http://java.sun.com/jsf/composite"
+	xmlns:h="http://java.sun.com/jsf/html">
+<h:head>
+</h:head>
+<h:body>
+	<composite:interface>
+	</composite:interface>
+
+	<composite:implementation>
+		<ul>
+			<li>Host: #{request.remoteHost}</li>
+			<li>Clienttyp:<br /> #{header["User - Agent"]}
+			</li>
+			<li>Locale: #{vie w.locale}</li>
+			<li>Session - ID: #{session.id}</li>
+		</ul>
+	</composite:implementation>
+
+
+</h:body>
+</html>

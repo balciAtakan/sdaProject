@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition template="/WEB-INF/templates/struktur.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+	<ui:define name="title">
+        Communication
+    </ui:define>
+   	<ui:define name="styles">
+    	<link rel="stylesheet" href="resources/css/communication.css" type="text/css"/>
+    </ui:define>	
+
+	<ui:define name="main_content">
+	
+	<h:form id="mainform">
+		<br/>		
+		
+		<p:layout id="layout1" fullPage="true">
+		<div class="div_west">
+			<p:layoutUnit position="west" styleClass="communication_layout_west">
+				<p:panel id="personPanel" styleClass="person_panel">
+					<h:panelGrid id="personGrid" columns="1" >
+						
+						<p:accordionPanel activeIndex="null" styleClass="accordion_channel">
+							<p:tab title="#{communicationBean.currUser.firstname} #{communicationBean.currUser.lastname}">
+					            <h:panelGrid columns="2" cellpadding="0">
+					                
+					                <h:outputText value="Knowledge Rooms(#{communicationBean.rooms.size()})" />
+					                <p:commandButton type="button" icon="fa fa-plus" onclick="PF('roomDlg').show();"/>
+					                <p:dataTable id="personTable" value="#{communicationBean.rooms}" var="room">
+					                	<p:column>
+					                		<p:commandButton value="#{room.roomname}" onclick=""/>
+					                	</p:column>
+					                
+					                
+					                
+					                </p:dataTable>
+					                
+					            </h:panelGrid>
+					        </p:tab>
+					        
+						
+						</p:accordionPanel>
+						
+						
+					</h:panelGrid>
+				</p:panel>
+			
+			
+			
+			</p:layoutUnit>
+		</div>
+			<p:layoutUnit position="center" collapsed="false" styleClass="communication_layout_center" header="Chat">
+			</p:layoutUnit>
+			<p:layoutUnit position="east" styleClass="communication_layout_east" header="Words">
+			</p:layoutUnit>
+		
+		
+		
+		
+		</p:layout>
+		
+		<ui:remove>
+		<p:layout style="min-width:500px;min-height:700px;">
+		    <p:layoutUnit position="west" header="Knowledge Rooms" resizable="true" collapsible="true" size="300" minSize="50" maxSize="400">
+		       <div id="firstPan">
+		       			
+		       
+		       
+		       
+		       </div>
+		       <div>
+		       
+		       
+		       
+		       
+		       </div>
+		        
+		        
+		        
+		        
+		        
+		    </p:layoutUnit>
+		 
+			<p:layoutUnit position="center" header="Chat">
+		       <p:fieldset id="container">
+ 
+		        <h:panelGroup>
+		        	<p:inputText disabled="true" style="width:100%;height:300px;" id="chatfield" value="#{communicationBean.message}"/>
+		            <br/>
+		            <p:inputText placeholder="Message" value="#{communicationBean.message}"/>
+		            
+		            <p:commandButton value="Send" update="chatfield" />
+		        </h:panelGroup> 
+			    </p:fieldset>
+			</p:layoutUnit>
+			<p:layoutUnit position="east" header="Knowledge" resizable="false" collapsible="true" size="400" minSize="50" maxSize="600">
+		       Words
+			</p:layoutUnit>
+			
+		</p:layout>
+		</ui:remove>
+	</h:form>
+	
+	<h:form id="dialog_form">
+	<p:dialog id="addRoomDialog" widgetVar="roomDlg" modal="true" height="675" width="640" header="Add New Knowledge Room">
+			<p:messages id="dialog_messages" showDetail="true" autoUpdate="true" closable="false" />
+			<center>
+				<h:outputText value="Here you can add a new knowledge room." style="font-size:.8em;color:lightgrey;"/>
+			</center>
+			<br/>
+			<h:panelGrid columns="2" style="width:100%;">
+				<p:outputLabel value="Room name : " />
+				<p:inputText value="#{communicationBean.newRoom.roomname}" required="true" requiredMessage="Please enter a Room name" />
+				<p:separator/>
+				<p:separator style="margin-left:-5px;"/>
+				
+				<p:outputLabel value="Allowed User Roles:" />
+				<p:selectManyCheckbox id="grid" value="#{communicationBean.selectedRoles}" layout="grid" columns="1">
+		        	<f:selectItems value="#{communicationBean.roles}" var="role" itemLabel="#{role}" itemValue="#{role}" />
+		    	</p:selectManyCheckbox>
+		    	<p:spacer/>
+		    	<p:spacer/>				
+				<p:spacer/>
+		    	<p:spacer/>	
+		    	<p:commandButton value="Cancel" style="float:left;background-color:aliceblue" onclick="PF('roomDlg').hide();"/>
+		    	<p:commandButton value="Create Room" style="float:right;background-color:aliceblue" action="#{communicationBean.processCreateRoom}" update="mainform" />
+		    	
+			</h:panelGrid>
+			
+		
+		</p:dialog>
+		</h:form>
+	</ui:define>
+</ui:composition>

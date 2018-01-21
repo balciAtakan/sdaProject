@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<title>Insert title here</title>
+</h:head>
+<h:body>
+		Rechner<br />
+	<h:outputText value="Rechner" />
+
+	<h:form id="rechner_form1">
+		<h:messages />
+		<h:outputText value="Zahl: " />
+		<h:inputText value="#{rechnerBean.zahl}" />
+		<br /><br /><br />
+
+		<h:outputText value="Einkunftsart: " />
+		<h:selectOneMenu value="#{rechnerBean.einkunftsart}">
+			<f:selectItems value="#{rechnerBean.einkunftsarten}" />
+		</h:selectOneMenu>
+		<br /><br /><br />
+		
+		<h:commandLink action="rechnerergebnis" value="Berechne" />
+		<h:commandButton action="#{rechnerBean.berechne}" value="Berechne" />
+		<br /><br /><br />
+		
+		<h:commandLink actionListener="#{rechnerBean.zeigeInfo}" value="Zeige Info" />
+		<br /><br /><br />
+		
+		
+		<h:outputText value="Vorname: " />
+		<h:inputText id="recher_form1_vornameInput" value="#{rechnerBean.personView.vorname}" 
+			valueChangeListener="#{rechnerBean.wertGeaendert}">
+			<f:ajax render="@this" />	
+		</h:inputText>
+		
+		<h:outputText value="Nachname: " />
+		<h:inputText id="recher_form1_nachnameInput" value="#{rechnerBean.personView.nachname}" 
+			valueChangeListener="#{rechnerBean.wertGeaendert}"/>
+		
+		
+	</h:form>
+
+</h:body>
+</html>

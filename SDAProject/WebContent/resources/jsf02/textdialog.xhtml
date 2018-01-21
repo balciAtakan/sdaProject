@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:composite="http://java.sun.com/jsf/composite"
+	xmlns:h="http://java.sun.com/jsf/html">
+<h:head>
+</h:head>
+<h:body>
+	<composite:interface>
+		<composite:attribute name="text" />
+	</composite:interface>
+	<composite:implementation>
+		<h:form id="form">
+			<h:panelGrid columns="2">
+				<h:outputLabel value="Dein Text:" />
+				<h:outputLabel value="#{cc.attrs.text}" />
+			</h:panelGrid>
+		</h:form>
+	</composite:implementation>
+</h:body>
+</html>
