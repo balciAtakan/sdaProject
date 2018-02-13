@@ -4,6 +4,7 @@
 	xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:h="http://xmlns.jcp.org/jsf/html"
 	xmlns:p="http://primefaces.org/ui"
+	xmlns:b="http://bootsfaces.net/ui"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:ui="http://java.sun.com/jsf/facelets">
 	<ui:define name="title">
@@ -15,53 +16,64 @@
 
 	<ui:define name="main_content">
 	
-	<h:form id="mainform">
-		<br/>		
-		
-		<p:layout id="layout1" fullPage="true">
-		<div class="div_west">
-			<p:layoutUnit position="west" styleClass="communication_layout_west">
-				<p:panel id="personPanel" styleClass="person_panel">
-					<h:panelGrid id="personGrid" columns="1" >
-						
-						<p:accordionPanel activeIndex="null" styleClass="accordion_channel">
-							<p:tab title="#{communicationBean.currUser.firstname} #{communicationBean.currUser.lastname}">
-					            <h:panelGrid columns="2" cellpadding="0">
-					                
-					                <h:outputText value="Knowledge Rooms(#{communicationBean.rooms.size()})" />
-					                <p:commandButton type="button" icon="fa fa-plus" onclick="PF('roomDlg').show();"/>
-					                <p:dataTable id="personTable" value="#{communicationBean.rooms}" var="room">
-					                	<p:column>
-					                		<p:commandButton value="#{room.roomname}" onclick=""/>
-					                	</p:column>
-					                
-					                
-					                
-					                </p:dataTable>
-					                
-					            </h:panelGrid>
-					        </p:tab>
-					        
-						
-						</p:accordionPanel>
-						
-						
-					</h:panelGrid>
-				</p:panel>
+	<h:form id="baseForm" >
+		<b:panel id="personPanel" style="width:20%;height:100%">
+			<h:panelGrid id="personGrid" columns="1" >
+				
+				<p:accordionPanel id="baseAccord" activeIndex="null" styleClass="accordion_channel">
+					<p:tab id="baseTab" title="#{communicationBean.currUser.firstname} #{communicationBean.currUser.lastname}">
+			  
+		                <p:dataTable id="personTable" value="#{communicationBean.rooms}" var="room">
+		                	<f:facet name="header">
+					            Knowledge Rooms(#{communicationBean.rooms.size()})
+					            <p:commandButton id="newRoomButton" style="background:azure" icon="fa fa-plus"
+		                				 oncomplete="PF('roomDlg').show();"/>
+					        </f:facet>
+		                	<p:column>
+		                		<b:commandButton id="roomnameButton" value="#{room.roomname}" update="roomPanel" 
+		                						 action="#{communicationBean.processEnterRoom}">
+		                			<f:setPropertyActionListener target="#{communicationBean.activeRoom}" value="#{room}"/>
+		                		</b:commandButton>
+		                	</p:column>
+		                
+		                </p:dataTable>
+			        </p:tab>
+				
+				</p:accordionPanel>
+				
+			</h:panelGrid>
+		</b:panel>
+	</h:form>
+	<h:form id="roomPanel" style="position: absolute;left:20%;top:44px;width: 50%;height:100%;">
+		<b:panel id="roomUnit" position="center" collapsed="false" rendered="#{not empty communicationBean.activeRoom.history}" 
+			     title="#{communicationBean.activeRoom.roomname}"> 
+			<b:alert severity="success" id="baseAlert" closable="true" >
+				Wellcome to <strong>#{communicationBean.activeRoom.roomname}!</strong>
+				
+			</b:alert>
+			
+			<b:dataTable id="messageTable" var="mes" value="#{communicationBean.activeRoom.history}" paginated="false" > 
+				<b:column>
+					<b:button disabled="true" value="#{mes.messageOwner.username}"/> 
+					<h:outputText value="#{mes.message}"/>
+				</b:column>
 			
 			
+			</b:dataTable>
 			
-			</p:layoutUnit>
-		</div>
-			<p:layoutUnit position="center" collapsed="false" styleClass="communication_layout_center" header="Chat">
-			</p:layoutUnit>
-			<p:layoutUnit position="east" styleClass="communication_layout_east" header="Words">
-			</p:layoutUnit>
+			
+			<b:inputTextarea placeholder="Type here..." value="#{communicationBean.message}"/>
+		    <b:commandButton value="Send" span="2" offset="10" style="background:#dff0d8" actionListener="#{communicationBean.processMessage}" 
+		    				 update="roomPanel"/>	
+						
 		
+		</b:panel>
+	</h:form>
+	<h:form id="wordPanel" style="position: absolute;left:70%;top: 44px;width: 28%;" rendered="true">
+		<b:panel id="wordUnit" title="Words">
+		</b:panel>
+	</h:form>
 		
-		
-		
-		</p:layout>
 		
 		<ui:remove>
 		<p:layout style="min-width:500px;min-height:700px;">
@@ -103,36 +115,56 @@
 			
 		</p:layout>
 		</ui:remove>
-	</h:form>
 	
 	<h:form id="dialog_form">
-	<p:dialog id="addRoomDialog" widgetVar="roomDlg" modal="true" height="675" width="640" header="Add New Knowledge Room">
-			<p:messages id="dialog_messages" showDetail="true" autoUpdate="true" closable="false" />
-			<center>
-				<h:outputText value="Here you can add a new knowledge room." style="font-size:.8em;color:lightgrey;"/>
-			</center>
-			<br/>
-			<h:panelGrid columns="2" style="width:100%;">
-				<p:outputLabel value="Room name : " />
-				<p:inputText value="#{communicationBean.newRoom.roomname}" required="true" requiredMessage="Please enter a Room name" />
-				<p:separator/>
-				<p:separator style="margin-left:-5px;"/>
+		<p:dialog id="addRoomDialog" widgetVar="roomDlg" modal="true" height="620" width="550" header="Add New Knowledge Room" closable="false">
 				
-				<p:outputLabel value="Allowed User Roles:" />
-				<p:selectManyCheckbox id="grid" value="#{communicationBean.selectedRoles}" layout="grid" columns="1">
-		        	<f:selectItems value="#{communicationBean.roles}" var="role" itemLabel="#{role}" itemValue="#{role}" />
-		    	</p:selectManyCheckbox>
-		    	<p:spacer/>
-		    	<p:spacer/>				
-				<p:spacer/>
-		    	<p:spacer/>	
-		    	<p:commandButton value="Cancel" style="float:left;background-color:aliceblue" onclick="PF('roomDlg').hide();"/>
-		    	<p:commandButton value="Create Room" style="float:right;background-color:aliceblue" action="#{communicationBean.processCreateRoom}" update="mainform" />
-		    	
-			</h:panelGrid>
+			<p:messages id="dialog_messages" autoUpdate="true" closable="false" />
 			
-		
+				<p:outputLabel style="text-align:center;margin-right:5px;" value="Room name*  " />
+				<p:inputText value="#{communicationBean.newRoom.roomname}" />
+				
+				<p:dataTable var="role" value="#{communicationBean.roles}" selection="#{communicationBean.selectedRoles}" style="margin-top:10px"
+							 rowKey="#{role.role()}" >
+					<f:facet name="header">
+			            Allowed User Roles in Room
+			        </f:facet>
+			        <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+			        <p:column headerText="Role">
+			            <h:outputText value="#{role.role()}" />
+			        </p:column>
+				
+				
+				</p:dataTable>
+				
+				<p:spacer/>
+				
+			<h:panelGrid columns="2" style="width:100%">
+		    	<p:commandButton value="Cancel" style="float:left;background-color:aliceblue" onclick="PF('roomDlg').hide();"/>
+		    	<p:commandButton value="Create Room" style="float:right;background-color:aliceblue" action="#{communicationBean.processCreateRoom}" />
+		    </h:panelGrid>
+				
 		</p:dialog>
-		</h:form>
+	</h:form>
+	
+	<h:form id="enterroom_dialog_form">
+		<p:dialog id="enterRoomDialog" widgetVar="enterRoomDlg" modal="true" style="postion:absolute;top:40%;left:40%;width:300px;height:175px" 
+				  header="Do you want to enter room (#{communicationBean.activeRoom.roomname}) ?" closable="false">
+				
+			<h:panelGrid columns="2" style="width:100%">
+		    	<b:commandButton value="Cancel" style="background-color:aliceblue" onclick="PF('enterRoomDlg').hide();"/>
+		    	<b:commandButton value="Enter" style="background-color:aliceblue" actionListener="#{communicationBean.loadRoomData}" />
+		    </h:panelGrid>
+				
+		</p:dialog>
+	</h:form>
+	
+	<h:form id="denied_enterroom_dialog_form">
+		<p:dialog id="deniedEnterRoomDlg" widgetVar="deniedEnterRoom" modal="true" height="170" width="300" style="postion:absolute;top:40%;left:40%" 
+				  header="Sorry! You are not allowed to enter THIS room (#{communicationBean.activeRoom.roomname}) " closable="false">
+				  
+		    	<b:commandButton value="OK" style="background-color:aliceblue" onclick="PF('deniedEnterRoom').hide();"/>
+		</p:dialog>
+	</h:form>
 	</ui:define>
 </ui:composition>

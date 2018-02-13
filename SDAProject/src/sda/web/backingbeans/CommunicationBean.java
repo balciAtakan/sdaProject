@@ -1,13 +1,19 @@
 package sda.web.backingbeans;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
+import javax.servlet.http.HttpServletRequest;
 
+import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -15,18 +21,16 @@ import org.springframework.stereotype.Component;
 import sda.web.exception.SDAException;
 import sda.web.services.KnowledgeRoomService;
 import sda.web.services.PersonenService;
+import sda.web.util.UserRole;
+import sda.web.views.KnowledgeRoomMessageView;
 import sda.web.views.KnowledgeRoomView;
 import sda.web.views.PersonView;
 
 @Component
-@Scope("request")
+@Scope("session")
 public class CommunicationBean implements Serializable{
-	
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
-	private String message;
 
 	@Autowired
 	private PersonenService personenService;
@@ -38,24 +42,31 @@ public class CommunicationBean implements Serializable{
 	private ArrayList<KnowledgeRoomView> rooms;
 	
 	private KnowledgeRoomView newRoom;
-	private List<String> roles;
-	private String[] selectedRoles;
+	private List<UserRole> roles;
+	private List<UserRole> selectedRoles;
+	/////////////////////////////////////
+	//----------------------------------/
+	//----------------------------------/
+	//----------------------------------/
+	/////////////////////////////////////
+	private KnowledgeRoomView activeRoom;
+	private String message;
+	
 	
 	@PostConstruct
 	public void init(){
 		
 		System.out.println("Communication bean init!");
 
-		roles = new ArrayList<String>();
+		roles = new ArrayList<UserRole>();
 		addRoom();
 		//load currentUser from processor
 		setCurrUser(personenService.getCurrUser());
-		
 		//load all rooms
 		try {
 			rooms = roomService.getKnowledgeRooms();
 		} catch (SDAException e) {
-			
+			System.out.println(e.getMessage());
 			FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_ERROR,"Error!","Something went wrong on Load Knowledge Rooms"));
 		}
 		
@@ -63,55 +74,113 @@ public class CommunicationBean implements Serializable{
 	
 	public void addRoom(){
 		
-		roles.add("All");
-		roles.add("Project Development Manager");
-		roles.add("Senior Development Engineer");
-		roles.add("Junior Development Engineer");
-		roles.add("Design Engineer");
-		roles.add("Material Engineer");
-		roles.add("Senior Production Engineer");
-		roles.add("Junior Production Engineer");
-		roles.add("Senior Production Manager");
-		roles.add("Senior Assembly Engineer");
-		roles.add("Junior Assembly Engineer");
-		roles.add("Quality Manager");
-		roles.add("Customer Service Specialist");
-		roles.add("Sales Manager");
-		roles.add("Market Research Manager");
-		roles.add("Technical Service Engineer");
+		UserRole[] roles = UserRole.values();
+		for (UserRole userRole : roles) {
+			this.roles.add(userRole);
+			System.out.println("name: "+userRole.name() + " role: "+userRole.role());
+		
+		}
+		newRoom = new KnowledgeRoomView();
 		
 	}
 	
-	public void processCreateRoom()
+	public String processCreateRoom() throws IOException
 	{
-		System.out.println("hi");
-		for (String role : selectedRoles) {
-			if(role.equals("All")){
-				
-				
-			}
-					
+		if(newRoom.getRoomname() != null && newRoom.getRoomname().isEmpty())
+		{
+			FacesContext.getCurrentInstance().addMessage("dialog_form:dialog_messages",new FacesMessage(FacesMessage.SEVERITY_ERROR,"Please enter a room name!",""));
+			return null;
 		}
+		System.out.println("create room");
+		
+		//new room initial 
+		newRoom.setAllowedRoles(selectedRoles);
+		newRoom.setRoomOwner(currUser);
+		newRoom.getUsers().add(currUser);
+		
+		selectedRoles.forEach(System.out::println);
+		
+		try {
+			
+			roomService.saveKnowledgeRoom(newRoom);
+		} catch (SDAException e) {
+			
+			System.out.println(e.getMessage());
+			FacesContext.getCurrentInstance().addMessage("dialog_form:dialog_messages",new FacesMessage(FacesMessage.SEVERITY_ERROR,"Unknown error!",""));
+			return null;
+		}
+		
+		FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_INFO,"New room is created!",""));
+		ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+	    ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
+	    return null;
+		
 	}
 	
-	public String[] getSelectedRoles() {
-        return selectedRoles;
-    }
- 
-    public void setSelectedRoles(String[] selectedRoles) {
-        this.selectedRoles = selectedRoles;
-    }
+	public void processEnterRoom(){
+		
+		if(activeRoom.getAllowedRoles().stream().anyMatch(role -> role.name().equals(currUser.getRole())))
+		{
+			RequestContext context = RequestContext.getCurrentInstance();
+			context.execute("PF('enterRoomDlg').show();");
+		}
+		else
+		{
+			RequestContext context = RequestContext.getCurrentInstance();
+			context.execute("PF('deniedEnterRoom').show();");
+		}
+		
+	}
 	
-	public List<String> getRoles() {
+	public void loadRoomData(ActionEvent event)
+	{
+		try 
+		{
+			activeRoom.setHistory(roomService.getKnowledgeRoomData(activeRoom.getUuid()));
+		} catch (SDAException e) {
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
+		
+		
+	}
+	
+	
+	
+	public void processMessage(ActionEvent event){
+		
+		try 
+		{
+		
+			KnowledgeRoomMessageView messageView = new KnowledgeRoomMessageView(message,new Date(),currUser,activeRoom.getUuid()); 
+			activeRoom.getHistory().add(messageView);
+		
+			roomService.saveKnowledgeRoomMessage(messageView);
+		} catch (SDAException e) {
+			FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_ERROR,e.getMessage(),""));
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
+	}
+
+
+
+	public List<UserRole> getSelectedRoles() {
+		return selectedRoles;
+	}
+
+	public void setSelectedRoles(List<UserRole> selectedRoles) {
+		this.selectedRoles = selectedRoles;
+	}
+
+
+
+	public List<UserRole> getRoles() {
 		return roles;
 	}
 
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
+	public void setRoles(List<UserRole> roles) {
+		this.roles = roles;
 	}
 
 	public PersonView getCurrUser() {
@@ -138,6 +207,22 @@ public class CommunicationBean implements Serializable{
 
 	public void setNewRoom(KnowledgeRoomView newRoom) {
 		this.newRoom = newRoom;
+	}
+
+	public KnowledgeRoomView getActiveRoom() {
+		return activeRoom;
+	}
+
+	public void setActiveRoom(KnowledgeRoomView activeRoom) {
+		this.activeRoom = activeRoom;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
 	
 }

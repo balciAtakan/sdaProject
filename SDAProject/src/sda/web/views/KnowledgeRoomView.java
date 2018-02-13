@@ -1,40 +1,32 @@
 package sda.web.views;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import sda.web.util.SDAUtil;
 import sda.web.util.UserRole;
 
 public class KnowledgeRoomView {
 
 	private String uuid;
 	private String roomname;
-	private ArrayList<UserRole> allowedRoles;
+	private PersonView roomOwner;
+	private List<UserRole> allowedRoles;
+	
+	/** Here is saved only the id from the person not other attributes! 
+	 */
 	private ArrayList<PersonView> users;
-	private KnowledgeRoomHistoryView history;
-	
-	
-	public KnowledgeRoomView(String uuid, String roomname, ArrayList<UserRole> allowedRoles, ArrayList<PersonView> users,
-			KnowledgeRoomHistoryView history) {
-		
-		this.uuid = uuid;
-		this.roomname = roomname;
-		this.allowedRoles = allowedRoles;
-		this.users = users;
-		this.history = history;
-	}
-	
-	public KnowledgeRoomView(String roomname, ArrayList<UserRole> allowedRoles){
-		
-		this.roomname = roomname;
-		this.allowedRoles = allowedRoles;
-		this.uuid = SDAUtil.GenerateUuid();
-	}
+	private ArrayList<KnowledgeRoomMessageView> history;
 	
 	public KnowledgeRoomView(){
 		
+		this.users = new ArrayList<PersonView>();
+		this.history = new ArrayList<KnowledgeRoomMessageView>();
 	}
 	
+	public KnowledgeRoomView(PersonView roomOwner){
+		
+		this.roomOwner = roomOwner;
+	}
 	public String getUuid() {
 		return uuid;
 	}
@@ -47,10 +39,10 @@ public class KnowledgeRoomView {
 	public void setRoomname(String roomname) {
 		this.roomname = roomname;
 	}
-	public ArrayList<UserRole> getAllowedRoles() {
+	public List<UserRole> getAllowedRoles() {
 		return allowedRoles;
 	}
-	public void setAllowedRoles(ArrayList<UserRole> allowedRoles) {
+	public void setAllowedRoles(List<UserRole> allowedRoles) {
 		this.allowedRoles = allowedRoles;
 	}
 	public ArrayList<PersonView> getUsers() {
@@ -59,11 +51,19 @@ public class KnowledgeRoomView {
 	public void setUsers(ArrayList<PersonView> users) {
 		this.users = users;
 	}
-	public KnowledgeRoomHistoryView getHistory() {
+	public ArrayList<KnowledgeRoomMessageView> getHistory() {
 		return history;
 	}
-	public void setHistory(KnowledgeRoomHistoryView history) {
+	public void setHistory(ArrayList<KnowledgeRoomMessageView> history) {
 		this.history = history;
+	}
+
+	public PersonView getRoomOwner() {
+		return roomOwner;
+	}
+
+	public void setRoomOwner(PersonView roomOwner) {
+		this.roomOwner = roomOwner;
 	}
 	
 }

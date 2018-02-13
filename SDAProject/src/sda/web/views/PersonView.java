@@ -12,11 +12,23 @@ public class PersonView {
 	public PersonView() {
 	}
 	
-	public PersonView(String uuid, String firstname, String lastname) {
+	public PersonView(String uuid) {
+		this.uuid = uuid;
+	}
+	public PersonView(String uuid, String username) {
+		this.uuid = uuid;
+		this.username = username;
+	}
+	
+	public PersonView(String uuid, String firstname, String lastname, String username, String role) {
+		super();
 		this.uuid = uuid;
 		this.firstname = firstname;
 		this.lastname = lastname;
+		this.username = username;
+		this.role = role;
 	}
+
 	public PersonView(PersonView person)
 	{
 		this.uuid = person.getUuid();

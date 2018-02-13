@@ -10,6 +10,7 @@ import sda.web.daos.KnowledgeRoomReadDAO;
 import sda.web.daos.KnowledgeRoomWriteDAO;
 import sda.web.exception.SDAException;
 import sda.web.util.SDAResult;
+import sda.web.views.KnowledgeRoomMessageView;
 import sda.web.views.KnowledgeRoomView;
 
 @Service
@@ -34,6 +35,22 @@ public class KnowledgeRoomService {
 			result.setMessage("The KnowledgeRoom is successfully saved!");
 		else 
 			result.setMessage("Error on KnowledgeRoom save!");
+		
+		return result;
+	}
+	
+	public ArrayList<KnowledgeRoomMessageView> getKnowledgeRoomData(String roomId) throws SDAException{
+		
+		return knowledgeRoomReadDAO.getKnowledgeRoomData(roomId);
+	}
+	
+	public SDAResult saveKnowledgeRoomMessage(KnowledgeRoomMessageView view) throws SDAException{
+		
+		SDAResult result = new SDAResult();
+		if(knowledgeRoomWriteDAO.saveKnowledgeRoomMessage(view))
+			result.setMessage("Message is successfully saved!");
+		else 
+			result.setMessage("Error on message save!");
 		
 		return result;
 	}
