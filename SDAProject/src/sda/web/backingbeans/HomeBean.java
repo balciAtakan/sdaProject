@@ -29,25 +29,25 @@ public class HomeBean {
 	public String logout(){
 		
 		personenService.setCurrUser(null);	
-		return "login";
+		return "login?faces-redirect=true";
 	}
 	
 	public String processHome(){
-		return "home";
+		return "home?faces-redirect=true";
 	}
 	public String processCommunication(){
-		return "communication";
+		return "communication?faces-redirect=true";
 	}
 	public String processCreateKnowledge(){
-		return "create";
+		return "create?faces-redirect=true";
 	}
 	public String processSearchKnowledge(){
-		return "search";
+		return "search?faces-redirect=true";
 	}
 	
 	//yet to be implemented 
 	public String processDeleteKnowledge(){
-		return "delete";
+		return "delete?faces-redirect=true";
 	}
 	
 	

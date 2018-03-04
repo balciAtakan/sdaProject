@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import sda.web.services.PersonenService;
+import sda.web.services.SessionService;
 
 @Component
 @Scope("request")
@@ -20,6 +21,9 @@ public class LoginBean {
 
 	@Autowired
 	private PersonenService personenService;
+	
+	@Autowired
+	private SessionService sessionService;
 
 	@PostConstruct
 	public void init(){
@@ -35,11 +39,17 @@ public class LoginBean {
 		if(username != null && password != null)
 		{
 			if(personenService.checkCredentials(username, password))
-				return "home";
+			{
+				sessionService.initDfxCategories();
+				return "home?faces-redirect=true";
+			}
 
 			//developer shortcut ;)
 			if(username.equals("admin")&& password.equals("admin"))
-				return "home";
+			{
+				sessionService.initDfxCategories();
+				return "home?faces-redirect=true";
+			}
 			else{ 
 				FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_ERROR,"Error!","Username or password is wrong."));
 				return null;
@@ -50,7 +60,7 @@ public class LoginBean {
 	}
 	
 	public String processNewUser(){
-		return "newUser";
+		return "newUser?faces-redirect=true";
 	}
 	
 	

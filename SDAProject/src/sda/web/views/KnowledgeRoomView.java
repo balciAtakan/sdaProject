@@ -9,7 +9,7 @@ public class KnowledgeRoomView {
 
 	private String uuid;
 	private String roomname;
-	private PersonView roomOwner;
+	private String roomOwner;
 	private List<UserRole> allowedRoles;
 	
 	/** Here is saved only the id from the person not other attributes! 
@@ -23,7 +23,7 @@ public class KnowledgeRoomView {
 		this.history = new ArrayList<KnowledgeRoomMessageView>();
 	}
 	
-	public KnowledgeRoomView(PersonView roomOwner){
+	public KnowledgeRoomView(String roomOwner){
 		
 		this.roomOwner = roomOwner;
 	}
@@ -58,11 +58,11 @@ public class KnowledgeRoomView {
 		this.history = history;
 	}
 
-	public PersonView getRoomOwner() {
+	public String getRoomOwner() {
 		return roomOwner;
 	}
 
-	public void setRoomOwner(PersonView roomOwner) {
+	public void setRoomOwner(String roomOwner) {
 		this.roomOwner = roomOwner;
 	}
 	

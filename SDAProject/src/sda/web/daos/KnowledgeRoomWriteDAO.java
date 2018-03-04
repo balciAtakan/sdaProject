@@ -27,7 +27,7 @@ public class KnowledgeRoomWriteDAO {
 		params.put("roomname", view.getRoomname());
 		params.put("user_roles", SDAUtil.buildUserRoles(view.getAllowedRoles()));
 		params.put("users", SDAUtil.buildUserIds(view.getUsers()));
-		params.put("roomOwner", view.getRoomOwner().getUuid());
+		params.put("roomOwner", view.getRoomOwner());
 		
 		try 
 		{

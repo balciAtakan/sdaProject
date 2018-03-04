@@ -12,6 +12,8 @@ public class KnowledgeRoomMessageView {
 	private PersonView messageOwner;
 	private String knowledgeRoomId;
 	
+	private boolean found;
+	
 	public KnowledgeRoomMessageView(){
 		
 	}
@@ -62,6 +64,14 @@ public class KnowledgeRoomMessageView {
 
 	public void setKnowledgeRoomId(String knowledgeRoomId) {
 		this.knowledgeRoomId = knowledgeRoomId;
+	}
+
+	public boolean isFound() {
+		return found;
+	}
+
+	public void setFound(boolean found) {
+		this.found = found;
 	}
 	
 	

@@ -22,7 +22,7 @@ public class KnowledgeRoomReadDAO {
 
 	public ArrayList<KnowledgeRoomView> getKnowledgeRooms() throws SDAException {
 		// statt ? wird :uuid verwendet...
-		String sql = "SELECT * FROM knowledge_room kr, person p where kr.room_owner = p.id";
+		String sql = "SELECT * FROM knowledge_room";
 
 		Map<String, Object> params = new HashMap<>();
 		ArrayList<KnowledgeRoomView> res = null;

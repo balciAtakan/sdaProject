@@ -3,8 +3,11 @@ package sda.web.backingbeans;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -21,6 +24,7 @@ import org.springframework.stereotype.Component;
 import sda.web.exception.SDAException;
 import sda.web.services.KnowledgeRoomService;
 import sda.web.services.PersonenService;
+import sda.web.services.SessionService;
 import sda.web.util.UserRole;
 import sda.web.views.KnowledgeRoomMessageView;
 import sda.web.views.KnowledgeRoomView;
@@ -34,6 +38,9 @@ public class CommunicationBean implements Serializable{
 
 	@Autowired
 	private PersonenService personenService;
+	
+	@Autowired
+	private SessionService sessionService;
 	
 	@Autowired
 	private KnowledgeRoomService roomService;
@@ -95,7 +102,7 @@ public class CommunicationBean implements Serializable{
 		
 		//new room initial 
 		newRoom.setAllowedRoles(selectedRoles);
-		newRoom.setRoomOwner(currUser);
+		newRoom.setRoomOwner(currUser.getUuid());
 		newRoom.getUsers().add(currUser);
 		
 		selectedRoles.forEach(System.out::println);
@@ -147,15 +154,20 @@ public class CommunicationBean implements Serializable{
 	
 	
 	
-	public void processMessage(ActionEvent event){
-		
+	public void processMessage(ActionEvent event)
+	{	
 		try 
 		{
 		
 			KnowledgeRoomMessageView messageView = new KnowledgeRoomMessageView(message,new Date(),currUser,activeRoom.getUuid()); 
+			
+			messageView.setFound(processWords(messageView));
+			
 			activeRoom.getHistory().add(messageView);
 		
 			roomService.saveKnowledgeRoomMessage(messageView);
+			
+			
 		} catch (SDAException e) {
 			FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_ERROR,e.getMessage(),""));
 			e.printStackTrace();
@@ -163,7 +175,39 @@ public class CommunicationBean implements Serializable{
 		}
 	}
 
-
+	////////////////////////////////////////////////
+	//											 //
+	//											 //
+	//				Wording Process				 //
+	//											 //
+	// 											 //
+	///////////////////////////////////////////////
+	public boolean processWords(KnowledgeRoomMessageView message) 
+	{
+		
+		String[] word= message.getMessage().toLowerCase().trim().split("\\s+");
+		List<String> list = Arrays.stream(word).collect(Collectors.toList());
+		
+		ArrayList<KnowledgeRoomMessageView> history = activeRoom.getHistory();
+		
+		boolean found = false;
+		for (KnowledgeRoomMessageView hist : history) {
+			
+			String[] temp = hist.getMessage().toLowerCase().trim().split("\\s+");
+			List<String> list2 = Arrays.stream(temp).collect(Collectors.toList());
+			
+			found = list.stream().anyMatch(new HashSet<>(list2)::contains);
+			
+			if(found)
+				return found;
+		}
+		
+		return found;
+	}
+	
+	public int getTotalRooms(){
+		return rooms == null ? Integer.valueOf(0): rooms.size();
+	}
 
 	public List<UserRole> getSelectedRoles() {
 		return selectedRoles;

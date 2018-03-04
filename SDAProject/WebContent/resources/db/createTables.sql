@@ -22,3 +22,23 @@ CREATE TABLE knowledge_room_message(
     CONSTRAINT FK_KR FOREIGN KEY (knowledge_room)
     REFERENCES knowledge_room(uuid)
 );
+
+CREATE TABLE knowledge(
+	uuid varchar(255) not null primary key,
+	word varchar(255) not null,
+    category varchar(255) not null,
+    knowledge_text varchar(8000),
+	knowledge_data blob,
+
+	CONSTRAINT FK_CATEGORY FOREIGN KEY (category)
+    REFERENCES categories(uuid)
+
+
+);
+
+CREATE TABLE categories(
+	uuid varchar(255) not null primary key,
+	cat_name varchar(255) not null,
+    sub_category varchar(255)
+
+);

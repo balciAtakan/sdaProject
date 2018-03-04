@@ -18,8 +18,7 @@ public class KnowledgeRoomRowMapper implements RowMapper<KnowledgeRoomView> {
 		KnowledgeRoomView roomView = new KnowledgeRoomView();
 		roomView.setUuid(resultSet.getString("uuid"));
 		roomView.setRoomname(resultSet.getString("roomname"));
-		roomView.setRoomOwner(new PersonView(resultSet.getString("id"),resultSet.getString("firstname"),resultSet.getString("lastname"),
-							resultSet.getString("username"),resultSet.getString("role")));
+		roomView.setRoomOwner(resultSet.getString("room_owner"));
 		
 		List<String> temp = SDAUtil.seperateUserIds(resultSet.getString("users"));
 		ArrayList<PersonView> list =new  ArrayList<PersonView>();
