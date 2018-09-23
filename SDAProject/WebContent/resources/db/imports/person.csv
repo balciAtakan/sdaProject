@@ -1,5 +1,4 @@
-"id";"firstname";"lastname";"username";"pass";"role"
-"0152015202156457";"atakan";"balci";"abalci";"admin";""
-"006";"anton";"weber";"aweber";"admin";""
-"977842823";"John";"Graham";"jgraham";"admin";"DE"
-"495325011";"Kemba";"Boran";"kboran";"admin";"SDE"
+[{"id":"0152015202156457", "firstname":"atakan", "lastname":"balci", "username":"abalci", "pass":"admin", "role":""},
+ {"id":"006", "firstname":"anton", "lastname":"weber", "username":"aweber", "pass":"admin", "role":""},
+ {"id":"977842823", "firstname":"John", "lastname":"Graham", "username":"jgraham", "pass":"admin", "role":"DE"},
+ {"id":"495325011", "firstname":"Kemba", "lastname":"Boran", "username":"kboran", "pass":"admin", "role":"SDE"}]
