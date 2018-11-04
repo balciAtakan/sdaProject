@@ -4,7 +4,19 @@ firstname varchar(24),
 lastname varchar(24),
 username varchar(24),
 pass varchar(24),
-role varchar(12));
+role varchar(12),
+primary key (id));
+
+create table role (
+	id varchar(16) not null ,
+    role_code varchar(8) not null,
+    role_description varchar(255),
+    person_id varchar(16),
+    primary key (id),
+    FOREIGN KEY (person_id)
+        REFERENCES person(id)
+        ON DELETE CASCADE
+);
 
 create table knowledge_room(
 uuid varchar (255) not null primary key,
@@ -20,7 +32,7 @@ CREATE TABLE knowledge_room_message(
     date date,
     PRIMARY KEY (uuid),
     CONSTRAINT FK_KR FOREIGN KEY (knowledge_room)
-    REFERENCES knowledge_room(uuid)
+    REFERENCES knowledge_room(uuid) ON DELETE CASCADE
 );
 
 CREATE TABLE knowledge(
@@ -31,8 +43,7 @@ CREATE TABLE knowledge(
 	knowledge_data blob,
 
 	CONSTRAINT FK_CATEGORY FOREIGN KEY (category)
-    REFERENCES categories(uuid)
-
+    REFERENCES categories(uuid) ON DELETE CASCADE
 
 );
 
@@ -40,5 +51,4 @@ CREATE TABLE categories(
 	uuid varchar(255) not null primary key,
 	cat_name varchar(255) not null,
     sub_category varchar(255)
-
 );
