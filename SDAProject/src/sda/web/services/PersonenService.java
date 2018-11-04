@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 
 import sda.web.daos.PersonDAO;
 import sda.web.exception.SDAException;
+import sda.web.util.SDAUtil;
+import sda.web.util.UserRole;
 import sda.web.views.PersonView;
 
 @Service
@@ -17,7 +19,7 @@ public class PersonenService {
 	//active User,filled on login and lives through the session.
 	private PersonView currUser;
 	
-	public PersonView getCurrentPersonDaten(String uuid) {
+	public PersonView getCurrentPersonDaten(String uuid) throws SDAException {
 		
 		return personDAO.findById(uuid);
 	}
@@ -43,10 +45,14 @@ public class PersonenService {
 	
 	public void createUser(PersonView person) throws SDAException
 	{
+		
 		if(personDAO.userInDB(person.getUsername()))
 			throw new SDAException("Username exist in Databank. Please enter another username!");
 		
+		person.setUuid(SDAUtil.GenerateUuid());
 		personDAO.createUser(person);
+		for(UserRole role :person.getRoles())
+			personDAO.createUserRole(person, role);
 	}
 	
 	public PersonView getCurrUser() {

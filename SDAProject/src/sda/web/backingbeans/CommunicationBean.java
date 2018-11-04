@@ -16,7 +16,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.servlet.http.HttpServletRequest;
 
-import org.primefaces.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -31,7 +30,7 @@ import sda.web.views.KnowledgeRoomView;
 import sda.web.views.PersonView;
 
 @Component
-@Scope("session")
+@Scope("view")
 public class CommunicationBean implements Serializable{
 
 	private static final long serialVersionUID = 1L;
@@ -67,10 +66,11 @@ public class CommunicationBean implements Serializable{
 
 		roles = new ArrayList<UserRole>();
 		addRoom();
-		//load currentUser from processor
-		setCurrUser(personenService.getCurrUser());
-		//load all rooms
+		
 		try {
+			//load currentUser from processor
+			setCurrUser(personenService.getCurrentPersonDaten(personenService.getCurrUser().getUuid()));
+			//load all rooms
 			rooms = roomService.getKnowledgeRooms();
 		} catch (SDAException e) {
 			System.out.println(e.getMessage());
@@ -126,6 +126,8 @@ public class CommunicationBean implements Serializable{
 	
 	public void processEnterRoom(){
 		
+		// todo!!!!
+		/*
 		if(activeRoom.getAllowedRoles().stream().anyMatch(role -> role.name().equals(currUser.getRole())))
 		{
 			RequestContext context = RequestContext.getCurrentInstance();
@@ -136,6 +138,7 @@ public class CommunicationBean implements Serializable{
 			RequestContext context = RequestContext.getCurrentInstance();
 			context.execute("PF('deniedEnterRoom').show();");
 		}
+		*/
 		
 	}
 	

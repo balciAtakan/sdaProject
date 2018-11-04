@@ -4,10 +4,9 @@ firstname varchar(24),
 lastname varchar(24),
 username varchar(24),
 pass varchar(24),
-role varchar(12),
 primary key (id));
 
-create table role (
+create table person_role (
 	id varchar(16) not null ,
     role_code varchar(8) not null,
     role_description varchar(255),

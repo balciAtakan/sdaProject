@@ -27,4 +27,17 @@ public enum UserRole
     public String role() {
         return role;
     }
+    
+    public static UserRole getEnum(String name) {
+    	if(name == null)
+    		return null;
+    	else {
+    		for(UserRole role : UserRole.values())
+    		{
+    			if(role.name().equalsIgnoreCase(name))
+    				return role;
+    		}
+    		throw new IllegalArgumentException();
+    	}
+    }
 }

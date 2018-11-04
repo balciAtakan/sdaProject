@@ -1,5 +1,9 @@
 package sda.web.views;
 
+import java.util.List;
+
+import sda.web.util.UserRole;
+
 public class PersonView {
 	
 	private String uuid;
@@ -7,7 +11,7 @@ public class PersonView {
 	private String lastname;
 	private String password; 
 	private String username;
-	private String role;
+	private List<UserRole> roles;
 	
 	public PersonView() {
 	}
@@ -20,13 +24,13 @@ public class PersonView {
 		this.username = username;
 	}
 	
-	public PersonView(String uuid, String firstname, String lastname, String username, String role) {
+	public PersonView(String uuid, String firstname, String lastname, String username, List<UserRole> roles) {
 		super();
 		this.uuid = uuid;
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.username = username;
-		this.role = role;
+		this.roles = roles;
 	}
 
 	public PersonView(PersonView person)
@@ -35,7 +39,7 @@ public class PersonView {
 		this.firstname = person.getFirstname();
 		this.lastname = person.getLastname();
 		this.username = person.getUsername();
-		this.role = person.getRole();
+		this.roles = person.getRoles();
 	}
 	
 	@Override
@@ -64,12 +68,13 @@ public class PersonView {
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
 	}
-	
-	public String getRole() {
-		return role;
+
+	public List<UserRole> getRoles() {
+		return roles;
 	}
-	public void setRole(String role) {
-		this.role = role;
+
+	public void setRoles(List<UserRole> roles) {
+		this.roles = roles;
 	}
 
 	public String getUsername() {

@@ -6,3 +6,6 @@ alter table knowledge_room modify column users varchar(20000);
 alter table knowledge_room_message add knowledge_room varchar(255);
 
 drop table knowledge_room_message;
+
+alter table person add primary key(id);
+alter table person drop column role;
