@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -96,16 +97,19 @@ public class PersonDAO {
 		parameters.put("lastname", person.getLastname().toLowerCase());
 		parameters.put("username", person.getUsername().toLowerCase());
 		parameters.put("pass", person.getPassword());
-		//parameters.put("role", person.getRole());
 		
 		try {
 			template.update(sql, parameters);
 			System.out.println("User is inserted!");
 		} 
+		catch (DuplicateKeyException dke) {
+			System.out.println("Username in DB!");
+			throw new SDAException("Username exist in DB!");
+		}
 		catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("Error in DB!");
-			throw new SDAException("Error in DB!");
+			throw new SDAException("Error in DB in createUser process!");
 		}
 		return true;
 	}

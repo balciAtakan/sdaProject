@@ -10,13 +10,15 @@ import sda.web.services.PersonenService;
 import sda.web.views.PersonView;
 
 @Component
-@Scope("request")
+@Scope("view")
 public class HomeBean {
 
 	@Autowired
 	private PersonenService personenService;
 	
 	private PersonView currUser;
+	
+	private String usernameForDelete;
 	
 	@PostConstruct
 	public void init(){
@@ -30,6 +32,14 @@ public class HomeBean {
 		
 		personenService.setCurrUser(null);	
 		return "login?faces-redirect=true";
+	}
+	
+	public boolean isRoleAdmin() {return currUser.getUsername().equals("abalci");}
+	
+	public String processDeleteUser() {
+		
+		System.out.println("User is gone!!");
+		return "home?faces-redirect=true";
 	}
 	
 	public String processHome(){
@@ -58,5 +68,15 @@ public class HomeBean {
 	public void setCurrUser(PersonView currUser) {
 		this.currUser = currUser;
 	}
+
+	public String getUsernameForDelete() {
+		return usernameForDelete;
+	}
+
+	public void setUsernameForDelete(String usernameForDelete) {
+		this.usernameForDelete = usernameForDelete;
+	}
+	
+	
 	
 }

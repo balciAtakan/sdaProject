@@ -23,6 +23,16 @@ roomname varchar(255),
 user_roles varchar(255),
 users varchar(255));
 
+create table knowledge_room_role (
+	id varchar(16) not null ,
+    role_code varchar(8) not null,
+    knowledge_room_id varchar(16),
+    primary key (id),
+    FOREIGN KEY (knowledge_room_id)
+        REFERENCES knowledge_room(uuid)
+        ON DELETE CASCADE
+);
+
 CREATE TABLE knowledge_room_message(
     uuid varchar(255) NOT NULL,
     content varchar(8000) NOT NULL,

@@ -45,10 +45,6 @@ public class PersonenService {
 	
 	public void createUser(PersonView person) throws SDAException
 	{
-		
-		if(personDAO.userInDB(person.getUsername()))
-			throw new SDAException("Username exist in Databank. Please enter another username!");
-		
 		person.setUuid(SDAUtil.GenerateUuid());
 		personDAO.createUser(person);
 		for(UserRole role :person.getRoles())

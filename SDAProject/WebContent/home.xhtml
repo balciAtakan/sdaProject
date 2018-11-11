@@ -20,8 +20,11 @@
 	<h:form>
 		<p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
 		
+		<p:commandButton rendered="#{homeBean.roleAdmin}" value="Delete User" icon="fa fa-trash" oncomplete="PF('deleteDlg').show();" style="margin-top:1%;margin-left:45%;" />
+		
 		<ui:remove>
 		<h:panelGroup>
+			<p:commandButton value="Delete User" icon="fa fa-trash" oncomplete="PF('deleteDlg').show();"/>
 			<h:column>
 				<h:graphicImage width="35%" height="35%" name="images/tuwien.jpg" />
 			</h:column>
@@ -36,6 +39,24 @@
 		<br />
 		<br />
 		<br />
+	</h:form>
+	
+	<h:form id="dialog_form">
+		<p:dialog id="deleteUSerDialog" widgetVar="deleteDlg" modal="true" height="150" width="400" header="Delete User" closable="false">
+				
+			<p:messages id="dialog_messages" autoUpdate="true" closable="false" />
+			
+				<p:outputLabel style="text-align:center;margin-right:5px;" value="Username*  " />
+				<p:inputText value="#{homeBean.usernameForDelete}" />
+		
+				<p:spacer/>
+				
+			<h:panelGrid columns="2" style="width:100%;margin-top:20px">
+		    	<p:commandButton value="Cancel" style="float:left;background-color:aliceblue" onclick="PF('deleteDlg').hide();"/>
+		    	<p:commandButton value="Delete User" style="float:right;background-color:aliceblue" update="@all" action="#{homeBean.processDeleteUser}" />
+		    </h:panelGrid>
+				
+		</p:dialog>
 	</h:form>
 	
 	</ui:define>

@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.jdbc.core.RowMapper;
 
 import sda.web.util.SDAUtil;
+import sda.web.util.UserRole;
 import sda.web.views.KnowledgeRoomView;
 import sda.web.views.PersonView;
 
@@ -21,13 +22,14 @@ public class KnowledgeRoomRowMapper implements RowMapper<KnowledgeRoomView> {
 		roomView.setRoomOwner(resultSet.getString("room_owner"));
 		
 		List<String> temp = SDAUtil.seperateUserIds(resultSet.getString("users"));
-		ArrayList<PersonView> list =new  ArrayList<PersonView>();
+		ArrayList<PersonView> list = new  ArrayList<PersonView>();
 		if(temp != null)
 			temp.stream().forEach(id -> list.add(new PersonView(id)));
 		roomView.setUsers(list);
 		
-		roomView.setAllowedRoles(SDAUtil.seperateUserRoles(resultSet.getString("user_roles").toUpperCase()));
-	
+		ArrayList<UserRole> list2 = new ArrayList<>();
+		list2.add(UserRole.getEnum(resultSet.getString("role_code").toLowerCase()));
+		roomView.setAllowedRoles(list2);
 		
 		//personView.setUsername(resultSet.getString("users"));
 		return roomView;

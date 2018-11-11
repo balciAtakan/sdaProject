@@ -22,13 +22,34 @@ public class KnowledgeRoomReadDAO {
 
 	public ArrayList<KnowledgeRoomView> getKnowledgeRooms() throws SDAException {
 		// statt ? wird :uuid verwendet...
-		String sql = "SELECT * FROM knowledge_room";
+		String sql = "SELECT kr.*,knr.role_code FROM knowledge_room kr left join knowledge_room_role knr on kr.uuid = knr.knowledge_room_id";
 
 		Map<String, Object> params = new HashMap<>();
-		ArrayList<KnowledgeRoomView> res = null;
+
+		ArrayList<KnowledgeRoomView> res = new ArrayList<>();
 		try {
-			res = (ArrayList<KnowledgeRoomView>) template.query(sql, params,
-					new KnowledgeRoomRowMapper());
+
+			res.addAll((ArrayList<KnowledgeRoomView>) template.query(sql, params,
+					new KnowledgeRoomRowMapper()));
+			
+			if(res.size() > 0)
+			{
+				ArrayList<KnowledgeRoomView> temp = res;
+				for(int i = 0 ; i < res.size() ; i++)
+				{
+					for (int a = 0 ; a < temp.size() ; a++) {
+						
+						if(res.get(i).getUuid().equals(temp.get(a).getUuid()))
+						{
+							res.get(i).getAllowedRoles().addAll((temp.get(a).getAllowedRoles()));
+							temp.remove(a);
+							break;
+						}
+					}
+					//todo;
+					//KnowledgeRoomView view = temp.stream().filter(a->a.getUuid().equals(temp.get(i).getUuid())).findFirst().orElse(null);
+				}
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();

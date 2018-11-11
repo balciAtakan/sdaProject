@@ -1,7 +1,6 @@
 package sda.web.backingbeans;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 
@@ -63,14 +62,6 @@ public class LoginBean {
 		return "newUser?faces-redirect=true";
 	}
 	
-	
-	
-	@PreDestroy
-	public void destroy(){
-
-		username = null;
-		password=null;
-	}
 
 	public String getUsername() {
 		return username;
