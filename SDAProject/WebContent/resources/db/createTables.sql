@@ -19,9 +19,11 @@ create table person_role (
 
 create table knowledge_room(
 uuid varchar (255) not null primary key,
-roomname varchar(255),
-user_roles varchar(255),
-users varchar(255));
+roomname varchar(255) not null,
+room_owner varchar(255) not null,
+date_create datetime(3) not null,
+ 	CONSTRAINT fk_person FOREIGN KEY (room_owner)
+    REFERENCES person(id));
 
 create table knowledge_room_role (
 	id varchar(16) not null ,
@@ -30,6 +32,20 @@ create table knowledge_room_role (
     primary key (id),
     FOREIGN KEY (knowledge_room_id)
         REFERENCES knowledge_room(uuid)
+        ON DELETE CASCADE
+);
+
+create table knowledge_room_user(
+	id varchar(16) not null ,
+    username varchar(255) not null,
+    knowledge_room_id varchar(16) not null,
+    person_id varchar(16) not null,
+    primary key (id),
+    FOREIGN KEY (knowledge_room_id)
+        REFERENCES knowledge_room(uuid)
+        ON DELETE CASCADE,
+	FOREIGN KEY (person_id)
+        REFERENCES person(id)
         ON DELETE CASCADE
 );
 

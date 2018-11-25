@@ -9,3 +9,10 @@ drop table knowledge_room_message;
 
 alter table person add primary key(id);
 alter table person drop column role;
+
+ALTER TABLE knowledge_room
+ADD COLUMN date_create datetime(3) AFTER room_owner;
+
+alter table knowledge_room
+add CONSTRAINT FK_person FOREIGN KEY (room_owner)
+    REFERENCES person(id);

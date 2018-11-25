@@ -1,11 +1,13 @@
 package sda.web.daos;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -130,6 +132,32 @@ public class PersonDAO {
 			e.printStackTrace();
 			System.out.println("Error in DB!");
 			throw new SDAException("Error in DB!");
+		}
+		return true;
+	}
+	
+	public boolean deleteUser(String username)throws SDAException{
+		
+		String sql = "DELETE FROM person WHERE username = :username";
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		parameters.put("username", username);
+		
+		try {
+			template.update(sql, parameters);
+			System.out.println("User is deleted!");
+		}
+		catch (Exception e) {
+			if(e instanceof SQLIntegrityConstraintViolationException || e instanceof DataIntegrityViolationException)
+			{
+				System.out.println("Roomowner!!");
+				throw new SDAException("This user is a chatroom owner therefore cannot be deleted! Delete the Room First!");
+			}
+			else
+			{
+				e.printStackTrace();
+				System.out.println("Error in DB!");
+				throw new SDAException("Error in DB in deleteUser process!");
+			}
 		}
 		return true;
 	}

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import org.springframework.jdbc.core.RowMapper;
 
+import sda.web.util.SDAUtil;
 import sda.web.util.UserRole;
 import sda.web.views.PersonView;
 
@@ -21,8 +22,8 @@ public class PersonRowMapper implements RowMapper<PersonView> {
 	public PersonView mapRow(ResultSet resultSet, int arg1) throws SQLException {
 		PersonView personView = new PersonView();
 		personView.setUuid(resultSet.getString("id"));
-		personView.setFirstname(resultSet.getString("firstname"));
-		personView.setLastname(resultSet.getString("lastname"));
+		personView.setFirstname(SDAUtil.firstLetterUppercase(resultSet.getString("firstname")));
+		personView.setLastname(SDAUtil.firstLetterUppercase(resultSet.getString("lastname")));
 		personView.setUsername(resultSet.getString("username"));
 		
 		if(needRoles)

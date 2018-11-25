@@ -1,11 +1,15 @@
 package sda.web.backingbeans;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import sda.web.exception.SDAException;
+import sda.web.services.KnowledgeRoomService;
 import sda.web.services.PersonenService;
 import sda.web.views.PersonView;
 
@@ -16,9 +20,13 @@ public class HomeBean {
 	@Autowired
 	private PersonenService personenService;
 	
+	@Autowired
+	private KnowledgeRoomService knowledgeRoomService;
+	
 	private PersonView currUser;
 	
 	private String usernameForDelete;
+	private String roomnameForDelete;
 	
 	@PostConstruct
 	public void init(){
@@ -38,7 +46,30 @@ public class HomeBean {
 	
 	public String processDeleteUser() {
 		
-		System.out.println("User is gone!!");
+		if((usernameForDelete == null || usernameForDelete.isEmpty()) && (roomnameForDelete == null || roomnameForDelete.isEmpty()))
+		{
+			FacesContext.getCurrentInstance().addMessage("dialog_form:dialog_messages",new FacesMessage(FacesMessage.SEVERITY_ERROR,"Please enter a room or username for delete!",""));
+			return null;
+		}
+		
+		try {
+			if(usernameForDelete != null && !usernameForDelete.isEmpty()){
+				personenService.deleteUser(usernameForDelete);
+				System.out.println("User is deleted!");
+				FacesContext.getCurrentInstance().addMessage("dialog_form:dialog_messages",new FacesMessage(FacesMessage.SEVERITY_INFO,"User is deleted",""));
+			}
+			if(roomnameForDelete != null && !roomnameForDelete.isEmpty()){
+				knowledgeRoomService.deleteKnowledgeRoom(roomnameForDelete);
+				System.out.println("Room is deleted!");
+				FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_INFO,"Room is deleted",""));
+			}
+			
+		} catch (SDAException e) {
+			// TODO Auto-generated catch block
+			FacesContext.getCurrentInstance().addMessage("dialog_form:dialog_messages",new FacesMessage(FacesMessage.SEVERITY_ERROR,e.getMessage(),""));
+			return null;
+		}
+		
 		return "home?faces-redirect=true";
 	}
 	
@@ -76,7 +107,13 @@ public class HomeBean {
 	public void setUsernameForDelete(String usernameForDelete) {
 		this.usernameForDelete = usernameForDelete;
 	}
-	
-	
+
+	public String getRoomnameForDelete() {
+		return roomnameForDelete;
+	}
+
+	public void setRoomnameForDelete(String roomnameForDelete) {
+		this.roomnameForDelete = roomnameForDelete;
+	}
 	
 }

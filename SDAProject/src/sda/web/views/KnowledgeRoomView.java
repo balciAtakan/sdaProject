@@ -1,6 +1,7 @@
 package sda.web.views;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import sda.web.util.UserRole;
@@ -10,12 +11,15 @@ public class KnowledgeRoomView {
 	private String uuid;
 	private String roomname;
 	private String roomOwner;
+	private Date dateCreate;
 	private List<UserRole> allowedRoles;
 	
 	/** Here is saved only the id from the person not other attributes! 
 	 */
 	private ArrayList<PersonView> users;
 	private ArrayList<KnowledgeRoomMessageView> history;
+	
+	private PersonView newUser;
 	
 	public KnowledgeRoomView(){
 		
@@ -65,5 +69,23 @@ public class KnowledgeRoomView {
 	public void setRoomOwner(String roomOwner) {
 		this.roomOwner = roomOwner;
 	}
+
+	public Date getDateCreate() {
+		return dateCreate;
+	}
+
+	public void setDateCreate(Date dateCreate) {
+		this.dateCreate = dateCreate;
+	}
+
+	public PersonView getNewUser() {
+		return newUser;
+	}
+
+	public void setNewUser(PersonView newUser) {
+		this.newUser = newUser;
+	}
+	
+	
 	
 }

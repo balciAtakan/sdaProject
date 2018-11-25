@@ -1,18 +1,22 @@
 package sda.web.daos;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import sda.web.daos.mapper.KnowledgeRoomMessageRowMapper;
 import sda.web.daos.mapper.KnowledgeRoomRowMapper;
 import sda.web.exception.SDAException;
+import sda.web.util.UserRole;
 import sda.web.views.KnowledgeRoomMessageView;
 import sda.web.views.KnowledgeRoomView;
+import sda.web.views.PersonView;
 
 @Repository
 public class KnowledgeRoomReadDAO {
@@ -22,35 +26,43 @@ public class KnowledgeRoomReadDAO {
 
 	public ArrayList<KnowledgeRoomView> getKnowledgeRooms() throws SDAException {
 		// statt ? wird :uuid verwendet...
-		String sql = "SELECT kr.*,knr.role_code FROM knowledge_room kr left join knowledge_room_role knr on kr.uuid = knr.knowledge_room_id";
+		String sql = "SELECT kr.*,kn_role.role_code ,kn_user.person_id, kn_user.username FROM knowledge_room kr "
+				+ " left join knowledge_room_role kn_role on kr.uuid = kn_role.knowledge_room_id"
+				+ " left join knowledge_room_user kn_user on kr.uuid = kn_user.knowledge_room_id order by kr.date_create";
 
 		Map<String, Object> params = new HashMap<>();
 
 		ArrayList<KnowledgeRoomView> res = new ArrayList<>();
 		try {
 
-			res.addAll((ArrayList<KnowledgeRoomView>) template.query(sql, params,
-					new KnowledgeRoomRowMapper()));
+			res.addAll((ArrayList<KnowledgeRoomView>) template.query(sql, params,new KnowledgeRoomRowMapper()));
 			
+			ArrayList<KnowledgeRoomView> temp = new ArrayList<>();
 			if(res.size() > 0)
 			{
-				ArrayList<KnowledgeRoomView> temp = res;
 				for(int i = 0 ; i < res.size() ; i++)
 				{
-					for (int a = 0 ; a < temp.size() ; a++) {
-						
-						if(res.get(i).getUuid().equals(temp.get(a).getUuid()))
+					String id = res.get(i).getUuid();
+					KnowledgeRoomView item = temp.stream().filter(a->a.getUuid().equals(id)).findFirst().orElse(null);
+					if(item != null)
+					{
+						UserRole role = res.get(i).getAllowedRoles().get(0);
+						if(item.getAllowedRoles().stream().noneMatch(a->a.equals(role)))
 						{
-							res.get(i).getAllowedRoles().addAll((temp.get(a).getAllowedRoles()));
-							temp.remove(a);
-							break;
+							item.getAllowedRoles().add(role);
+						}
+						PersonView person = res.get(i).getUsers().get(0);
+						if(item.getUsers().stream().noneMatch(a->a.getUuid().equals(person.getUuid())))
+						{
+							item.getUsers().add(person);
 						}
 					}
-					//todo;
-					//KnowledgeRoomView view = temp.stream().filter(a->a.getUuid().equals(temp.get(i).getUuid())).findFirst().orElse(null);
+					else
+						temp.add(res.get(i));
 				}
 			}
-
+			res = temp;
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println(e.getMessage());
@@ -79,4 +91,31 @@ public class KnowledgeRoomReadDAO {
 		
 		return res;
 	}
+	
+	public boolean deleteKnowledgeRoom(String roomname)throws SDAException{
+		
+		String sql = "DELETE FROM knowledge_room WHERE roomname = :roomname";
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		parameters.put("roomname", roomname);
+		
+		try {
+			template.update(sql, parameters);
+			System.out.println("Room is deleted!");
+		}
+		catch (Exception e) {
+			if(e instanceof SQLIntegrityConstraintViolationException || e instanceof DataIntegrityViolationException)
+			{
+				System.out.println("Roomowner!!");
+				throw new SDAException("This room cannot be deleted!! ");
+			}
+			else
+			{
+				e.printStackTrace();
+				System.out.println("Error in DB!");
+				throw new SDAException("Error in DB in deleteRoom process!");
+			}
+		}
+		return true;
+	}
+	
 }

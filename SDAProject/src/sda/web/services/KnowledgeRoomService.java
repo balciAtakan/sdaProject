@@ -31,10 +31,17 @@ public class KnowledgeRoomService {
 	public SDAResult saveKnowledgeRoom(KnowledgeRoomView view) throws SDAException{
 		
 		SDAResult result = new SDAResult();
-		if(knowledgeRoomWriteDAO.saveKnowledgeRoom(view))
-			result.setMessage("The KnowledgeRoom is successfully saved!");
-		else 
+		try {
+			
+			view = knowledgeRoomWriteDAO.saveKnowledgeRoom(view);
+			knowledgeRoomWriteDAO.insertKnowledgeRoomRoles(view);
+			knowledgeRoomWriteDAO.saveKnowledgeRoomUser(view, view.getNewUser());
+			
+			result.setMessage("The KnowledgeRoom is successfully created!");
+		} catch (Exception e) {
+
 			result.setMessage("Error on KnowledgeRoom save!");
+		}
 		
 		return result;
 	}
@@ -53,5 +60,10 @@ public class KnowledgeRoomService {
 			result.setMessage("Error on message save!");
 		
 		return result;
+	}
+	
+	public void deleteKnowledgeRoom(String roomname) throws SDAException{
+		
+		knowledgeRoomReadDAO.deleteKnowledgeRoom(roomname);
 	}
 }

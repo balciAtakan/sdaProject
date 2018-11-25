@@ -25,8 +25,7 @@
 			  
 		                <p:dataTable id="personTable" value="#{communicationBean.rooms}" var="room">
 		                	<f:facet name="header">
-					            Knowledge Rooms(#{communicationBean.totalRooms})
-					            <p:commandButton id="newRoomButton" style="background:azure" icon="fa fa-plus"
+					            <p:commandButton id="newRoomButton" style="background:azure" icon="fa fa-plus" value="New Room"
 		                				 oncomplete="PF('roomDlg').show();"/>
 					        </f:facet>
 		                	<p:column>
@@ -141,7 +140,7 @@
 					<f:facet name="header">
 			            Allowed User Roles in Room
 			        </f:facet>
-			        <p:column selectionMode="multiple" style="width:16px;text-align:center"/>
+			        <p:column selectionMode="multiple" style="width:36px;text-align:center"/>
 			        <p:column headerText="Role">
 			            <h:outputText value="#{role.role()}" />
 			        </p:column>

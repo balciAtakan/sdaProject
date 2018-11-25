@@ -51,6 +51,11 @@ public class PersonenService {
 			personDAO.createUserRole(person, role);
 	}
 	
+	public void deleteUser(String username) throws SDAException
+	{
+		personDAO.deleteUser(username);
+	}
+	
 	public PersonView getCurrUser() {
 		return currUser;
 	}

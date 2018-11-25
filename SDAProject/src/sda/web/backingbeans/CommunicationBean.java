@@ -98,12 +98,19 @@ public class CommunicationBean implements Serializable{
 			FacesContext.getCurrentInstance().addMessage("dialog_form:dialog_messages",new FacesMessage(FacesMessage.SEVERITY_ERROR,"Please enter a room name!",""));
 			return null;
 		}
+		
+		if(selectedRoles.isEmpty())
+		{
+			FacesContext.getCurrentInstance().addMessage("dialog_form:dialog_messages",new FacesMessage(FacesMessage.SEVERITY_ERROR,"Please chose atleast one allowed Userrole!",""));
+			return null;
+		}
 		System.out.println("create room");
 		
 		//new room initial 
 		newRoom.setAllowedRoles(selectedRoles);
 		newRoom.setRoomOwner(currUser.getUuid());
 		newRoom.getUsers().add(currUser);
+		newRoom.setNewUser(currUser);
 		
 		selectedRoles.forEach(System.out::println);
 		
