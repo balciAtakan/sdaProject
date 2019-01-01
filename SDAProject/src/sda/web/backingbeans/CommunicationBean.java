@@ -24,6 +24,8 @@ import sda.web.exception.SDAException;
 import sda.web.services.KnowledgeRoomService;
 import sda.web.services.PersonenService;
 import sda.web.services.SessionService;
+import sda.web.util.SDAResult;
+import sda.web.util.SDAUtil;
 import sda.web.util.UserRole;
 import sda.web.views.KnowledgeRoomMessageView;
 import sda.web.views.KnowledgeRoomView;
@@ -64,7 +66,7 @@ public class CommunicationBean implements Serializable{
 		
 		System.out.println("Communication bean init!");
 
-		roles = new ArrayList<UserRole>();
+		roles = new ArrayList<>();
 		addRoom();
 		
 		try {
@@ -116,17 +118,17 @@ public class CommunicationBean implements Serializable{
 		
 		try {
 			
-			roomService.saveKnowledgeRoom(newRoom);
+			SDAResult res = roomService.saveKnowledgeRoom(newRoom);
+
+			FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_INFO,res.getMessage(),""));
+			ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
+			ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
 		} catch (SDAException e) {
 			
 			System.out.println(e.getMessage());
 			FacesContext.getCurrentInstance().addMessage("dialog_form:dialog_messages",new FacesMessage(FacesMessage.SEVERITY_ERROR,"Unknown error!",""));
 			return null;
 		}
-		
-		FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_INFO,"New room is created!",""));
-		ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
-	    ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
 	    return null;
 		
 	}
@@ -161,22 +163,20 @@ public class CommunicationBean implements Serializable{
 		
 		
 	}
-	
-	
-	
+
 	public void processMessage(ActionEvent event)
 	{	
 		try 
 		{
 		
-			KnowledgeRoomMessageView messageView = new KnowledgeRoomMessageView(message,new Date(),currUser,activeRoom.getUuid()); 
+			KnowledgeRoomMessageView messageView = new KnowledgeRoomMessageView(SDAUtil.GenerateUuid(), message,new Date(),currUser,activeRoom.getUuid());
 			
 			messageView.setFound(processWords(messageView));
 			
 			activeRoom.getHistory().add(messageView);
 		
-			roomService.saveKnowledgeRoomMessage(messageView);
-			
+			SDAResult res = roomService.saveKnowledgeRoomMessage(messageView);
+			System.out.println(res.getMessage());
 			
 		} catch (SDAException e) {
 			FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_ERROR,e.getMessage(),""));
@@ -192,7 +192,7 @@ public class CommunicationBean implements Serializable{
 	//											 //
 	// 											 //
 	///////////////////////////////////////////////
-	public boolean processWords(KnowledgeRoomMessageView message) 
+	private boolean processWords(KnowledgeRoomMessageView message)
 	{
 		
 		String[] word= message.getMessage().toLowerCase().trim().split("\\s+");

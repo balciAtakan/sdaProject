@@ -1,16 +1,24 @@
 package sda.web.views;
 
+import java.util.Date;
 import java.util.List;
 
 import sda.web.util.UserRole;
 
+/*	The Person Object from Person Table.
+*
+* */
 public class PersonView {
 	
 	private String uuid;
 	private String firstname;
 	private String lastname;
-	private String password; 
+	private String password;
+
+	/* Given Username is always unique.
+	 */
 	private String username;
+	private Date modify_date;
 	private List<UserRole> roles;
 	
 	public PersonView() {
@@ -92,6 +100,12 @@ public class PersonView {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
-	
+
+	public Date getModify_date() {
+		return modify_date;
+	}
+
+	public void setModify_date(Date modify_date) {
+		this.modify_date = modify_date;
+	}
 }

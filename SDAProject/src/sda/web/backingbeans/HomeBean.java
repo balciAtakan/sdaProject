@@ -73,19 +73,6 @@ public class HomeBean {
 		return "home?faces-redirect=true";
 	}
 	
-	public String processHome(){
-		return "home?faces-redirect=true";
-	}
-	public String processCommunication(){
-		return "communication?faces-redirect=true";
-	}
-	public String processCreateKnowledge(){
-		return "create?faces-redirect=true";
-	}
-	public String processSearchKnowledge(){
-		return "search?faces-redirect=true";
-	}
-	
 	//yet to be implemented 
 	public String processDeleteKnowledge(){
 		return "delete?faces-redirect=true";

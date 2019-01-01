@@ -4,6 +4,7 @@ firstname varchar(24),
 lastname varchar(24),
 username varchar(24),
 pass varchar(24),
+modify_date datetime(3) not null default '2019-01-01 00:00:00',
 primary key (id));
 
 create table person_role (
@@ -54,10 +55,16 @@ CREATE TABLE knowledge_room_message(
     content varchar(8000) NOT NULL,
     knowledge_room varchar(255) NOT NULL,
     owner varchar(255),
-    date date,
+    modify_date datetime(3) not null default '2019-01-01 00:00:00',
     PRIMARY KEY (uuid),
     CONSTRAINT FK_KR FOREIGN KEY (knowledge_room)
     REFERENCES knowledge_room(uuid) ON DELETE CASCADE
+);
+
+CREATE TABLE categories(
+	uuid varchar(255) not null primary key,
+	cat_name varchar(255) not null,
+    sub_category varchar(255)
 );
 
 CREATE TABLE knowledge(
@@ -72,8 +79,3 @@ CREATE TABLE knowledge(
 
 );
 
-CREATE TABLE categories(
-	uuid varchar(255) not null primary key,
-	cat_name varchar(255) not null,
-    sub_category varchar(255)
-);

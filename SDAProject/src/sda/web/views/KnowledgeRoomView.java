@@ -14,7 +14,7 @@ public class KnowledgeRoomView {
 	private Date dateCreate;
 	private List<UserRole> allowedRoles;
 	
-	/** Here is saved only the id from the person not other attributes! 
+	/** Here is saved only the username from the person not other attributes!
 	 */
 	private ArrayList<PersonView> users;
 	private ArrayList<KnowledgeRoomMessageView> history;

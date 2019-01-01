@@ -1,23 +1,21 @@
 package sda.web.daos;
 
-import java.sql.SQLIntegrityConstraintViolationException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-
 import sda.web.daos.mapper.PersonRowMapper;
 import sda.web.exception.SDAException;
 import sda.web.util.SDAUtil;
 import sda.web.util.UserRole;
 import sda.web.views.PersonView;
+
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.*;
 
 @Repository
 public class PersonDAO {
@@ -51,28 +49,7 @@ public class PersonDAO {
 		return result.get(0);
 	}
 
-	public PersonView checkCredentials(String uname, String pass)throws SDAException{
 
-		String sql="select * from person where username=:uname and pass=:pass" ;
-		Map<String, Object> parameters = new HashMap<String, Object>();
-		parameters.put("uname", uname);
-		parameters.put("pass", pass);
-		PersonView res = null;
-		try {
-			res = template.queryForObject(sql, parameters, new PersonRowMapper(false));
-		} 
-		catch (EmptyResultDataAccessException e) {
-			
-			return null;
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			System.out.println("Error in DB!");
-			throw new SDAException("Error in DB!");
-		}
-		
-		return res;
-	}
 	
 	public boolean userInDB(String username)throws SDAException{
 		
@@ -89,15 +66,40 @@ public class PersonDAO {
 			throw new SDAException("Error in DB!");
 		}
 	}
+
+	public PersonView checkCredentials(String uname, String pass)throws SDAException
+	{
+		String sql="select * from person where username=:uname and pass=:pass" ;
+		Map<String, Object> parameters = new HashMap<String, Object>();
+		parameters.put("uname", uname);
+		parameters.put("pass", pass);
+		PersonView res = null;
+
+		try {
+			res = template.queryForObject(sql, parameters, new PersonRowMapper(false));
+		}
+		catch (EmptyResultDataAccessException e) {
+
+			return null;
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			System.out.println("noldu lan Error in DB!");
+			throw new SDAException("Error in DB!");
+		}
+
+		return res;
+	}
 	
 	public boolean createUser(PersonView person)throws SDAException{
 		
-		String sql = "insert into person values(:uuid,:firstname,:lastname,:username,:pass)";
+		String sql = "insert into person values(:uuid,:firstname,:lastname,:username,:pass,:modify_date)";
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parameters.put("uuid", person.getUuid());
 		parameters.put("firstname", person.getFirstname().toLowerCase());
 		parameters.put("lastname", person.getLastname().toLowerCase());
 		parameters.put("username", person.getUsername().toLowerCase());
+		parameters.put("modify_date", new Date());
 		parameters.put("pass", person.getPassword());
 		
 		try {
@@ -147,7 +149,7 @@ public class PersonDAO {
 			System.out.println("User is deleted!");
 		}
 		catch (Exception e) {
-			if(e instanceof SQLIntegrityConstraintViolationException || e instanceof DataIntegrityViolationException)
+			if(e instanceof DataIntegrityViolationException)
 			{
 				System.out.println("Roomowner!!");
 				throw new SDAException("This user is a chatroom owner therefore cannot be deleted! Delete the Room First!");

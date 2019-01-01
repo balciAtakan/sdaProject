@@ -26,16 +26,18 @@ public class KnowledgeRoomReadDAO {
 
 	public ArrayList<KnowledgeRoomView> getKnowledgeRooms() throws SDAException {
 		// statt ? wird :uuid verwendet...
-		String sql = "SELECT kr.*,kn_role.role_code ,kn_user.person_id, kn_user.username FROM knowledge_room kr "
+		String sql = "SELECT kr.*,kn_role.role_code ,kn_user.person_id, kn_user.username , krm.uuid as krm_uuid, krm.content, krm.owner, krm.modify_date"
+				+ "	FROM knowledge_room kr "
 				+ " left join knowledge_room_role kn_role on kr.uuid = kn_role.knowledge_room_id"
-				+ " left join knowledge_room_user kn_user on kr.uuid = kn_user.knowledge_room_id order by kr.date_create";
+				+ " left join knowledge_room_user kn_user on kr.uuid = kn_user.knowledge_room_id "
+				+ " left join knowledge_room_message krm on kr.uuid = krm.knowledge_room ";
 
 		Map<String, Object> params = new HashMap<>();
 
-		ArrayList<KnowledgeRoomView> res = new ArrayList<>();
+		ArrayList<KnowledgeRoomView> res;
 		try {
 
-			res.addAll((ArrayList<KnowledgeRoomView>) template.query(sql, params,new KnowledgeRoomRowMapper()));
+			res = new ArrayList<>(template.query(sql, params, new KnowledgeRoomRowMapper()));
 			
 			ArrayList<KnowledgeRoomView> temp = new ArrayList<>();
 			if(res.size() > 0)
@@ -51,10 +53,17 @@ public class KnowledgeRoomReadDAO {
 						{
 							item.getAllowedRoles().add(role);
 						}
+
 						PersonView person = res.get(i).getUsers().get(0);
 						if(item.getUsers().stream().noneMatch(a->a.getUuid().equals(person.getUuid())))
 						{
 							item.getUsers().add(person);
+						}
+
+						KnowledgeRoomMessageView message = res.get(i).getHistory().get(0);
+						if(message != null && item.getHistory().stream().noneMatch(a->a.getUuid().equals(message.getUuid())))
+						{
+							item.getHistory().add(message);
 						}
 					}
 					else

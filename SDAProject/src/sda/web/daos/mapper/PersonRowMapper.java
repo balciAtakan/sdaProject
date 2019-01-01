@@ -24,6 +24,7 @@ public class PersonRowMapper implements RowMapper<PersonView> {
 		personView.setUuid(resultSet.getString("id"));
 		personView.setFirstname(SDAUtil.firstLetterUppercase(resultSet.getString("firstname")));
 		personView.setLastname(SDAUtil.firstLetterUppercase(resultSet.getString("lastname")));
+		personView.setModify_date(resultSet.getDate("modify_date"));
 		personView.setUsername(resultSet.getString("username"));
 		
 		if(needRoles)

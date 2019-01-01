@@ -4,10 +4,7 @@
 	<artifactId>SDAProject</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-	
-	
-	
-	
+
 	<build>
 		<sourceDirectory>src</sourceDirectory>
 		<plugins>
@@ -122,8 +119,6 @@
 		    <version>2.0.0.RELEASE</version>
 		</dependency>
 		
-
-		
 		<!-- https://mvnrepository.com/artifact/org.springframework/spring-messaging -->
 		<dependency>
 		    <groupId>org.springframework</groupId>
@@ -137,11 +132,7 @@
 		    <artifactId>spring-boot-autoconfigure</artifactId>
 		    <version>1.5.6.RELEASE</version>
 		</dependency>
-        
-        
-        
-        
-        
+
         
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -150,9 +141,11 @@
             <type>pom</type>
             <scope>import</scope>
         </dependency>
-		
-		
-              
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.0.1</version>
+		</dependency>
 
 
 	</dependencies>

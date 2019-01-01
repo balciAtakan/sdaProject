@@ -14,26 +14,29 @@ http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 		<constructor-arg ref="dataSource" />
 	</bean>
 
-	<!-- prod 
+	<!-- prod -->
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url" value="jdbc:mysql://128.131.136.169:3306/sdaproject?serverTimezone=UTC" />
+		<property name="url" value="jdbc:mysql://localhost:3306/sdaproject?serverTimezone=UTC&amp;useSSL=false" />
 		<property name="username" value="sda" />
-		<property name="password" value="root" />	
+		<property name="password" value="root" />
 	</bean>
 	
-	-->
+
 	
-	
+	<!--
+	128.131.136.52
 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
 		<property name="url" value="jdbc:mysql://localhost:3306/sys?serverTimezone=UTC" />
 		<property name="username" value="root" />
 		
-		<!-- Home Windows prop -->
+		 Home Windows prop
 		<property name="password" value="root" />
 		
 	</bean>
+
+	-->
 	
 	<!-- View-Scope registrieren -->
     <bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">

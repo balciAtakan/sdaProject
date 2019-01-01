@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import sda.web.services.PersonenService;
 import sda.web.services.SessionService;
 
+import java.net.InetAddress;
+
 @Component
 @Scope("request")
 public class LoginBean {
@@ -27,11 +29,13 @@ public class LoginBean {
 	@PostConstruct
 	public void init(){
 
+
+
 		username=null;
 		password=null;
 		System.out.println("Login bean init!");
 	}
-	
+
 	public String doNavigation()
 	{
 		System.out.println("navigation method");
