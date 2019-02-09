@@ -3,7 +3,7 @@
     <wb-module deploy-name="SDAProject-0.0.1-SNAPSHOT">
                 
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
-        <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
+        <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-main.resources"/>
                 
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
                 

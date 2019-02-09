@@ -13,6 +13,7 @@
 </h:head>
 <h:body>
 	<h:form >
+		<p:defaultCommand target="loginBut"/>
 		<p:messages id="messages" showDetail="true" autoUpdate="true" closable="true" />
 		<h:panelGrid style="margin:0 auto;">
 			<p:outputLabel  value="User Login"/>
@@ -29,8 +30,8 @@
 			
 		</h:panelGrid>
 		<h:panelGrid columns="2" cellpadding="4" style="margin: 0 auto;"> 
-			<p:commandButton action="#{loginBean.processNewUser}" value="New User" style="background-color:aliceblue"/>
-			<p:commandButton action="#{loginBean.doNavigation()}" value="Login" style="background-color:aliceblue"/>
+			<p:commandButton id="newBut" action="#{loginBean.processNewUser}" value="New User" style="background-color:aliceblue"/>
+			<p:commandButton id="loginBut" action="#{loginBean.doNavigation()}" value="Login" style="background-color:aliceblue"/>
 		</h:panelGrid>
 	</h:form>
 </h:body>

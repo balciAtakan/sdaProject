@@ -70,12 +70,14 @@ CREATE TABLE categories(
 CREATE TABLE knowledge(
 	uuid varchar(255) not null primary key,
 	word varchar(255) not null,
-    category varchar(255) not null,
-    knowledge_text varchar(8000),
+  category varchar(255) not null,
+  knowledge_text varchar(8000),
+  modify_date datetime(3) not null default '2019-01-01 00:00:00',
+  room_owner varchar(255) not null,
 	knowledge_data blob,
-
 	CONSTRAINT FK_CATEGORY FOREIGN KEY (category)
-    REFERENCES categories(uuid) ON DELETE CASCADE
-
+    REFERENCES categories(uuid) ON DELETE CASCADE,
+  CONSTRAINT fk_person FOREIGN KEY (room_owner)
+    REFERENCES person(id)
 );
 

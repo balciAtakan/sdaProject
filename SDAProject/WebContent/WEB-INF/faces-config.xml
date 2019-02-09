@@ -10,7 +10,7 @@
 	</application>
 
 	<lifecycle>
-		<phase-listener>sda.web.PhaseListenerDebugging</phase-listener>
+		<phase-listener>main.java.sda.web.PhaseListenerDebugging</phase-listener>
 	</lifecycle>
 
 </faces-config>

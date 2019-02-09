@@ -23,6 +23,6 @@
 .test{
 	color:red;
 }
-#roomPanel:messageTable .table.dateTable .th{
-	display:none;
-}
+
+
+.multiselectClass .ui-multiselectlistbox-listcontainer{width: 30%}

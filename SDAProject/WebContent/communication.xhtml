@@ -15,12 +15,12 @@
     </ui:define>
 
     <ui:define name="main_content">
-
         <h:form id="baseForm">
+            <p:remoteCommand name="rc" action="#{communicationBean.loadAsyncKnowledge}" update="personPanel" />
             <b:panel id="personPanel" style="width:20%;height:100%">
                 <h:panelGrid id="personGrid" columns="1">
 
-                    <p:accordionPanel id="baseAccord" activeIndex="null" styleClass="accordion_channel">
+                    <p:accordionPanel id="baseAccord" activeIndex="null" styleClass="accordion_channel" onTabChange="">
                         <p:tab id="baseTab" title="#{communicationBean.currUser.firstname} #{communicationBean.currUser.lastname}">
 
                             <p:dataTable id="personTable" value="#{communicationBean.rooms}" var="room">
@@ -44,13 +44,23 @@
         <h:form id="roomPanel" style="position: absolute;left:20%;top:44px;width: 50%;height:100%;">
             <b:panel id="roomUnit" position="center" collapsed="false" rendered="#{communicationBean.activeRoom.history != null}"
                      title="#{communicationBean.activeRoom.roomname}">
-                <b:alert severity="success" id="baseAlert" closable="true"> Wellcome to <strong>#{communicationBean.activeRoom.roomname}!</strong>
+                <b:alert severity="success" id="baseAlert" closable="true"> Welcome to <strong>#{communicationBean.activeRoom.roomname}!</strong>
                 </b:alert>
                 <div>
-                    <b:dataTable id="messageTable" var="mes" value="#{communicationBean.activeRoom.history}" paginated="false" searching="false" info="false">
-                        <b:dataTableColumn id="ownerName" value="#{mes.ownerName}" style="width:10%" />
-                        <b:dataTableColumn id="plainMessag" rendered="#{!mes.found}" value=" #{mes.message}"/>
-                        <b:dataTableColumn  id="foundMessag" rendered="#{mes.found}" value=" #{mes.message}" style="text-decoration: underline;"/>
+                    <b:dataTable id="messageTable" var="mes" value="#{communicationBean.activeRoom.history}"
+                                 emptyMessage="No Message"
+                                 paginated="false" searching="false" info="false">
+                        <b:dataTableColumn id="userColumn" value="#{mes.ownerName}" style="width:10%" label="User"/>
+                        <b:dataTableColumn id="messageDate" value="#{mes.messageDate}" style="width:5%" label="Date"/>
+
+                        <b:dataTableColumn  id="messageOut" >
+                            <h:outputText rendered="#{!mes.found}" value=" #{mes.message}" id="messageText"/>
+                            <p:commandLink value=" #{mes.message}" id="addKnowledgeLink" update="wordPanel:wordUnit"
+                                           style="background:#dff0d8" actionListener="#{communicationBean.addKnowledge}">
+                                <f:setPropertyActionListener target="#{communicationBean.wordPanelOn}" value="#{true}"/>
+                                <f:setPropertyActionListener target="#{communicationBean.highlightedWord}" value="#{mes.message}"/>
+                            </p:commandLink>
+                        </b:dataTableColumn>
 
                     </b:dataTable>
                 </div>
@@ -72,41 +82,21 @@
 
             </b:panel>
         </h:form>
-        <h:form id="wordPanel" style="position: absolute;left:70%;top: 44px;width: 28%;" rendered="true">
-            <b:panel id="wordUnit" title="Words" rendered="false">
+        <h:form id="wordPanel" style="position: absolute;left:70%;top: 44px;width: 30%;" rendered="true">
+            <b:panel id="wordUnit" title="Words" collapsed="#{!communicationBean.wordPanelOn}" rendered="#{communicationBean.activeRoom.history != null}">
+                <b:panelGrid colSpans="12">
+                    <h:outputText value="&lt;u&gt;#{communicationBean.highlightedWord}&lt;/u&gt; is a frequently used Word. Do you have any &lt;u&gt;Knowledge&lt;/u&gt; to add?" escape="false"/>
+                    <br/>
+                    <p:commandButton id="addKnowledgeButton" value="Add" style="background:#dff0d8;float: right;" actionListener="#{communicationBean.initNewRoom}"
+                                     update="add_knowledge_form:add_knowledge_dialog"
+                                     oncomplete="PF('knowledgeDlg').show();"/>
+                </b:panelGrid>
+
+
+
             </b:panel>
         </h:form>
 
-
-        <ui:remove>
-            <p:layout style="min-width:500px;min-height:700px;">
-                <p:layoutUnit position="west" header="Knowledge Rooms" resizable="true" collapsible="true" size="300" minSize="50" maxSize="400">
-                    <div id="firstPan">
-                    </div>
-
-                    <div>
-                    </div>
-
-                </p:layoutUnit>
-
-                <p:layoutUnit position="center" header="Chat">
-                    <p:fieldset id="container">
-
-                        <h:panelGroup>
-                            <p:inputText disabled="true" style="width:100%;height:300px;" id="chatfield" value="#{communicationBean.message}"/>
-                            <br/>
-                            <p:inputText placeholder="Message" value="#{communicationBean.message}"/>
-
-                            <p:commandButton value="Send" update="chatfield"/>
-                        </h:panelGroup>
-                    </p:fieldset>
-                </p:layoutUnit>
-                <p:layoutUnit position="east" header="Knowledge" resizable="false" collapsible="true" size="400" minSize="50" maxSize="600">
-                    Words
-                </p:layoutUnit>
-
-            </p:layout>
-        </ui:remove>
 
         <h:form id="dialog_form">
             <p:dialog id="addRoomDialog" widgetVar="roomDlg" modal="true" height="620" width="550" header="Add New Knowledge Room" closable="false">
@@ -140,7 +130,7 @@
         </h:form>
 
         <h:form id="enterroom_dialog_form">
-            <p:dialog id="enterRoomDialog" widgetVar="enterRoomDlg" modal="true" style="postion:absolute;top:40%;left:40%;width:300px;height:175px"
+            <p:dialog id="enterRoomDialog" widgetVar="enterRoomDlg" modal="true" style="position:absolute;top:40%;left:40%;width:300px;height:175px"
                       header="Do you want to enter room (#{communicationBean.activeRoom.roomname}) ?" closable="false">
 
                 <h:panelGrid columns="2" style="width:100%">
@@ -155,10 +145,52 @@
         </h:form>
 
         <h:form id="denied_enterroom_dialog_form">
-            <p:dialog id="deniedEnterRoomDlg" widgetVar="deniedEnterRoom" modal="true" height="80" width="500" style="postion:absolute;top:40%;left:40%"
+            <p:dialog id="deniedEnterRoomDlg" widgetVar="deniedEnterRoom" modal="true" height="80" width="500" style="position:absolute;top:40%;left:40%"
                       header="Sorry! You are not allowed to enter THIS room (#{communicationBean.activeRoom.roomname}) " closable="false">
 
                 <b:commandButton value="OK" style="background-color:aliceblue;text-align:right" onclick="PF('deniedEnterRoom').hide();"/>
+            </p:dialog>
+        </h:form>
+
+        <h:form id="add_knowledge_form">
+            <p:dialog id="add_knowledge_dialog" widgetVar="knowledgeDlg" modal="true" height="50%" width="60%" header="Add New Knowledge" closable="false">
+
+                <p:messages id="knowledge_dialog_messages" autoUpdate="true" closable="false"/>
+
+                <h:panelGrid id="panelTest" columns="2" style="width:100%">
+                    <p:outputLabel style="text-align:center;" value="Knowledge*  " />
+                    <p:inputText value="#{communicationBean.highlightedWord}" disabled="true" placeholder="#{communicationBean.highlightedWord}" style="width: 100%"/>
+
+                    <p:spacer/>
+                    <p:spacer/>
+
+                    <p:outputLabel style="text-align:center;margin-right:5px;" value="Description "/>
+                    <p:inputTextarea value="#{communicationBean.newKnowledge.knowledge_text}" style="width: 100%"/>
+                </h:panelGrid>
+
+                <h:panelGrid id="panel2" columns="2" style="margin-bottom:10px;width: 100%">
+
+                    <p:outputLabel for="selectbox" value="DfXCategories:" style="margin-right: 10px"/>
+                    <p:multiSelectListbox id="selectbox" value="#{communicationBean.selectedCategory}" effect="slide"  header="DfX Categories" showHeaders="true"
+                                          styleClass="multiselectClass">
+                        <f:selectItems id="itemsdfx" value="#{communicationBean.dfxCategories}" var="d" itemLabel="#{d.label}" itemValue="#{d.value}"/>
+                    </p:multiSelectListbox>
+
+                    <ui:remove>
+                    <p:outputLabel for="dfx" value="DfXCategories:" style="margin-right: 10px"/>
+                    <p:selectOneRadio id="dfx" value="#{communicationBean.newKnowledge.dfXCategory}"  layout="grid" columns="3">
+                        <f:selectItems value="#{communicationBean.dfxCategories}" var="d" itemLabel="#{d.longText}"/>
+                    </p:selectOneRadio>
+                    </ui:remove>
+                </h:panelGrid>
+
+                <br/>
+
+                <h:panelGrid columns="2" style="width:100%">
+                    <p:commandButton value="Cancel" style="float:left;background-color:aliceblue" onclick="PF('knowledgeDlg').hide();"/>
+                    <p:commandButton value="Create" style="float:right;background-color:aliceblue" action="#{communicationBean.addKnowledge}"/>
+                </h:panelGrid>
+
             </p:dialog>
         </h:form>
     </ui:define>
