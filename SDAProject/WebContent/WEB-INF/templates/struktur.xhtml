@@ -1,50 +1,67 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:h="http://xmlns.jcp.org/jsf/html"
-	xmlns:p="http://primefaces.org/ui"
-	xmlns:f="http://java.sun.com/jsf/core"
-	xmlns:b="http://bootsfaces.net/ui"
-	xmlns:ui="http://java.sun.com/jsf/facelets">
-	<h:head>
-		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />		
-	    <title><ui:insert name="title">SDA</ui:insert></title>
-		
-		
-	</h:head>
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:b="http://bootsfaces.net/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+<h:head>
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+    <title><ui:insert name="title">SDA</ui:insert></title>
 
-	<h:body>
-		<ui:insert name="styles">
-		
-		</ui:insert>
-		<ui:insert name="scripts">
-		
-		</ui:insert>
-        <div id="menu">
+
+</h:head>
+
+<h:body>
+    <ui:insert name="styles">
+
+    </ui:insert>
+    <ui:insert name="scripts">
+
+    </ui:insert>
+    <div id="menu">
         <h:form>
-        <p:menubar id="tb">
- 			<p:menuitem disabled="true" icon="fa fa-toggle-right" value="SDA"/>
- 			
- 			<p:menuitem style="margin-left:20px" value="Home" action="#{strukturBean.processHome}"/>
- 			
- 			<p:menuitem style="margin-left:20px;" value="Communication" action="#{strukturBean.processCommunication}" />
- 			
- 			<p:submenu style="margin-left:20px;" label="Knowledge processing">
- 				<p:menuitem value="Create" action="#{strukturBean.processCreateKnowledge}"/>
- 				<p:menuitem value="Update" action="#{strukturBean.processSearchKnowledge}"/>
- 				<p:menuitem value="Delete" action="#{strukturBean.processSearchKnowledge}"/>
- 			</p:submenu>
- 			
- 			<f:facet name="options">
- 				
-            	<p:inputText style="margin-right:10px" placeholder="Query Knowledge"/>
-           		<p:commandButton type="button" value="Logout" icon="fa fa-fw fa-power-off" action="#{strukturBean.logout}"/>
-       		</f:facet>
- 		</p:menubar>
-		<p:sticky target="tb" />
-		</h:form>
-		</div>
-        <div id="content"><ui:insert name="main_content">Default content</ui:insert></div>
+            <p:menubar id="tb">
+                <p:menuitem disabled="true" icon="fa fa-toggle-right" value="SDA"/>
 
-	</h:body>
+                <p:menuitem style="margin-left:20px" value="Home" action="#{strukturBean.processHome}"/>
+
+                <p:menuitem style="margin-left:20px;" value="Communication" action="#{strukturBean.processCommunication}"/>
+
+                <p:submenu style="margin-left:20px;" label="Knowledge processing">
+                    <p:menuitem value="Create" action="#{strukturBean.processCreateKnowledge}"/>
+                    <p:menuitem value="Update" action="#{strukturBean.processSearchKnowledge}"/>
+                    <p:menuitem value="Delete" action="#{strukturBean.processSearchKnowledge}"/>
+                </p:submenu>
+
+                <f:facet name="options">
+                    <p:inputText id="quicksearch" value="#{quickSearchBean.query}" autocomplete="off" placeholder="Query Knowledge"
+                                 style="background:white;color:black;font-size: 0.9em;margin-right: 200px;">
+                        <p:ajax event="keyup" delay="500" listener="#{quickSearchBean.updateKnowledgeSearch}" update="ergebnisDatatable"/>
+                    </p:inputText>
+                    <p:overlayPanel style="width: 20%;" id="quickOverlay" for="quicksearch">
+                        <p:dataTable var="erg" value="#{quickSearchBean.results}" id="ergebnisDatatable"
+                                     emptyMessage="Noresults found!" style="font-size: 0.85em">
+                            <p:column headerText="Word" style="text-align: left;">
+                                <p:commandLink id="quicksearchLinkAntragShort" style="text-align: left;" action="#{quickSearchBean.processOpenKnowledge}"
+                                               value="#{erg.word}" styleClass="quickSearchFontSize"/>
+                            </p:column>
+                            <p:column headerText="DfX" style="text-align: left;">
+                                <h:outputText value="#{erg.dfXCategory.longText}"/>
+                            </p:column>
+                            <p:column headerText="Sub" style="text-align: left;">
+                                <h:outputText value="#{erg.dfXSubCategory.longText}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:overlayPanel>
+                    <p:commandButton type="button" value="Logout" icon="fa fa-fw fa-power-off" style="font-size: 0.9em" action="#{strukturBean.logout}"/>
+                </f:facet>
+            </p:menubar>
+            <p:sticky target="tb"/>
+        </h:form>
+    </div>
+    <div id="content"><ui:insert name="main_content">Default content</ui:insert></div>
+
+</h:body>
 </html>

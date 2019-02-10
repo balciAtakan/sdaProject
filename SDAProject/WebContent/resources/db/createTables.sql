@@ -54,7 +54,7 @@ CREATE TABLE knowledge_room_message(
     uuid varchar(255) NOT NULL,
     content varchar(8000) NOT NULL,
     knowledge_room varchar(255) NOT NULL,
-    owner varchar(255),
+    ownerID varchar(255),
     modify_date datetime(3) not null default '2019-01-01 00:00:00',
     PRIMARY KEY (uuid),
     CONSTRAINT FK_KR FOREIGN KEY (knowledge_room)

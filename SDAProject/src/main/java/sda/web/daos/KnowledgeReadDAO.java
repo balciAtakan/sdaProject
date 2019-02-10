@@ -1,7 +1,10 @@
 package main.java.sda.web.daos;
 
 import main.java.sda.web.daos.mapper.KnowledgeRowMapper;
+import main.java.sda.web.daos.mapper.KnowledgeRowQSMapper;
 import main.java.sda.web.util.SDAUtil;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -13,12 +16,32 @@ import java.util.*;
 @Repository
 public class KnowledgeReadDAO {
 
+
+    private static Logger log = LogManager.getLogger(KnowledgeReadDAO.class);
+
 	@Autowired
 	private NamedParameterJdbcTemplate template;
 
+	public KnowledgeView getKnowledge(KnowledgeView view) throws SDAException {
+		// statt ? wird :uuid verwendet...
+		String sql = "SELECT k.*,p.username FROM knowledge k left join person p on k.owner = p.id where k.uuid = :uuid";
+		Map<String, Object> params = new HashMap<>();
+
+		params.put("uuid",view.getUuid());
+
+		try {
+
+			return template.queryForObject(sql, params, new KnowledgeRowMapper());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new SDAException(e.getMessage());
+		}
+	}
+
 	public ArrayList<KnowledgeView> getAllKnowledge() throws SDAException {
 		// statt ? wird :uuid verwendet...
-		String sql = "SELECT k.*,p.username FROM knowledge k left join person p on k.room_owner = p.id";
+		String sql = "SELECT k.*,p.username FROM knowledge k left join person p on k.owner = p.id";
 		Map<String, Object> params = new HashMap<>();
 
 		ArrayList<KnowledgeView> res;
@@ -45,7 +68,7 @@ public class KnowledgeReadDAO {
 		parameters.put("knowledge_text", view.getKnowledge_text());
 		parameters.put("knowledge_data", view.getFilename());
 		parameters.put("modify_date", new Date());
-		parameters.put("owner", view.getOwner());
+		parameters.put("owner", view.getOwnerID());
 		parameters.put("subcategory", view.getDfXSubCategory() != null ? view.getDfXSubCategory().name() : null);
 
 		boolean res;
@@ -60,5 +83,57 @@ public class KnowledgeReadDAO {
 
 		return res;
 	}
-	
+
+    public ArrayList<KnowledgeView> selectQuickResultsByInput(String input)
+    {
+        if(input != null && input.length() > 0)
+        {
+            //template = new NamedParameterJdbcTemplate(schuljahrDatasource);
+//			input = input.replace(" ", "%");
+            String[] allinputs = input.split("\\s");
+
+
+            String sql = generateQuickSearchSQL();
+
+            Map<String, Object> params = new HashMap<>();
+
+            int counter = 0;
+
+            for(String oneinput : allinputs)
+            {
+                if(oneinput != null && !oneinput.equals(" ") && !oneinput.equals(""))
+                {
+                    if(counter != 0)
+                        sql = sql + " or ";
+                    sql = sql + " lower(word) like :input" + counter;
+
+                    //Params für namedQuery setzen!
+                    params.put("input" + counter, "%" + oneinput.toLowerCase().trim() + "%");
+
+                    counter++;
+                }
+            }
+
+            sql = sql + " order by word limit 10";
+
+            log.info(sql);
+
+
+            //Absetzen der Query und Ergebnis erhalten
+            return (ArrayList<KnowledgeView>)template.query(sql, params, new KnowledgeRowQSMapper());
+        }
+        else
+            return new ArrayList<>();
+    }
+
+    private String generateQuickSearchSQL(){
+
+	    StringBuilder sb = new StringBuilder();
+
+	    sb.append(" SELECT * from knowledge where ");
+
+	    return sb.toString();
+    }
+
+
 }

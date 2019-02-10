@@ -13,7 +13,8 @@ public class KnowledgeView {
 	private DfXCategory dfXCategory;
 	private DfXSubCategory dfXSubCategory;
 	private Date modifyDate;
-	private String owner;
+	private String ownerID;
+	private String ownerUsername;
 	private String filename;
 
 	public KnowledgeView() {
@@ -67,12 +68,12 @@ public class KnowledgeView {
 		this.modifyDate = modifyDate;
 	}
 
-	public String getOwner() {
-		return owner;
+	public String getOwnerID() {
+		return ownerID;
 	}
 
-	public void setOwner(String owner) {
-		this.owner = owner;
+	public void setOwnerID(String ownerID) {
+		this.ownerID = ownerID;
 	}
 
 	public String getFilename() {
@@ -81,5 +82,13 @@ public class KnowledgeView {
 
 	public void setFilename(String filename) {
 		this.filename = filename;
+	}
+
+	public String getOwnerUsername() {
+		return ownerUsername;
+	}
+
+	public void setOwnerUsername(String ownerUsername) {
+		this.ownerUsername = ownerUsername;
 	}
 }

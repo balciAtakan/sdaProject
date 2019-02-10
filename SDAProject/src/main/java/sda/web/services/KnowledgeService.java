@@ -21,6 +21,7 @@ public class KnowledgeService {
 	private KnowledgeReadDAO knowledgeReadDAO;
 
 	private List<KnowledgeView> allKnowledge;
+	private KnowledgeView currentKnowledge;
 	
 	public void initAllKnowledge() throws SDAException{
 		
@@ -33,6 +34,16 @@ public class KnowledgeService {
 		return knowledgeReadDAO.saveKnowledge(view);
 	}
 
+	public void initKnowledge(){
+
+		try {
+			currentKnowledge = knowledgeReadDAO.getKnowledge(currentKnowledge);
+		} catch (SDAException e) {
+			e.printStackTrace();
+			currentKnowledge = null;
+		}
+	}
+
 	public List<KnowledgeView> getAllKnowledge() {
 		return allKnowledge;
 	}
@@ -41,4 +52,11 @@ public class KnowledgeService {
 		this.allKnowledge = allKnowledge;
 	}
 
+	public KnowledgeView getCurrentKnowledge() {
+		return currentKnowledge;
+	}
+
+	public void setCurrentKnowledge(KnowledgeView currentKnowledge) {
+		this.currentKnowledge = currentKnowledge;
+	}
 }

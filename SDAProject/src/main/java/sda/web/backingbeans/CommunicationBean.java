@@ -330,7 +330,7 @@ public class CommunicationBean implements Serializable{
         }
 
         newKnowledge.setWord(highlightedWord);
-        newKnowledge.setOwner(currUser.getUuid());
+        newKnowledge.setOwnerID(currUser.getUuid());
         try {
         	if(knowledgeService.saveKnowledge(newKnowledge))
 				FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_INFO,"Knowledge successfuly saved!",""));
