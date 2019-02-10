@@ -1,7 +1,6 @@
 package main.java.sda.web.services;
 
-import main.java.sda.web.daos.KnowledgeReadDAO;
-import main.java.sda.web.exception.SDAException;
+import main.java.sda.web.daos.KnowledgeDAO;
 import main.java.sda.web.views.KnowledgeView;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -18,13 +17,13 @@ public class QuickSearchService {
 	private static Logger log = LogManager.getLogger(QuickSearchService.class);
 
 	@Autowired
-	private KnowledgeReadDAO knowledgeReadDAO;
+	private KnowledgeDAO knowledgeDAO;
 
 	private List<KnowledgeView> results;
 	
 	public void selectQuickResultsByInput(String input){
 
-		results = knowledgeReadDAO.selectQuickResultsByInput(input);
+		results = knowledgeDAO.selectQuickResultsByInput(input);
 		log.info("all knowledge has been loaded! Count : " + (results != null ? results.size(): " "));
 	}
 

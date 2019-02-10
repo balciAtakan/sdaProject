@@ -16,7 +16,7 @@
 
     <ui:define name="main_content">
         <h:form id="baseForm">
-            <p:remoteCommand name="rc" action="#{communicationBean.loadAsyncKnowledge}" update="personPanel" />
+            <p:remoteCommand name="rc" action="#{communicationBean.loadAsyncKnowledge}" update="personGrid" async="true" />
             <b:panel id="personPanel" style="width:20%;height:100%">
                 <h:panelGrid id="personGrid" columns="1">
 
@@ -51,15 +51,20 @@
                                  emptyMessage="No Message"
                                  paginated="false" searching="false" info="false">
                         <b:dataTableColumn id="userColumn" value="#{mes.ownerName}" style="width:10%" label="User"/>
-                        <b:dataTableColumn id="messageDate" value="#{mes.messageDate}" style="width:5%" label="Date"/>
+                        <b:dataTableColumn id="messageDate" value="#{mes.modifyDate}" style="width:5%" label="Date"/>
 
-                        <b:dataTableColumn  id="messageOut" >
+                        <b:dataTableColumn  id="messageOut" label="Message">
                             <h:outputText rendered="#{!mes.found}" value=" #{mes.message}" id="messageText"/>
-                            <p:commandLink value=" #{mes.message}" id="addKnowledgeLink" update="wordPanel:wordUnit"
+
+                            <h:outputText rendered="#{mes.found}" value=" #{mes.prefixMessage}" id="messagePrefixText"/>
+                            <p:commandLink value=" #{mes.highlightedWord}" id="addKnowledgeLink" update="wordPanel:wordUnit"
+                                           rendered="#{mes.found}"
                                            style="background:#dff0d8" actionListener="#{communicationBean.addKnowledge}">
                                 <f:setPropertyActionListener target="#{communicationBean.wordPanelOn}" value="#{true}"/>
-                                <f:setPropertyActionListener target="#{communicationBean.highlightedWord}" value="#{mes.message}"/>
+                                <f:setPropertyActionListener target="#{communicationBean.highlightedWord}" value="#{mes.highlightedWord}"/>
                             </p:commandLink>
+                            <h:outputText rendered="#{mes.found}" value=" #{mes.postfixMessage}" id="messagePostfixText"/>
+
                         </b:dataTableColumn>
 
                     </b:dataTable>
@@ -73,10 +78,10 @@
                     });
                 </script>
 
-                <b:inputTextarea placeholder="Type here..." value="#{communicationBean.message}"/>
+                <b:inputTextarea placeholder="Type here..." value="#{communicationBean.enteredMessage}"/>
                 <b:commandButton id="sendButton" value="Send" span="2" offset="10" style="background:#dff0d8" actionListener="#{communicationBean.processMessage}"
                                  update="roomPanel">
-                    <f:setPropertyActionListener target="#{communicationBean.message}" value="#{null}"/>
+                    <f:setPropertyActionListener target="#{communicationBean.enteredMessage}" value="#{null}"/>
                 </b:commandButton>
                 <b:defaultCommand target="sendButton"/>
 
@@ -179,7 +184,7 @@
                     <ui:remove>
                     <p:outputLabel for="dfx" value="DfXCategories:" style="margin-right: 10px"/>
                     <p:selectOneRadio id="dfx" value="#{communicationBean.newKnowledge.dfXCategory}"  layout="grid" columns="3">
-                        <f:selectItems value="#{communicationBean.dfxCategories}" var="d" itemLabel="#{d.longText}"/>
+                        <f:selectItems value="#{communicationBean.dfxCategories}" var="d" itemLabel="#{d.label}"/>
                     </p:selectOneRadio>
                     </ui:remove>
                 </h:panelGrid>

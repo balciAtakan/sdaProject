@@ -1,5 +1,6 @@
 package main.java.sda.web.views;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class KnowledgeRoomMessageView {
@@ -14,6 +15,9 @@ public class KnowledgeRoomMessageView {
     private boolean found;
     private String highlightedWord;
 
+    private String prefixMessage;
+    private String postfixMessage;
+
     public KnowledgeRoomMessageView() {
 
     }
@@ -26,6 +30,20 @@ public class KnowledgeRoomMessageView {
         this.messageOwner = messageOwner;
         this.knowledgeRoomId = knowledgeRoomId;
     }
+
+    public void copyView(KnowledgeRoomMessageView view) {
+        this.uuid = view.getUuid();
+        this.message = view.getMessage();
+        this.messageDate = view.getMessageDate();
+        this.messageOwner = view.getMessageOwner();
+        this.knowledgeRoomId = view.getKnowledgeRoomId();
+        this.found = view.isFound();
+        this.highlightedWord = view.getHighlightedWord();
+        this.prefixMessage = view.getPrefixMessage();
+        this.postfixMessage = view.getPostfixMessage();
+    }
+
+
 
     public String getUuid() {
         return uuid;
@@ -83,5 +101,29 @@ public class KnowledgeRoomMessageView {
 
     public void setHighlightedWord(String highlightedWord) {
         this.highlightedWord = highlightedWord;
+    }
+
+    public String getPrefixMessage() {
+        return prefixMessage;
+    }
+
+    public void setPrefixMessage(String prefixMessage) {
+        this.prefixMessage = prefixMessage;
+    }
+
+    public String getPostfixMessage() {
+        return postfixMessage;
+    }
+
+    public void setPostfixMessage(String postfixMessage) {
+        this.postfixMessage = postfixMessage;
+    }
+
+    public String getModifyDate(){
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String format = formatter.format(messageDate);
+
+        return format;
     }
 }

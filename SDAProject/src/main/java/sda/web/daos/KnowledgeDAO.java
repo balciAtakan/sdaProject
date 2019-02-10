@@ -14,10 +14,10 @@ import main.java.sda.web.views.KnowledgeView;
 import java.util.*;
 
 @Repository
-public class KnowledgeReadDAO {
+public class KnowledgeDAO {
 
 
-    private static Logger log = LogManager.getLogger(KnowledgeReadDAO.class);
+    private static Logger log = LogManager.getLogger(KnowledgeDAO.class);
 
 	@Autowired
 	private NamedParameterJdbcTemplate template;

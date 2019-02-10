@@ -33,7 +33,7 @@ public class KnowledgeRoomReadDAO {
 				+ "	FROM knowledge_room kr "
 				+ " left join knowledge_room_role kn_role on kr.uuid = kn_role.knowledge_room_id"
 				+ " left join knowledge_room_user kn_user on kr.uuid = kn_user.knowledge_room_id "
-				+ " left join knowledge_room_message krm on kr.uuid = krm.knowledge_room ";
+				+ " left join knowledge_room_message krm on kr.uuid = krm.knowledge_room order by kr.date_create asc ";
 
 		Map<String, Object> params = new HashMap<>();
 
@@ -87,7 +87,7 @@ public class KnowledgeRoomReadDAO {
 	}
 
 	public ArrayList<KnowledgeRoomMessageView> getKnowledgeRoomData(String roomId) throws SDAException {
-		String sql = "SELECT * FROM knowledge_room_message krm, person p where knowledge_room = :roomId and krm.owner=p.id order by krm.modify_date";
+		String sql = "SELECT * FROM knowledge_room_message krm, person p where knowledge_room = :roomId and krm.owner=p.id order by krm.modify_date asc";
 
 		Map<String, Object> params = new HashMap<>();
 

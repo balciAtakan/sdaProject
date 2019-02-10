@@ -2,11 +2,7 @@ package main.java.sda.web.backingbeans;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -66,7 +62,7 @@ public class CommunicationBean implements Serializable{
 	//----------------------------------/
 	/////////////////////////////////////
 	private KnowledgeRoomView activeRoom;
-	private String message;
+	private String enteredMessage;
 
 	private String highlightedWord;
 	private boolean wordPanelOn;
@@ -91,6 +87,8 @@ public class CommunicationBean implements Serializable{
 			setCurrUser(personenService.getCurrentPersonDaten(personenService.getCurrUser().getUuid()));
 			//load all rooms
 			rooms = roomService.getKnowledgeRooms();
+
+			knowledgeService.initAllKnowledge();
 		} catch (SDAException e) {
 			log.info(e.getMessage());
 			FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_ERROR,"Error!","Something went wrong on Load Knowledge Rooms"));
@@ -98,6 +96,7 @@ public class CommunicationBean implements Serializable{
 		
 	}
 
+	//TODO: asny loading!!
 	public void loadAsyncKnowledge(){
 
 		log.info("Load async knowledge!");
@@ -216,24 +215,6 @@ public class CommunicationBean implements Serializable{
 		
 	}
 	
-	public void processEnterRoom(){
-		
-		// todo!!!!
-		/*
-		if(activeRoom.getAllowedRoles().stream().anyMatch(role -> role.name().equals(currUser.getRole())))
-		{
-			RequestContext context = RequestContext.getCurrentInstance();
-			context.execute("PF('enterRoomDlg').show();");
-		}
-		else
-		{
-			RequestContext context = RequestContext.getCurrentInstance();
-			context.execute("PF('deniedEnterRoom').show();");
-		}
-		*/
-		
-	}
-	
 	public void loadRoomData(ActionEvent event)
 	{
 		try 
@@ -251,14 +232,14 @@ public class CommunicationBean implements Serializable{
 	{	
 		try 
 		{
-		
-			KnowledgeRoomMessageView messageView = new KnowledgeRoomMessageView(SDAUtil.generateUuid(), message,new Date(),currUser,activeRoom.getUuid());
+			KnowledgeRoomMessageView messageView = new KnowledgeRoomMessageView(SDAUtil.generateUuid(), enteredMessage,new Date(),currUser,activeRoom.getUuid());
 			
-			messageView.setFound(processWords(messageView));
+			messageView.copyView(processGivenMessage(messageView));
 			
 			activeRoom.getHistory().add(messageView);
 		
 			SDAResult res = roomService.saveKnowledgeRoomMessage(messageView);
+
 			log.info(res.getMessage());
 			
 		} catch (SDAException e) {
@@ -275,35 +256,115 @@ public class CommunicationBean implements Serializable{
 	//											 //
 	// 											 //
 	///////////////////////////////////////////////
-	private boolean processWords(KnowledgeRoomMessageView message)
-	{
-		
-		String[] word= message.getMessage().toLowerCase().trim().split("\\s+");
-		List<String> list = Arrays.stream(word).collect(Collectors.toList());
-		
-		ArrayList<KnowledgeRoomMessageView> history = activeRoom.getHistory();
-		
-		boolean found = false;
-		for (KnowledgeRoomMessageView hist : history) {
-			
-			String[] temp = hist.getMessage().toLowerCase().trim().split("\\s+");
-			List<String> list2 = Arrays.stream(temp).collect(Collectors.toList());
+	public void processEnterRoom(){
+		//todo: find all the messages which have knowledge inside them
 
-			for(String entered : list)
+		if(activeRoom != null)
+		{
+			List<KnowledgeRoomMessageView> history = activeRoom.getHistory();
+			history.sort(Comparator.comparing(KnowledgeRoomMessageView::getModifyDate));
+			if(!history.isEmpty())
 			{
-				for(String historied : list2)
-				{
-					if(entered.equalsIgnoreCase(historied))
-					{
-						message.setHighlightedWord(entered);
-						found = true;
-						return found;
-					}
+				for (KnowledgeRoomMessageView view: history) {
+					view.copyView(checkWordInDB(view));
 				}
 			}
 		}
+		// todo!!!!
+		/*
+		if(activeRoom.getAllowedRoles().stream().anyMatch(role -> role.name().equals(currUser.getRole())))
+		{
+			RequestContext context = RequestContext.getCurrentInstance();
+			context.execute("PF('enterRoomDlg').show();");
+		}
+		else
+		{
+			RequestContext context = RequestContext.getCurrentInstance();
+			context.execute("PF('deniedEnterRoom').show();");
+		}
+		*/
+
+	}
+	private KnowledgeRoomMessageView processGivenMessage(KnowledgeRoomMessageView message)
+	{
+		message.copyView(checkWordInDB(message));
+
+		if(!message.isFound())
+			message.copyView(checkWordInHistory(message));
 		
-		return found;
+		return message;
+	}
+
+	/*	This Method checks if the given MESSAGE is already in the DB so the program can show it to user. Only for the words more than 2 letter
+	 * 	@Usage
+	* 		- Init
+	* 		- Every message push into the active room
+	* */
+	private KnowledgeRoomMessageView checkWordInDB(KnowledgeRoomMessageView messageToCheck){
+
+		String[] allMessage = messageToCheck.getMessage().split("\\s");
+		for (String message : allMessage)
+		{
+			if(message.length() > 2) {
+				if (knowledgeService.getAllKnowledge().stream().anyMatch(a -> a.getWord().equalsIgnoreCase(message))) {
+					messageToCheck.copyView(setPrefixAndPostfixOfMessage(messageToCheck, message));
+					break;
+				}
+			}
+		}
+		return messageToCheck;
+	}
+
+	/*	This Method checks if the given MESSAGE in the room history,
+	* 	If so; the word is a frequently used word, so it is possible to add new Knowledge. Only for the words more than 2 letter
+	* 	@Usage
+	* 		- Every message push into the active Room
+	* */
+	private KnowledgeRoomMessageView checkWordInHistory(KnowledgeRoomMessageView messageToCheck){
+
+		String[] word= messageToCheck.getMessage().toLowerCase().trim().split("\\s+");
+
+		ArrayList<KnowledgeRoomMessageView> history = activeRoom.getHistory();
+
+		boolean found = false;
+		for (KnowledgeRoomMessageView hist : history)
+		{
+			String[] temp = hist.getMessage().toLowerCase().trim().split("\\s+");
+
+			for(String entered : word)
+				if(entered.length() > 2)
+					for(String historied : temp)
+						if(entered.equalsIgnoreCase(historied))
+							return setPrefixAndPostfixOfMessage(messageToCheck, entered);
+		}
+		return messageToCheck;
+	}
+
+	private KnowledgeRoomMessageView setPrefixAndPostfixOfMessage(KnowledgeRoomMessageView messageToCheck, String foundMessage)
+	{
+		messageToCheck.setFound(true);
+		messageToCheck.setHighlightedWord(foundMessage);
+
+		int index = messageToCheck.getMessage().indexOf(foundMessage);
+		if((index + foundMessage.length()) % messageToCheck.getMessage().length() == 0){
+			String[] splittedMessage = messageToCheck.getMessage().split(foundMessage);
+			if(splittedMessage.length == 1) {
+				messageToCheck.setPrefixMessage(splittedMessage[0]);
+				messageToCheck.setPostfixMessage("");
+			}
+		}
+		else if(index == 0 && foundMessage.length() == messageToCheck.getMessage().length())
+		{
+			messageToCheck.setPrefixMessage("");
+			messageToCheck.setPostfixMessage("");
+		}
+		else
+		{
+			String[] splittedMessage = messageToCheck.getMessage().split(foundMessage);
+			messageToCheck.setPrefixMessage(splittedMessage[0]);
+			messageToCheck.setPostfixMessage(splittedMessage[1]);
+		}
+		return messageToCheck;
 	}
 
 	////////////////////////////////////////////////
@@ -406,12 +467,12 @@ public class CommunicationBean implements Serializable{
 		this.activeRoom = activeRoom;
 	}
 
-	public String getMessage() {
-		return message;
+	public String getEnteredMessage() {
+		return enteredMessage;
 	}
 
-	public void setMessage(String message) {
-		this.message = message;
+	public void setEnteredMessage(String enteredMessage) {
+		this.enteredMessage = enteredMessage;
 	}
 
 	public String getHighlightedWord() {

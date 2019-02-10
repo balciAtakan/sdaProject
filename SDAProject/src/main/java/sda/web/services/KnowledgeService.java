@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import main.java.sda.web.daos.KnowledgeReadDAO;
+import main.java.sda.web.daos.KnowledgeDAO;
 import main.java.sda.web.exception.SDAException;
 import main.java.sda.web.views.KnowledgeView;
 
@@ -18,7 +18,7 @@ public class KnowledgeService {
 	private static Logger log = LogManager.getLogger(KnowledgeService.class);
 
 	@Autowired
-	private KnowledgeReadDAO knowledgeReadDAO;
+	private KnowledgeDAO knowledgeReadDAO;
 
 	private List<KnowledgeView> allKnowledge;
 	private KnowledgeView currentKnowledge;
