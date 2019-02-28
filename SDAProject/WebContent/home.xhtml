@@ -18,9 +18,19 @@
 	<ui:define name="main_content">
 	
 	<h:form>
-		<p:messages id="messages" showDetail="true" autoUpdate="false" closable="true" />
+		<p:messages id="messages" showDetail="true"  closable="true" />
 		
 		<p:commandButton rendered="#{homeBean.roleAdmin}" value="Delete" icon="fa fa-trash" oncomplete="PF('deleteDlg').show();" style="margin-top:1%;margin-left:45%;" />
+
+		<p:fileUpload id="upload" value="#{homeBean.file}" mode="simple"
+					   sizeLimit="1000000" allowTypes="/(\.|\/)(pdf|png)$/" fileLimit="1"/>
+
+		<p:fileUpload id="upload2" fileUploadListener="#{homeBean.handleFileUpload}" mode="advanced"
+					  sizeLimit="1000000" allowTypes="/(\.|\/)(pdf|png)$/" fileLimit="1"/>
+
+
+
+		<p:commandButton value="gogo" icon="fa fa-trash" update="messages" action="#{homeBean.showname()}"/>
 		
 		<ui:remove>
 		<h:panelGroup>

@@ -44,6 +44,15 @@ public class KnowledgeService {
 		}
 	}
 
+	public List<KnowledgeView> getKnowledgeFromWord(String word){
+		try {
+			return knowledgeReadDAO.getKnowledgeFromWord(word);
+		} catch (SDAException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
 	public List<KnowledgeView> getAllKnowledge() {
 		return allKnowledge;
 	}

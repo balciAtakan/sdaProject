@@ -23,10 +23,16 @@
 			<b:panel title="Knowledge details for the word : #{knowledgeBean.view.word}" collapsible="false" look="success">
 
 				<b:inputText span="6" id="dfx" value="#{knowledgeBean.view.dfXCategory.longText}" label="DfX Category" />
-				<b:inputText span="6" id="sub" value="#{knowledgeBean.view.dfXSubCategory.longText}" label="DfX Sub-Category" />
+				<b:inputText span="6" id="sub" value="#{knowledgeBean.view.dfXSubCategoryValue}" label="DfX Sub-Category" />
 				<b:inputTextarea span="12" id="text" value="#{knowledgeBean.view.knowledge_text}" label="Description" />
 				<b:inputText span="6" id="ownerID" value="#{knowledgeBean.view.ownerUsername}" label="Knowledge owner" disabled="true"/>
 				<b:inputText span="6" id="date" value="#{knowledgeBean.view.modifyDate}" label="Modify Date" disabled="true"/>
+
+				<p:commandButton value="Download" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="pi pi-arrow-down">
+					<p:fileDownload value="#{knowledgeBean.view.fileUpload}" />
+				</p:commandButton>
+
+				<b:commandButton span="1" value="Back" action="#{knowledgeBean.processReturnCommunication}"/>
 			</b:panel>
 
 		</b:container>

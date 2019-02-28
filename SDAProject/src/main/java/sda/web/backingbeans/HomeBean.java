@@ -6,6 +6,8 @@ import javax.faces.context.FacesContext;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.UploadedFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -31,6 +33,8 @@ public class HomeBean {
 	
 	private String usernameForDelete;
 	private String roomnameForDelete;
+
+	private UploadedFile file;
 	
 	@PostConstruct
 	public void init(){
@@ -76,6 +80,13 @@ public class HomeBean {
 		
 		return "home?faces-redirect=true";
 	}
+
+	public void handleFileUpload(FileUploadEvent event) {
+		log.info("file gogogo");
+		FacesMessage msg = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
+		FacesContext.getCurrentInstance().addMessage(null, msg);
+
+	}
 	
 	//yet to be implemented 
 	public String processDeleteKnowledge(){
@@ -106,5 +117,27 @@ public class HomeBean {
 	public void setRoomnameForDelete(String roomnameForDelete) {
 		this.roomnameForDelete = roomnameForDelete;
 	}
-	
+
+
+	public UploadedFile getFile() {
+		return file;
+	}
+
+	public void setFile(UploadedFile file) {
+		this.file = file;
+	}
+
+	public String showname(){
+		log.info("jere" );
+		if(file != null) {
+			FacesMessage message = new FacesMessage("Succesful", file.getFileName() + " is uploaded.");
+			FacesContext.getCurrentInstance().addMessage(null, message);
+		}
+		else
+		{
+			FacesMessage message = new FacesMessage("fuck!");
+			FacesContext.getCurrentInstance().addMessage(null, message);
+		}
+
+		return null;}
 }

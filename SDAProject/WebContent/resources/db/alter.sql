@@ -16,3 +16,6 @@ ADD COLUMN date_create datetime(3) AFTER room_owner;
 alter table knowledge_room
 add CONSTRAINT FK_person FOREIGN KEY (room_owner)
     REFERENCES person(id);
+
+
+ALTER TABLE `knowledge` ADD UNIQUE `unique_index`(`word`, `category`);

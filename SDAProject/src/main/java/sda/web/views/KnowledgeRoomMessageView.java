@@ -12,7 +12,8 @@ public class KnowledgeRoomMessageView {
     private PersonView messageOwner;
     private String knowledgeRoomId;
 
-    private boolean found;
+    private boolean foundInDB;
+    private boolean foundInUsage;
     private String highlightedWord;
 
     private String prefixMessage;
@@ -37,7 +38,8 @@ public class KnowledgeRoomMessageView {
         this.messageDate = view.getMessageDate();
         this.messageOwner = view.getMessageOwner();
         this.knowledgeRoomId = view.getKnowledgeRoomId();
-        this.found = view.isFound();
+        this.foundInDB = view.isFoundInDB();
+        this.foundInUsage = view.isFoundInUsage();
         this.highlightedWord = view.getHighlightedWord();
         this.prefixMessage = view.getPrefixMessage();
         this.postfixMessage = view.getPostfixMessage();
@@ -87,12 +89,20 @@ public class KnowledgeRoomMessageView {
         this.knowledgeRoomId = knowledgeRoomId;
     }
 
-    public boolean isFound() {
-        return found;
+    public boolean isFoundInDB() {
+        return foundInDB;
     }
 
-    public void setFound(boolean found) {
-        this.found = found;
+    public void setFoundInDB(boolean foundInDB) {
+        this.foundInDB = foundInDB;
+    }
+
+    public boolean isFoundInUsage() {
+        return foundInUsage;
+    }
+
+    public void setFoundInUsage(boolean foundInUsage) {
+        this.foundInUsage = foundInUsage;
     }
 
     public String getHighlightedWord() {

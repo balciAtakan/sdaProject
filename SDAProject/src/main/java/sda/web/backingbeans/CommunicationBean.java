@@ -18,6 +18,8 @@ import main.java.sda.web.util.*;
 import main.java.sda.web.views.KnowledgeView;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.UploadedFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -64,13 +66,15 @@ public class CommunicationBean implements Serializable{
 	private KnowledgeRoomView activeRoom;
 	private String enteredMessage;
 
-	private String highlightedWord;
+	private KnowledgeRoomMessageView highlightedMessage;
 	private boolean wordPanelOn;
 	private KnowledgeView newKnowledge;
+	private List<KnowledgeView> knowledgeViewListFromDB;
 
 	private List<SelectItem> dfxCategories;
 	private String selectedCategory;
     private String desc;
+    private UploadedFile fileUpload;
 	
 	@PostConstruct
 	public void init(){
@@ -78,6 +82,7 @@ public class CommunicationBean implements Serializable{
 		log.info("Communication bean init!");
 
         initCategories();
+		//knowledgeViewListFromDB = new ArrayList<>();
 
 		roles = new ArrayList<>();
 		addRoom();
@@ -269,6 +274,7 @@ public class CommunicationBean implements Serializable{
 					view.copyView(checkWordInDB(view));
 				}
 			}
+			setHighlightedMessage(null);
 		}
 		// todo!!!!
 		/*
@@ -289,7 +295,7 @@ public class CommunicationBean implements Serializable{
 	{
 		message.copyView(checkWordInDB(message));
 
-		if(!message.isFound())
+		if(!message.isFoundInDB())
 			message.copyView(checkWordInHistory(message));
 		
 		return message;
@@ -308,6 +314,7 @@ public class CommunicationBean implements Serializable{
 			if(message.length() > 2) {
 				if (knowledgeService.getAllKnowledge().stream().anyMatch(a -> a.getWord().equalsIgnoreCase(message))) {
 					messageToCheck.copyView(setPrefixAndPostfixOfMessage(messageToCheck, message));
+					messageToCheck.setFoundInDB(true);
 					break;
 				}
 			}
@@ -334,15 +341,17 @@ public class CommunicationBean implements Serializable{
 			for(String entered : word)
 				if(entered.length() > 2)
 					for(String historied : temp)
-						if(entered.equalsIgnoreCase(historied))
-							return setPrefixAndPostfixOfMessage(messageToCheck, entered);
+						if(entered.equalsIgnoreCase(historied)) {
+                            messageToCheck.copyView(setPrefixAndPostfixOfMessage(messageToCheck, entered));
+                            messageToCheck.setFoundInUsage(true);
+                            return messageToCheck;
+                        }
 		}
 		return messageToCheck;
 	}
 
 	private KnowledgeRoomMessageView setPrefixAndPostfixOfMessage(KnowledgeRoomMessageView messageToCheck, String foundMessage)
 	{
-		messageToCheck.setFound(true);
 		messageToCheck.setHighlightedWord(foundMessage);
 
 		int index = messageToCheck.getMessage().indexOf(foundMessage);
@@ -376,9 +385,16 @@ public class CommunicationBean implements Serializable{
 	///////////////////////////////////////////////
 
 	public void initNewRoom(){ newKnowledge = new KnowledgeView();}
+
 	public void addKnowledge(){
-	    if(selectedCategory == null)
-	        return;
+	    if(selectedCategory == null) {
+			FacesContext context = FacesContext.getCurrentInstance();
+			KnowledgeRoomMessageView view = context.getApplication().evaluateExpressionGet(context,"#{mes}", KnowledgeRoomMessageView.class);
+
+			getKnowledgeListFromWord(view.getHighlightedWord());
+
+			return;
+		}
         if(selectedCategory.contains("SubCategory")) {
             log.info("chosen no sub category: " + selectedCategory.substring(15));
             newKnowledge.setDfXCategory(DfXCategory.getEnum(selectedCategory.substring(15)));
@@ -390,8 +406,9 @@ public class CommunicationBean implements Serializable{
             newKnowledge.setDfXSubCategory(DfXSubCategory.getEnum(selectedCategory, true));
         }
 
-        newKnowledge.setWord(highlightedWord);
+        newKnowledge.setWord(highlightedMessage.getHighlightedWord());
         newKnowledge.setOwnerID(currUser.getUuid());
+        newKnowledge.setFileUpload(fileUpload);
         try {
         	if(knowledgeService.saveKnowledge(newKnowledge))
 				FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_INFO,"Knowledge successfuly saved!",""));
@@ -404,6 +421,27 @@ public class CommunicationBean implements Serializable{
 			log.info(e.getMessage());
 		}
 
+	}
+
+	private void getKnowledgeListFromWord(String word){
+		setKnowledgeViewListFromDB(knowledgeService.getKnowledgeFromWord(word));
+	}
+
+	public String processOpenKnowledge(){
+
+		FacesContext context = FacesContext.getCurrentInstance();
+		KnowledgeView view = context.getApplication().evaluateExpressionGet(context,"#{value}", KnowledgeView.class);
+
+		knowledgeService.setCurrentKnowledge(view);
+
+		return "knowledge?faces-redirect=true";
+	}
+
+	public void handleFileUpload(FileUploadEvent event) {
+		log.info("file gogogo");
+		FacesMessage msg = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
+		FacesContext.getCurrentInstance().addMessage(null, msg);
+		fileUpload = event.getFile();
 	}
 
 	////////////////////////////////////////////////
@@ -475,15 +513,15 @@ public class CommunicationBean implements Serializable{
 		this.enteredMessage = enteredMessage;
 	}
 
-	public String getHighlightedWord() {
-		return highlightedWord;
-	}
+    public KnowledgeRoomMessageView getHighlightedMessage() {
+        return highlightedMessage;
+    }
 
-	public void setHighlightedWord(String highlightedWord) {
-		this.highlightedWord = highlightedWord;
-	}
+    public void setHighlightedMessage(KnowledgeRoomMessageView highlightedMessage) {
+        this.highlightedMessage = highlightedMessage;
+    }
 
-	public boolean isWordPanelOn() {
+    public boolean isWordPanelOn() {
 		return wordPanelOn;
 	}
 
@@ -522,4 +560,20 @@ public class CommunicationBean implements Serializable{
     public void setDesc(String desc) {
         this.desc = desc;
     }
+
+	public List<KnowledgeView> getKnowledgeViewListFromDB() {
+		return knowledgeViewListFromDB;
+	}
+
+	public void setKnowledgeViewListFromDB(List<KnowledgeView> knowledgeViewListFromDB) {
+		this.knowledgeViewListFromDB = knowledgeViewListFromDB;
+	}
+
+	public UploadedFile getFileUpload() {
+		return fileUpload;
+	}
+
+	public void setFileUpload(UploadedFile fileUpload) {
+		this.fileUpload = fileUpload;
+	}
 }

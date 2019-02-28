@@ -21,6 +21,7 @@ public class KnowledgeRowMapper implements RowMapper<KnowledgeView> {
         view.setKnowledge_text(resultSet.getString("knowledge_text"));
         view.setModifyDate(resultSet.getDate("modify_date"));
         view.setOwnerUsername(resultSet.getString("username"));
+        ///view.setFileUpload(resultSet.getBinaryStream("knowledge_data"));
 
         return view;
 

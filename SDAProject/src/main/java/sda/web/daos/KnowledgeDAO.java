@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import main.java.sda.web.exception.SDAException;
 import main.java.sda.web.views.KnowledgeView;
 
+import java.io.FileInputStream;
 import java.util.*;
 
 @Repository
@@ -39,6 +40,23 @@ public class KnowledgeDAO {
 		}
 	}
 
+	public List<KnowledgeView> getKnowledgeFromWord(String word) throws SDAException {
+		// statt ? wird :uuid verwendet...
+		String sql = "SELECT k.*,p.username FROM knowledge k left join person p on k.owner = p.id where k.word = :word";
+		Map<String, Object> params = new HashMap<>();
+
+		params.put("word", word);
+
+		try {
+
+			return template.query(sql, params, new KnowledgeRowMapper());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new SDAException(e.getMessage());
+		}
+	}
+
 	public ArrayList<KnowledgeView> getAllKnowledge() throws SDAException {
 		// statt ? wird :uuid verwendet...
 		String sql = "SELECT k.*,p.username FROM knowledge k left join person p on k.owner = p.id";
@@ -59,22 +77,24 @@ public class KnowledgeDAO {
 
 	public boolean saveKnowledge(KnowledgeView view) throws SDAException {
 
-		//language=MySQL
-		String sql = "insert into knowledge values(:uuid,:word,:category,:knowledge_text,:knowledge_data,:modify_date,:owner,:subcategory)";
-		Map<String, Object> parameters = new HashMap<>();
-		parameters.put("uuid", SDAUtil.generateUuid());
-		parameters.put("word", view.getWord());
-		parameters.put("category", view.getDfXCategory().name());
-		parameters.put("knowledge_text", view.getKnowledge_text());
-		parameters.put("knowledge_data", view.getFilename());
-		parameters.put("modify_date", new Date());
-		parameters.put("owner", view.getOwnerID());
-		parameters.put("subcategory", view.getDfXSubCategory() != null ? view.getDfXSubCategory().name() : null);
+
 
 		boolean res;
 		try {
+			//language=MySQL
+			String sql = "insert into knowledge values(:uuid,:word,:category,:knowledge_text,:knowledge_data,:modify_date,:owner,:subcategory)";
+			Map<String, Object> parameters = new HashMap<>();
+			parameters.put("uuid", SDAUtil.generateUuid());
+			parameters.put("word", view.getWord());
+			parameters.put("category", view.getDfXCategory().name());
+			parameters.put("knowledge_text", view.getKnowledge_text());
+			parameters.put("knowledge_data", view.getFileUpload() == null ? null : view.getFileUpload().getInputstream());
+			parameters.put("modify_date", new Date());
+			parameters.put("owner", view.getOwnerID());
+			parameters.put("subcategory", view.getDfXSubCategory() != null ? view.getDfXSubCategory().name() : null);
 
 			res = template.update(sql, parameters) == 1;
+			log.info("update result: " + res);
 
 		} catch (Exception e) {
 			e.printStackTrace();

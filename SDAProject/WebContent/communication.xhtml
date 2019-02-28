@@ -54,16 +54,16 @@
                         <b:dataTableColumn id="messageDate" value="#{mes.modifyDate}" style="width:5%" label="Date"/>
 
                         <b:dataTableColumn  id="messageOut" label="Message">
-                            <h:outputText rendered="#{!mes.found}" value=" #{mes.message}" id="messageText"/>
+                            <h:outputText rendered="#{!mes.foundInDB and !mes.foundInUsage}" value=" #{mes.message}" id="messageText"/>
 
-                            <h:outputText rendered="#{mes.found}" value=" #{mes.prefixMessage}" id="messagePrefixText"/>
+                            <h:outputText rendered="#{mes.foundInDB or mes.foundInUsage}" value=" #{mes.prefixMessage}" id="messagePrefixText"/>
                             <p:commandLink value=" #{mes.highlightedWord}" id="addKnowledgeLink" update="wordPanel:wordUnit"
-                                           rendered="#{mes.found}"
+                                           rendered="#{mes.foundInDB or mes.foundInUsage}"
                                            style="background:#dff0d8" actionListener="#{communicationBean.addKnowledge}">
                                 <f:setPropertyActionListener target="#{communicationBean.wordPanelOn}" value="#{true}"/>
-                                <f:setPropertyActionListener target="#{communicationBean.highlightedWord}" value="#{mes.highlightedWord}"/>
+                                <f:setPropertyActionListener target="#{communicationBean.highlightedMessage}" value="#{mes}"/>
                             </p:commandLink>
-                            <h:outputText rendered="#{mes.found}" value=" #{mes.postfixMessage}" id="messagePostfixText"/>
+                            <h:outputText rendered="#{mes.foundInDB or mes.foundInUsage}" value=" #{mes.postfixMessage}" id="messagePostfixText"/>
 
                         </b:dataTableColumn>
 
@@ -88,13 +88,30 @@
             </b:panel>
         </h:form>
         <h:form id="wordPanel" style="position: absolute;left:70%;top: 44px;width: 30%;" rendered="true">
-            <b:panel id="wordUnit" title="Words" collapsed="#{!communicationBean.wordPanelOn}" rendered="#{communicationBean.activeRoom.history != null}">
-                <b:panelGrid colSpans="12">
-                    <h:outputText value="&lt;u&gt;#{communicationBean.highlightedWord}&lt;/u&gt; is a frequently used Word. Do you have any &lt;u&gt;Knowledge&lt;/u&gt; to add?" escape="false"/>
+            <b:panel id="wordUnit" title="Words" collapsed="#{!communicationBean.wordPanelOn}"
+                     rendered="#{communicationBean.activeRoom.history != null}">
+                <b:panelGrid colSpans="12" rendered="#{communicationBean.highlightedMessage.foundInUsage}">
+                    <h:outputText value="&lt;u&gt;#{communicationBean.highlightedMessage.highlightedWord}&lt;/u&gt; is a frequently used Word. Do you have any &lt;u&gt;Knowledge&lt;/u&gt; to add?" escape="false"/>
                     <br/>
                     <p:commandButton id="addKnowledgeButton" value="Add" style="background:#dff0d8;float: right;" actionListener="#{communicationBean.initNewRoom}"
                                      update="add_knowledge_form:add_knowledge_dialog"
                                      oncomplete="PF('knowledgeDlg').show();"/>
+                </b:panelGrid>
+                <b:panelGrid colSpans="12" rendered="#{communicationBean.highlightedMessage.foundInDB}">
+                    <h:outputText value="&lt;u&gt;#{communicationBean.highlightedMessage.highlightedWord}&lt;/u&gt; is in Database." escape="false"/>
+                    <h:panelGrid columns="1" style="width:100%">
+                        <ui:repeat value="#{communicationBean.knowledgeViewListFromDB}" var="value">
+                            <br/>
+                            <p:commandButton value="#{value.dfXCategory.longText}" style="float:left;background-color:aliceblue" action="#{communicationBean.processOpenKnowledge}"/>
+                        </ui:repeat>
+
+                    </h:panelGrid>
+                    <br/>
+                    <ui:remove>
+                    <p:commandButton id="getKnowledgeButton" value="Details" style="background:#dff0d8;float: right;" >
+                        <f:setPropertyActionListener target="#{communicationBean.wordPanelOn}" value="#{true}"/>
+                    </p:commandButton>
+                    </ui:remove>
                 </b:panelGrid>
 
 
@@ -160,11 +177,12 @@
         <h:form id="add_knowledge_form">
             <p:dialog id="add_knowledge_dialog" widgetVar="knowledgeDlg" modal="true" height="50%" width="60%" header="Add New Knowledge" closable="false">
 
-                <p:messages id="knowledge_dialog_messages" autoUpdate="true" closable="false"/>
+                <p:messages id="knowledge_dialog_messages" autoUpdate="true" closable="false" showDetail="true"/>
 
                 <h:panelGrid id="panelTest" columns="2" style="width:100%">
                     <p:outputLabel style="text-align:center;" value="Knowledge*  " />
-                    <p:inputText value="#{communicationBean.highlightedWord}" disabled="true" placeholder="#{communicationBean.highlightedWord}" style="width: 100%"/>
+                    <p:inputText value="#{communicationBean.highlightedMessage.highlightedWord}" disabled="true"
+                                 placeholder="#{communicationBean.highlightedMessage.highlightedWord}" style="width: 100%"/>
 
                     <p:spacer/>
                     <p:spacer/>
@@ -175,18 +193,19 @@
 
                 <h:panelGrid id="panel2" columns="2" style="margin-bottom:10px;width: 100%">
 
-                    <p:outputLabel for="selectbox" value="DfXCategories:" style="margin-right: 10px"/>
+                    <p:outputLabel for="selectbox" value="DfXCategories" style="margin-right: 10px"/>
                     <p:multiSelectListbox id="selectbox" value="#{communicationBean.selectedCategory}" effect="slide"  header="DfX Categories" showHeaders="true"
                                           styleClass="multiselectClass">
                         <f:selectItems id="itemsdfx" value="#{communicationBean.dfxCategories}" var="d" itemLabel="#{d.label}" itemValue="#{d.value}"/>
                     </p:multiSelectListbox>
 
-                    <ui:remove>
-                    <p:outputLabel for="dfx" value="DfXCategories:" style="margin-right: 10px"/>
-                    <p:selectOneRadio id="dfx" value="#{communicationBean.newKnowledge.dfXCategory}"  layout="grid" columns="3">
-                        <f:selectItems value="#{communicationBean.dfxCategories}" var="d" itemLabel="#{d.label}"/>
-                    </p:selectOneRadio>
-                    </ui:remove>
+                    <p:spacer/>
+                    <p:spacer/>
+
+                    <p:outputLabel for="upload" value="File" style="margin-right: 10px"/>
+                    <p:fileUpload id="upload" fileUploadListener="#{communicationBean.handleFileUpload}" mode="advanced" dragDropSupport="true"
+                                  update="knowledge_dialog_messages" sizeLimit="1000000" allowTypes="/(\.|\/)(pdf|png)$/" fileLimit="1"/>
+
                 </h:panelGrid>
 
                 <br/>
