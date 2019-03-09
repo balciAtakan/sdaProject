@@ -25,14 +25,18 @@
 				<b:inputText span="6" id="dfx" value="#{knowledgeBean.view.dfXCategory.longText}" label="DfX Category" />
 				<b:inputText span="6" id="sub" value="#{knowledgeBean.view.dfXSubCategoryValue}" label="DfX Sub-Category" />
 				<b:inputTextarea span="12" id="text" value="#{knowledgeBean.view.knowledge_text}" label="Description" />
-				<b:inputText span="6" id="ownerID" value="#{knowledgeBean.view.ownerUsername}" label="Knowledge owner" disabled="true"/>
+				<b:inputText span="6" id="ownerID" value="#{knowledgeBean.view.ownerUsername}"  label="Knowledge owner" disabled="true"/>
 				<b:inputText span="6" id="date" value="#{knowledgeBean.view.modifyDate}" label="Modify Date" disabled="true"/>
 
-				<p:commandButton value="Download" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);" icon="pi pi-arrow-down">
-					<p:fileDownload value="#{knowledgeBean.view.fileUpload}" />
+				<b:label span="12" id="seperator" style="margin-bottom:10px;padding:.1em .1em .1em" value=""/>
+				<p:commandButton value="Document" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);"
+								 style="margin-left: 15px"
+								 icon="fa fa-cloud-download">
+					<p:fileDownload value="#{knowledgeBean.view.fileDownload}" />
 				</p:commandButton>
 
-				<b:commandButton span="1" value="Back" action="#{knowledgeBean.processReturnCommunication}"/>
+
+
 			</b:panel>
 
 		</b:container>

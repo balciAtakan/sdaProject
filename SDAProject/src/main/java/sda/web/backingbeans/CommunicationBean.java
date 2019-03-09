@@ -1,8 +1,22 @@
 package main.java.sda.web.backingbeans;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.*;
+import main.java.sda.web.exception.SDAException;
+import main.java.sda.web.services.KnowledgeRoomService;
+import main.java.sda.web.services.KnowledgeService;
+import main.java.sda.web.services.PersonenService;
+import main.java.sda.web.services.SessionService;
+import main.java.sda.web.util.*;
+import main.java.sda.web.views.KnowledgeRoomMessageView;
+import main.java.sda.web.views.KnowledgeRoomView;
+import main.java.sda.web.views.KnowledgeView;
+import main.java.sda.web.views.PersonView;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.UploadedFile;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -12,25 +26,9 @@ import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.servlet.http.HttpServletRequest;
-
-import main.java.sda.web.services.KnowledgeService;
-import main.java.sda.web.util.*;
-import main.java.sda.web.views.KnowledgeView;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.primefaces.event.FileUploadEvent;
-import org.primefaces.model.UploadedFile;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
-import main.java.sda.web.exception.SDAException;
-import main.java.sda.web.services.KnowledgeRoomService;
-import main.java.sda.web.services.PersonenService;
-import main.java.sda.web.services.SessionService;
-import main.java.sda.web.views.KnowledgeRoomMessageView;
-import main.java.sda.web.views.KnowledgeRoomView;
-import main.java.sda.web.views.PersonView;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.*;
 
 @Component
 @Scope("view")
@@ -408,7 +406,24 @@ public class CommunicationBean implements Serializable{
 
         newKnowledge.setWord(highlightedMessage.getHighlightedWord());
         newKnowledge.setOwnerID(currUser.getUuid());
-        newKnowledge.setFileUpload(fileUpload);
+		try {
+			if(fileUpload != null && fileUpload.getInputstream() != null)
+			{
+				/*File file = new File(newKnowledge.getWord().concat("_document.").concat(fileUpload.getContentType()));
+				InputStream initialStream = fileUpload.getInputstream();
+
+				java.nio.file.Files.copy(
+						initialStream,
+						file.toPath(),
+						StandardCopyOption.REPLACE_EXISTING);
+
+				IOUtils.closeQuietly(initialStream);*/
+
+				newKnowledge.setFileUpload(fileUpload.getInputstream());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
         try {
         	if(knowledgeService.saveKnowledge(newKnowledge))
 				FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_INFO,"Knowledge successfuly saved!",""));

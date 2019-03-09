@@ -1,10 +1,11 @@
 package main.java.sda.web.daos.mapper;
 
-import main.java.sda.web.util.DfXSubCategory;
-import org.springframework.jdbc.core.RowMapper;
 import main.java.sda.web.util.DfXCategory;
+import main.java.sda.web.util.DfXSubCategory;
 import main.java.sda.web.views.KnowledgeView;
+import org.springframework.jdbc.core.RowMapper;
 
+import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -21,7 +22,19 @@ public class KnowledgeRowMapper implements RowMapper<KnowledgeView> {
         view.setKnowledge_text(resultSet.getString("knowledge_text"));
         view.setModifyDate(resultSet.getDate("modify_date"));
         view.setOwnerUsername(resultSet.getString("username"));
-        ///view.setFileUpload(resultSet.getBinaryStream("knowledge_data"));
+
+        InputStream document = resultSet.getBinaryStream("knowledge_data");
+            /*File file = new File(view.getWord().concat("_document.").concat("pdf"));
+
+            java.nio.file.Files.copy(
+                    document,
+                    file.toPath(),
+                    StandardCopyOption.REPLACE_EXISTING);
+
+            IOUtils.closeQuietly(document);*/
+
+        view.setFileUpload(document);
+
 
         return view;
 

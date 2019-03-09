@@ -2,9 +2,10 @@ package main.java.sda.web.views;
 
 import main.java.sda.web.util.DfXCategory;
 import main.java.sda.web.util.DfXSubCategory;
-import org.primefaces.model.UploadedFile;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
-import java.io.File;
+import java.io.InputStream;
 import java.util.Date;
 
 public class KnowledgeView {
@@ -17,7 +18,7 @@ public class KnowledgeView {
 	private Date modifyDate;
 	private String ownerID;
 	private String ownerUsername;
-	private UploadedFile fileUpload;
+	private InputStream fileUpload;
 
 	public KnowledgeView() {
 	}
@@ -84,11 +85,11 @@ public class KnowledgeView {
 		this.ownerID = ownerID;
 	}
 
-	public UploadedFile getFileUpload() {
+	public InputStream getFileUpload() {
 		return fileUpload;
 	}
 
-	public void setFileUpload(UploadedFile fileUpload) {
+	public void setFileUpload(InputStream fileUpload) {
 		this.fileUpload = fileUpload;
 	}
 
@@ -98,5 +99,9 @@ public class KnowledgeView {
 
 	public void setOwnerUsername(String ownerUsername) {
 		this.ownerUsername = ownerUsername;
+	}
+
+	public StreamedContent getFileDownload(){
+		return new DefaultStreamedContent(fileUpload,"application/pdf",this.word.concat("_document.pdf"));
 	}
 }

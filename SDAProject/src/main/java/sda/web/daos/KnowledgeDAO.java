@@ -88,7 +88,7 @@ public class KnowledgeDAO {
 			parameters.put("word", view.getWord());
 			parameters.put("category", view.getDfXCategory().name());
 			parameters.put("knowledge_text", view.getKnowledge_text());
-			parameters.put("knowledge_data", view.getFileUpload() == null ? null : view.getFileUpload().getInputstream());
+			parameters.put("knowledge_data", view.getFileUpload() == null ? null : view.getFileUpload());
 			parameters.put("modify_date", new Date());
 			parameters.put("owner", view.getOwnerID());
 			parameters.put("subcategory", view.getDfXSubCategory() != null ? view.getDfXSubCategory().name() : null);
