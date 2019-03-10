@@ -27,6 +27,7 @@ import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.*;
 
@@ -73,13 +74,14 @@ public class CommunicationBean implements Serializable{
 	private String selectedCategory;
     private String desc;
     private UploadedFile fileUpload;
+    private InputStream stream;
 	
 	@PostConstruct
 	public void init(){
 		
 		log.info("Communication bean init!");
 
-        initCategories();
+        dfxCategories = knowledgeService.initCategories();
 		//knowledgeViewListFromDB = new ArrayList<>();
 
 		roles = new ArrayList<>();
@@ -112,62 +114,7 @@ public class CommunicationBean implements Serializable{
 
 	}
 
-	private void initCategories(){
 
-        dfxCategories = new ArrayList<>();
-        SelectItem[] temp = new SelectItem[]{};
-        SelectItemGroup group1 = new SelectItemGroup(DfXCategory.DfA.getLongText());
-        SelectItemGroup group2 = new SelectItemGroup(DfXCategory.DfC.getLongText());
-        SelectItemGroup group3 = new SelectItemGroup(DfXCategory.DfE.getLongText());
-        SelectItemGroup group4 = new SelectItemGroup(DfXCategory.DfM.getLongText());
-        SelectItemGroup group5 = new SelectItemGroup(DfXCategory.DfMa.getLongText());
-        SelectItemGroup group6 = new SelectItemGroup(DfXCategory.DfQ.getLongText());
-        SelectItemGroup group7 = new SelectItemGroup(DfXCategory.DfR.getLongText());
-        SelectItemGroup group8 = new SelectItemGroup(DfXCategory.DfS.getLongText());
-
-        SelectItem group00 = new SelectItem( "No SubCategory DfA");
-        SelectItem group11 = new SelectItem(DfXSubCategory.SubDfA.getLongText());
-        SelectItem group12 = new SelectItem(DfXSubCategory.SubDfA2.getLongText());
-
-        SelectItem group20 = new SelectItem("No SubCategory DfC");
-        SelectItem group21 = new SelectItem(DfXSubCategory.SubDfC.getLongText());
-
-        SelectItem group30 = new SelectItem("No SubCategory DfE");
-        SelectItem group31 = new SelectItem(DfXSubCategory.SubDfE.getLongText());
-
-        SelectItem group40 = new SelectItem("No SubCategory DfM");
-        SelectItem group41 = new SelectItem(DfXSubCategory.SubDfM.getLongText());
-
-        SelectItem group50 = new SelectItem("No SubCategory DfMa");
-        SelectItem group51 = new SelectItem(DfXSubCategory.SubDfMa.getLongText());
-
-        SelectItem group60 = new SelectItem("No SubCategory DfQ");
-        SelectItem group61 = new SelectItem(DfXSubCategory.SubDfQ.getLongText());
-
-        SelectItem group70 = new SelectItem("No SubCategory DfR");
-        SelectItem group71 = new SelectItem(DfXSubCategory.SubDfR.getLongText());
-
-        SelectItem group80 = new SelectItem("No SubCategory DfS");
-        SelectItem group81 = new SelectItem(DfXSubCategory.SubDfS.getLongText());
-
-        group1.setSelectItems(new SelectItem[]{group00,group11, group12,group21});
-        group2.setSelectItems(new SelectItem[]{group20,group21});
-        group3.setSelectItems(new SelectItem[]{group30,group31});
-        group4.setSelectItems(new SelectItem[]{group40,group41});
-        group5.setSelectItems(new SelectItem[]{group50,group51});
-        group6.setSelectItems(new SelectItem[]{group60,group61});
-        group7.setSelectItems(new SelectItem[]{group70,group71});
-        group8.setSelectItems(new SelectItem[]{group80,group81});
-
-        dfxCategories.add(group1);
-        dfxCategories.add(group2);
-        dfxCategories.add(group3);
-        dfxCategories.add(group4);
-        dfxCategories.add(group5);
-        dfxCategories.add(group6);
-        dfxCategories.add(group7);
-        dfxCategories.add(group8);
-    }
 	
 	private void addRoom(){
 		
@@ -406,24 +353,9 @@ public class CommunicationBean implements Serializable{
 
         newKnowledge.setWord(highlightedMessage.getHighlightedWord());
         newKnowledge.setOwnerID(currUser.getUuid());
-		try {
-			if(fileUpload != null && fileUpload.getInputstream() != null)
-			{
-				/*File file = new File(newKnowledge.getWord().concat("_document.").concat(fileUpload.getContentType()));
-				InputStream initialStream = fileUpload.getInputstream();
+        if(stream != null)
+            newKnowledge.setFileUpload(stream);
 
-				java.nio.file.Files.copy(
-						initialStream,
-						file.toPath(),
-						StandardCopyOption.REPLACE_EXISTING);
-
-				IOUtils.closeQuietly(initialStream);*/
-
-				newKnowledge.setFileUpload(fileUpload.getInputstream());
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
         try {
         	if(knowledgeService.saveKnowledge(newKnowledge))
 				FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_INFO,"Knowledge successfuly saved!",""));
@@ -457,7 +389,14 @@ public class CommunicationBean implements Serializable{
 		FacesMessage msg = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
 		FacesContext.getCurrentInstance().addMessage(null, msg);
 		fileUpload = event.getFile();
-	}
+        try {
+            stream = fileUpload.getInputstream();
+            log.info("file upload successful");
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.info("file upload failed");
+        }
+    }
 
 	////////////////////////////////////////////////
 	//											 //

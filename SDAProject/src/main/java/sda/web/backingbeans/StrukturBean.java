@@ -19,7 +19,7 @@ public class StrukturBean {
 		return "communication?faces-redirect=true";
 	}
 	public String processCreateKnowledge(){
-		return "create?faces-redirect=true";
+		return "createKnowledge?faces-redirect=true";
 	}
 	public String processSearchKnowledge(){
 		return "search?faces-redirect=true";

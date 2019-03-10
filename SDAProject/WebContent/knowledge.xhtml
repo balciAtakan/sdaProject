@@ -22,15 +22,15 @@
 
 			<b:panel title="Knowledge details for the word : #{knowledgeBean.view.word}" collapsible="false" look="success">
 
-				<b:inputText span="6" id="dfx" value="#{knowledgeBean.view.dfXCategory.longText}" label="DfX Category" />
-				<b:inputText span="6" id="sub" value="#{knowledgeBean.view.dfXSubCategoryValue}" label="DfX Sub-Category" />
-				<b:inputTextarea span="12" id="text" value="#{knowledgeBean.view.knowledge_text}" label="Description" />
+				<b:inputText span="6" id="dfx" value="#{knowledgeBean.view.dfXCategory.longText}" label="DfX Category" disabled="true"/>
+				<b:inputText span="6" id="sub" value="#{knowledgeBean.view.dfXSubCategoryValue}" label="DfX Sub-Category" disabled="true"/>
+				<b:inputTextarea span="12" id="text" value="#{knowledgeBean.view.knowledge_text}" label="Description" disabled="true"/>
 				<b:inputText span="6" id="ownerID" value="#{knowledgeBean.view.ownerUsername}"  label="Knowledge owner" disabled="true"/>
 				<b:inputText span="6" id="date" value="#{knowledgeBean.view.modifyDate}" label="Modify Date" disabled="true"/>
 
 				<b:label span="12" id="seperator" style="margin-bottom:10px;padding:.1em .1em .1em" value=""/>
 				<p:commandButton value="Document" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);"
-								 style="margin-left: 15px"
+								 style="margin-left: 15px" rendered="#{knowledgeBean.view.fileUpload != null}"
 								 icon="fa fa-cloud-download">
 					<p:fileDownload value="#{knowledgeBean.view.fileDownload}" />
 				</p:commandButton>

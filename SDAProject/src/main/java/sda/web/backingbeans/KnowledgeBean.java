@@ -59,6 +59,4 @@ public class KnowledgeBean {
 	public void setView(KnowledgeView view) {
 		this.view = view;
 	}
-
-	public String processReturnCommunication(){return "communication?faces-redirect=true";}
 }
