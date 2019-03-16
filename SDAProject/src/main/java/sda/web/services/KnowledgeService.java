@@ -59,6 +59,11 @@ public class KnowledgeService {
 		}
 	}
 
+	public void updateKnowledge(KnowledgeView view) throws SDAException {
+
+		knowledgeDAO.updateKnowledge(view);
+	}
+
 	public void deleteKnowledge(String uuid) throws SDAException {
 
 		knowledgeDAO.deleteKnowledge(uuid);

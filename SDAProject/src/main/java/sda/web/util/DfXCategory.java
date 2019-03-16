@@ -7,7 +7,7 @@ public enum DfXCategory
 	DfE("Design for Environment"),
 	DfMa("Design for Maintainability"),
 	DfM("Design for Manufacturability"),
-	DfS("Design for serviceability"),
+	DfS("Design for Serviceability"),
 	DfR("Design for Reuse"),
 	DfQ("Design for Quality");
 
