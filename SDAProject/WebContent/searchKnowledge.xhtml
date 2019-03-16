@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        
+<ui:composition template="/WEB-INF/templates/struktur.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:b="http://bootsfaces.net/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<ui:define name="title">
+        Search Knowledge
+    </ui:define>
+
+	<ui:define name="styles">
+		<link rel="stylesheet" href="resources/css/createKnowledge.css" type="text/css"/>
+	</ui:define>
+	
+	<ui:define name="main_content">
+
+	<h:form id="knowledgeForm">
+		<p:messages id="messages" autoUpdate="true" closable="true" />
+		<b:container>
+
+			<b:panel title="Search Knowledge" collapsible="true" look="info">
+
+				<b:inputText placeholder="Word" label="Word" span="4" labelColMd="2" value="#{searchKnowledgeBean.view.word}">
+					<f:facet name="prepend">
+						<b:icon name="book" />
+					</f:facet>
+				</b:inputText>
+
+				<p:multiSelectListbox id="selectbox" value="#{searchKnowledgeBean.selectedCategory}" effect="slide"  header="DfX Categories" showHeaders="true"
+									  style="margin-bottom: 15px">
+					<f:selectItems id="itemsdfx" value="#{searchKnowledgeBean.dfxCategories}" var="d" itemLabel="#{d.label}" itemValue="#{d.value}"/>
+				</p:multiSelectListbox>
+
+				<b:commandButton span="2" offset="10" value="Search" actionListener="#{searchKnowledgeBean.processSearch}" look="info" update="resultPanel"/>
+
+			</b:panel>
+			<b:panel id="resultPanel" title="Results" collapsible="false" look="success">
+
+				<b:dataTable id="theTable" value="#{searchKnowledgeBean.results}" var="item"
+							 emptyMessage="No Result"
+							 searching="false"  info="false">
+
+					<b:dataTableColumn>
+						<p:commandLink id="Link" action="#{searchKnowledgeBean.processOpenKnowledge}"
+									   value="#{item.word}" />
+					</b:dataTableColumn>
+					<b:dataTableColumn value="#{item.dfXCategory.longText}" label="Category"/>
+					<b:dataTableColumn value="#{item.dfXSubCategoryValue}" label="SubCategory"/>
+					<b:dataTableColumn value="#{item.modifyDate}" />
+				</b:dataTable>
+			</b:panel>
+
+
+
+
+
+		</b:container>
+	</h:form>
+	
+	</ui:define>
+</ui:composition>

@@ -22,7 +22,7 @@ public class StrukturBean {
 		return "createKnowledge?faces-redirect=true";
 	}
 	public String processSearchKnowledge(){
-		return "search?faces-redirect=true";
+		return "searchKnowledge?faces-redirect=true";
 	}
 
 }

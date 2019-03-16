@@ -1,7 +1,7 @@
 package main.java.sda.web.backingbeans;
 
 import main.java.sda.web.services.KnowledgeService;
-import main.java.sda.web.services.QuickSearchService;
+import main.java.sda.web.services.SearchService;
 import main.java.sda.web.views.KnowledgeView;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -19,7 +19,7 @@ public class QuickSearchBean {
 	private static Logger log = LogManager.getLogger(QuickSearchBean.class);
 	
 	@Autowired
-	private QuickSearchService quickSearchService;
+	private SearchService searchService;
 
 	@Autowired
 	private KnowledgeService knowledgeService;
@@ -28,7 +28,7 @@ public class QuickSearchBean {
 
 	public void updateKnowledgeSearch(){
 
-		quickSearchService.selectQuickResultsByInput(query);
+		searchService.selectQuickResultsByInput(query);
 	}
 
 	public String processOpenKnowledge(){
@@ -45,11 +45,11 @@ public class QuickSearchBean {
 
 	private void reset(){
 		setQuery(null);
-		quickSearchService.setResults(null);
+		searchService.setResults(null);
 	}
 
 	public List<KnowledgeView> getResults(){
-		return quickSearchService.getResults();
+		return searchService.getResults();
 	}
 
 	public String getQuery() {

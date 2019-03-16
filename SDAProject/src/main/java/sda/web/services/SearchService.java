@@ -12,9 +12,9 @@ import java.util.List;
 
 @Service
 @Scope("session")
-public class QuickSearchService {
+public class SearchService {
 
-	private static Logger log = LogManager.getLogger(QuickSearchService.class);
+	private static Logger log = LogManager.getLogger(SearchService.class);
 
 	@Autowired
 	private KnowledgeDAO knowledgeDAO;
@@ -25,6 +25,13 @@ public class QuickSearchService {
 
 		results = knowledgeDAO.selectQuickResultsByInput(input);
 		log.info("all knowledge has been loaded! Count : " + (results != null ? results.size(): " "));
+	}
+
+	public List<KnowledgeView> selectSearchResultsByInput(KnowledgeView input){
+
+		List<KnowledgeView> res = knowledgeDAO.selectSearchResultsByInput(input);
+		log.info("Search results has been loaded! Count : " + (res != null ? res.size(): " "));
+		return res;
 	}
 
 	public List<KnowledgeView> getResults() {
