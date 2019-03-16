@@ -1,5 +1,6 @@
 package main.java.sda.web.backingbeans;
 
+import main.java.sda.web.exception.SDAException;
 import main.java.sda.web.services.KnowledgeService;
 import main.java.sda.web.views.KnowledgeView;
 import org.apache.log4j.LogManager;
@@ -9,6 +10,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 
 @Component
 @Scope("view")
@@ -20,6 +23,8 @@ public class KnowledgeBean {
 	private KnowledgeService knowledgeService;
 
 	private KnowledgeView view;
+
+	private boolean updateActive;
 	
 	@PostConstruct
 	public void init(){
@@ -29,28 +34,20 @@ public class KnowledgeBean {
 		setView(knowledgeService.getCurrentKnowledge());
 	}
 	
-	/*public String processDeleteUser() {
+	public String processDeleteKnowledge() {
 
 		try {
-			if(usernameForDelete != null && !usernameForDelete.isEmpty()){
-				personenService.deleteUser(usernameForDelete);
-				log.info("User is deleted!");
-				FacesContext.getCurrentInstance().addMessage("dialog_form:dialog_messages",new FacesMessage(FacesMessage.SEVERITY_INFO,"User is deleted",""));
-			}
-			if(roomnameForDelete != null && !roomnameForDelete.isEmpty()){
-				knowledgeRoomService.deleteKnowledgeRoom(roomnameForDelete);
-				log.info("Room is deleted!");
-				FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_INFO,"Room is deleted",""));
-			}
-			
+
+			knowledgeService.deleteKnowledge(view.getUuid());
+			FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_INFO,"Knowledge has been deleted",""));
 		} catch (SDAException e) {
 			// TODO Auto-generated catch block
-			FacesContext.getCurrentInstance().addMessage("dialog_form:dialog_messages",new FacesMessage(FacesMessage.SEVERITY_ERROR,e.getMessage(),""));
+			FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_ERROR,e.getMessage(),""));
 			return null;
 		}
 		
 		return "home?faces-redirect=true";
-	}*/
+	}
 
 	public KnowledgeView getView() {
 		return view;
@@ -58,5 +55,13 @@ public class KnowledgeBean {
 
 	public void setView(KnowledgeView view) {
 		this.view = view;
+	}
+
+	public boolean isUpdateActive() {
+		return updateActive;
+	}
+
+	public void setUpdateActive(boolean updateActive) {
+		this.updateActive = updateActive;
 	}
 }

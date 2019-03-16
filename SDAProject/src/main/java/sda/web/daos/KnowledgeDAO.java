@@ -200,5 +200,20 @@ public class KnowledgeDAO {
         }
     }
 
+    public void deleteKnowledge(String uuid) throws SDAException {
+        String sql = "delete from knowledge where uuid = :uuid";
+        Map<String, Object> params = new HashMap<>();
+        params.put("uuid",uuid);
+
+        try {
+
+            int res = template.update(sql, params);
+            log.info("Knowledge has been deleted! "+(res ==1));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SDAException(e.getMessage());
+        }
+    }
 
 }

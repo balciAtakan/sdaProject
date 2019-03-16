@@ -23,26 +23,27 @@ public class KnowledgeService {
 	private static Logger log = LogManager.getLogger(KnowledgeService.class);
 
 	@Autowired
-	private KnowledgeDAO knowledgeReadDAO;
+	private KnowledgeDAO knowledgeDAO;
+
 
 	private List<KnowledgeView> allKnowledge;
 	private KnowledgeView currentKnowledge;
 	
 	public void initAllKnowledge() throws SDAException{
 		
-		allKnowledge = knowledgeReadDAO.getAllKnowledge();
+		allKnowledge = knowledgeDAO.getAllKnowledge();
 		log.info("all knowledge has been loaded! Count : " + (allKnowledge != null ? allKnowledge.size(): " "));
 	}
 
 	public boolean saveKnowledge(KnowledgeView view) throws SDAException{
 
-		return knowledgeReadDAO.saveKnowledge(view);
+		return knowledgeDAO.saveKnowledge(view);
 	}
 
 	public void initKnowledge(){
 
 		try {
-			currentKnowledge = knowledgeReadDAO.getKnowledge(currentKnowledge);
+			currentKnowledge = knowledgeDAO.getKnowledge(currentKnowledge);
 		} catch (SDAException e) {
 			e.printStackTrace();
 			currentKnowledge = null;
@@ -51,11 +52,16 @@ public class KnowledgeService {
 
 	public List<KnowledgeView> getKnowledgeFromWord(String word){
 		try {
-			return knowledgeReadDAO.getKnowledgeFromWord(word);
+			return knowledgeDAO.getKnowledgeFromWord(word);
 		} catch (SDAException e) {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public void deleteKnowledge(String uuid) throws SDAException {
+
+		knowledgeDAO.deleteKnowledge(uuid);
 	}
 
 	public List<SelectItem> initCategories(){
