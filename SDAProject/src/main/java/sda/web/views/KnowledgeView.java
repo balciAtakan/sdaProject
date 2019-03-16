@@ -2,7 +2,10 @@ package main.java.sda.web.views;
 
 import main.java.sda.web.util.DfXCategory;
 import main.java.sda.web.util.DfXSubCategory;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
+import java.io.InputStream;
 import java.util.Date;
 
 public class KnowledgeView {
@@ -15,7 +18,7 @@ public class KnowledgeView {
 	private Date modifyDate;
 	private String ownerID;
 	private String ownerUsername;
-	private String filename;
+	private InputStream fileUpload;
 
 	public KnowledgeView() {
 	}
@@ -56,6 +59,12 @@ public class KnowledgeView {
 		return dfXSubCategory;
 	}
 
+	public String getDfXSubCategoryValue() {
+		return dfXSubCategory == null ? "" : dfXSubCategory.getLongText();
+	}
+
+	public void setDfXSubCategoryValue(String dummy){}
+
 	public void setDfXSubCategory(DfXSubCategory dfXSubCategory) {
 		this.dfXSubCategory = dfXSubCategory;
 	}
@@ -76,12 +85,12 @@ public class KnowledgeView {
 		this.ownerID = ownerID;
 	}
 
-	public String getFilename() {
-		return filename;
+	public InputStream getFileUpload() {
+		return fileUpload;
 	}
 
-	public void setFilename(String filename) {
-		this.filename = filename;
+	public void setFileUpload(InputStream fileUpload) {
+		this.fileUpload = fileUpload;
 	}
 
 	public String getOwnerUsername() {
@@ -90,5 +99,9 @@ public class KnowledgeView {
 
 	public void setOwnerUsername(String ownerUsername) {
 		this.ownerUsername = ownerUsername;
+	}
+
+	public StreamedContent getFileDownload(){
+		return new DefaultStreamedContent(fileUpload,"application/pdf",this.word.concat("_document.pdf"));
 	}
 }

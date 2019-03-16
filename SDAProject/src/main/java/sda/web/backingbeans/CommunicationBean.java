@@ -1,8 +1,22 @@
 package main.java.sda.web.backingbeans;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.*;
+import main.java.sda.web.exception.SDAException;
+import main.java.sda.web.services.KnowledgeRoomService;
+import main.java.sda.web.services.KnowledgeService;
+import main.java.sda.web.services.PersonenService;
+import main.java.sda.web.services.SessionService;
+import main.java.sda.web.util.*;
+import main.java.sda.web.views.KnowledgeRoomMessageView;
+import main.java.sda.web.views.KnowledgeRoomView;
+import main.java.sda.web.views.KnowledgeView;
+import main.java.sda.web.views.PersonView;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.UploadedFile;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -12,23 +26,10 @@ import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
 import javax.servlet.http.HttpServletRequest;
-
-import main.java.sda.web.services.KnowledgeService;
-import main.java.sda.web.util.*;
-import main.java.sda.web.views.KnowledgeView;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
-import main.java.sda.web.exception.SDAException;
-import main.java.sda.web.services.KnowledgeRoomService;
-import main.java.sda.web.services.PersonenService;
-import main.java.sda.web.services.SessionService;
-import main.java.sda.web.views.KnowledgeRoomMessageView;
-import main.java.sda.web.views.KnowledgeRoomView;
-import main.java.sda.web.views.PersonView;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.*;
 
 @Component
 @Scope("view")
@@ -64,20 +65,24 @@ public class CommunicationBean implements Serializable{
 	private KnowledgeRoomView activeRoom;
 	private String enteredMessage;
 
-	private String highlightedWord;
+	private KnowledgeRoomMessageView highlightedMessage;
 	private boolean wordPanelOn;
 	private KnowledgeView newKnowledge;
+	private List<KnowledgeView> knowledgeViewListFromDB;
 
 	private List<SelectItem> dfxCategories;
 	private String selectedCategory;
     private String desc;
+    private UploadedFile fileUpload;
+    private InputStream stream;
 	
 	@PostConstruct
 	public void init(){
 		
 		log.info("Communication bean init!");
 
-        initCategories();
+        dfxCategories = knowledgeService.initCategories();
+		//knowledgeViewListFromDB = new ArrayList<>();
 
 		roles = new ArrayList<>();
 		addRoom();
@@ -109,62 +114,7 @@ public class CommunicationBean implements Serializable{
 
 	}
 
-	private void initCategories(){
 
-        dfxCategories = new ArrayList<>();
-        SelectItem[] temp = new SelectItem[]{};
-        SelectItemGroup group1 = new SelectItemGroup(DfXCategory.DfA.getLongText());
-        SelectItemGroup group2 = new SelectItemGroup(DfXCategory.DfC.getLongText());
-        SelectItemGroup group3 = new SelectItemGroup(DfXCategory.DfE.getLongText());
-        SelectItemGroup group4 = new SelectItemGroup(DfXCategory.DfM.getLongText());
-        SelectItemGroup group5 = new SelectItemGroup(DfXCategory.DfMa.getLongText());
-        SelectItemGroup group6 = new SelectItemGroup(DfXCategory.DfQ.getLongText());
-        SelectItemGroup group7 = new SelectItemGroup(DfXCategory.DfR.getLongText());
-        SelectItemGroup group8 = new SelectItemGroup(DfXCategory.DfS.getLongText());
-
-        SelectItem group00 = new SelectItem( "No SubCategory DfA");
-        SelectItem group11 = new SelectItem(DfXSubCategory.SubDfA.getLongText());
-        SelectItem group12 = new SelectItem(DfXSubCategory.SubDfA2.getLongText());
-
-        SelectItem group20 = new SelectItem("No SubCategory DfC");
-        SelectItem group21 = new SelectItem(DfXSubCategory.SubDfC.getLongText());
-
-        SelectItem group30 = new SelectItem("No SubCategory DfE");
-        SelectItem group31 = new SelectItem(DfXSubCategory.SubDfE.getLongText());
-
-        SelectItem group40 = new SelectItem("No SubCategory DfM");
-        SelectItem group41 = new SelectItem(DfXSubCategory.SubDfM.getLongText());
-
-        SelectItem group50 = new SelectItem("No SubCategory DfMa");
-        SelectItem group51 = new SelectItem(DfXSubCategory.SubDfMa.getLongText());
-
-        SelectItem group60 = new SelectItem("No SubCategory DfQ");
-        SelectItem group61 = new SelectItem(DfXSubCategory.SubDfQ.getLongText());
-
-        SelectItem group70 = new SelectItem("No SubCategory DfR");
-        SelectItem group71 = new SelectItem(DfXSubCategory.SubDfR.getLongText());
-
-        SelectItem group80 = new SelectItem("No SubCategory DfS");
-        SelectItem group81 = new SelectItem(DfXSubCategory.SubDfS.getLongText());
-
-        group1.setSelectItems(new SelectItem[]{group00,group11, group12,group21});
-        group2.setSelectItems(new SelectItem[]{group20,group21});
-        group3.setSelectItems(new SelectItem[]{group30,group31});
-        group4.setSelectItems(new SelectItem[]{group40,group41});
-        group5.setSelectItems(new SelectItem[]{group50,group51});
-        group6.setSelectItems(new SelectItem[]{group60,group61});
-        group7.setSelectItems(new SelectItem[]{group70,group71});
-        group8.setSelectItems(new SelectItem[]{group80,group81});
-
-        dfxCategories.add(group1);
-        dfxCategories.add(group2);
-        dfxCategories.add(group3);
-        dfxCategories.add(group4);
-        dfxCategories.add(group5);
-        dfxCategories.add(group6);
-        dfxCategories.add(group7);
-        dfxCategories.add(group8);
-    }
 	
 	private void addRoom(){
 		
@@ -269,6 +219,7 @@ public class CommunicationBean implements Serializable{
 					view.copyView(checkWordInDB(view));
 				}
 			}
+			setHighlightedMessage(null);
 		}
 		// todo!!!!
 		/*
@@ -289,7 +240,7 @@ public class CommunicationBean implements Serializable{
 	{
 		message.copyView(checkWordInDB(message));
 
-		if(!message.isFound())
+		if(!message.isFoundInDB())
 			message.copyView(checkWordInHistory(message));
 		
 		return message;
@@ -308,6 +259,7 @@ public class CommunicationBean implements Serializable{
 			if(message.length() > 2) {
 				if (knowledgeService.getAllKnowledge().stream().anyMatch(a -> a.getWord().equalsIgnoreCase(message))) {
 					messageToCheck.copyView(setPrefixAndPostfixOfMessage(messageToCheck, message));
+					messageToCheck.setFoundInDB(true);
 					break;
 				}
 			}
@@ -334,15 +286,17 @@ public class CommunicationBean implements Serializable{
 			for(String entered : word)
 				if(entered.length() > 2)
 					for(String historied : temp)
-						if(entered.equalsIgnoreCase(historied))
-							return setPrefixAndPostfixOfMessage(messageToCheck, entered);
+						if(entered.equalsIgnoreCase(historied)) {
+                            messageToCheck.copyView(setPrefixAndPostfixOfMessage(messageToCheck, entered));
+                            messageToCheck.setFoundInUsage(true);
+                            return messageToCheck;
+                        }
 		}
 		return messageToCheck;
 	}
 
 	private KnowledgeRoomMessageView setPrefixAndPostfixOfMessage(KnowledgeRoomMessageView messageToCheck, String foundMessage)
 	{
-		messageToCheck.setFound(true);
 		messageToCheck.setHighlightedWord(foundMessage);
 
 		int index = messageToCheck.getMessage().indexOf(foundMessage);
@@ -376,9 +330,16 @@ public class CommunicationBean implements Serializable{
 	///////////////////////////////////////////////
 
 	public void initNewRoom(){ newKnowledge = new KnowledgeView();}
+
 	public void addKnowledge(){
-	    if(selectedCategory == null)
-	        return;
+	    if(selectedCategory == null) {
+			FacesContext context = FacesContext.getCurrentInstance();
+			KnowledgeRoomMessageView view = context.getApplication().evaluateExpressionGet(context,"#{mes}", KnowledgeRoomMessageView.class);
+
+			getKnowledgeListFromWord(view.getHighlightedWord());
+
+			return;
+		}
         if(selectedCategory.contains("SubCategory")) {
             log.info("chosen no sub category: " + selectedCategory.substring(15));
             newKnowledge.setDfXCategory(DfXCategory.getEnum(selectedCategory.substring(15)));
@@ -390,8 +351,11 @@ public class CommunicationBean implements Serializable{
             newKnowledge.setDfXSubCategory(DfXSubCategory.getEnum(selectedCategory, true));
         }
 
-        newKnowledge.setWord(highlightedWord);
+        newKnowledge.setWord(highlightedMessage.getHighlightedWord());
         newKnowledge.setOwnerID(currUser.getUuid());
+        if(stream != null)
+            newKnowledge.setFileUpload(stream);
+
         try {
         	if(knowledgeService.saveKnowledge(newKnowledge))
 				FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_INFO,"Knowledge successfuly saved!",""));
@@ -405,6 +369,34 @@ public class CommunicationBean implements Serializable{
 		}
 
 	}
+
+	private void getKnowledgeListFromWord(String word){
+		setKnowledgeViewListFromDB(knowledgeService.getKnowledgeFromWord(word));
+	}
+
+	public String processOpenKnowledge(){
+
+		FacesContext context = FacesContext.getCurrentInstance();
+		KnowledgeView view = context.getApplication().evaluateExpressionGet(context,"#{value}", KnowledgeView.class);
+
+		knowledgeService.setCurrentKnowledge(view);
+
+		return "knowledge?faces-redirect=true";
+	}
+
+	public void handleFileUpload(FileUploadEvent event) {
+		log.info("file gogogo");
+		FacesMessage msg = new FacesMessage("Succesful", event.getFile().getFileName() + " is uploaded.");
+		FacesContext.getCurrentInstance().addMessage(null, msg);
+		fileUpload = event.getFile();
+        try {
+            stream = fileUpload.getInputstream();
+            log.info("file upload successful");
+        } catch (IOException e) {
+            e.printStackTrace();
+            log.info("file upload failed");
+        }
+    }
 
 	////////////////////////////////////////////////
 	//											 //
@@ -475,15 +467,15 @@ public class CommunicationBean implements Serializable{
 		this.enteredMessage = enteredMessage;
 	}
 
-	public String getHighlightedWord() {
-		return highlightedWord;
-	}
+    public KnowledgeRoomMessageView getHighlightedMessage() {
+        return highlightedMessage;
+    }
 
-	public void setHighlightedWord(String highlightedWord) {
-		this.highlightedWord = highlightedWord;
-	}
+    public void setHighlightedMessage(KnowledgeRoomMessageView highlightedMessage) {
+        this.highlightedMessage = highlightedMessage;
+    }
 
-	public boolean isWordPanelOn() {
+    public boolean isWordPanelOn() {
 		return wordPanelOn;
 	}
 
@@ -522,4 +514,20 @@ public class CommunicationBean implements Serializable{
     public void setDesc(String desc) {
         this.desc = desc;
     }
+
+	public List<KnowledgeView> getKnowledgeViewListFromDB() {
+		return knowledgeViewListFromDB;
+	}
+
+	public void setKnowledgeViewListFromDB(List<KnowledgeView> knowledgeViewListFromDB) {
+		this.knowledgeViewListFromDB = knowledgeViewListFromDB;
+	}
+
+	public UploadedFile getFileUpload() {
+		return fileUpload;
+	}
+
+	public void setFileUpload(UploadedFile fileUpload) {
+		this.fileUpload = fileUpload;
+	}
 }

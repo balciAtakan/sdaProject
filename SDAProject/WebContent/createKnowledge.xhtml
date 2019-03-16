@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        
+<ui:composition template="/WEB-INF/templates/struktur.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:b="http://bootsfaces.net/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets">
+
+	<ui:define name="title">
+        Create Knowledge
+    </ui:define>
+
+	<ui:define name="styles">
+		<link rel="stylesheet" href="resources/css/createKnowledge.css" type="text/css"/>
+	</ui:define>
+	
+	<ui:define name="main_content">
+
+	<h:form id="knowledgeForm">
+		<p:messages id="messages" autoUpdate="false" closable="true" />
+		<b:container>
+
+			<b:panel title="Create new Knowledge" collapsible="false" look="success">
+
+				<b:inputText span="12" id="word" value="#{createKnowledgeBean.view.word}" label="Word" requiredMessage="Please enter a word!" required="true"/>
+				<b:inputTextarea span="12" id="text" value="#{createKnowledgeBean.view.knowledge_text}" label="Description" />
+
+				<p:multiSelectListbox id="selectbox" value="#{createKnowledgeBean.selectedCategory}" effect="slide"  header="DfX Categories" showHeaders="true"
+									  required="true" requiredMessage="Please select a category for the given word!">
+					<f:selectItems id="itemsdfx" value="#{createKnowledgeBean.dfxCategories}" var="d" itemLabel="#{d.label}" itemValue="#{d.value}"/>
+				</p:multiSelectListbox>
+
+				<p:fileUpload fileUploadListener="#{createKnowledgeBean.handleFileUpload}" mode="advanced" dragDropSupport="true"
+							  style="margin-left: 15px;padding: 5px 0 5px 0;width: 97%"
+							  fileLimitMessage="PDF Data Limit is 10Mb"
+							  update="messages" sizeLimit="10000000" allowTypes="/(\.|\/)(pdf)$/" fileLimit="1"/>
+
+				<b:commandButton span="2" value="Create" action="#{createKnowledgeBean.addKnowledge}" look="success"/>
+			</b:panel>
+
+
+
+
+		</b:container>
+	</h:form>
+	
+	</ui:define>
+</ui:composition>

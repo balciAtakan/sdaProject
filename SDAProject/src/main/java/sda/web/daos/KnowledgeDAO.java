@@ -6,11 +6,13 @@ import main.java.sda.web.util.SDAUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import main.java.sda.web.exception.SDAException;
 import main.java.sda.web.views.KnowledgeView;
 
+import java.io.FileInputStream;
 import java.util.*;
 
 @Repository
@@ -19,75 +21,91 @@ public class KnowledgeDAO {
 
     private static Logger log = LogManager.getLogger(KnowledgeDAO.class);
 
-	@Autowired
-	private NamedParameterJdbcTemplate template;
+    @Autowired
+    private NamedParameterJdbcTemplate template;
 
-	public KnowledgeView getKnowledge(KnowledgeView view) throws SDAException {
-		// statt ? wird :uuid verwendet...
-		String sql = "SELECT k.*,p.username FROM knowledge k left join person p on k.owner = p.id where k.uuid = :uuid";
-		Map<String, Object> params = new HashMap<>();
+    public KnowledgeView getKnowledge(KnowledgeView view) throws SDAException {
+        // statt ? wird :uuid verwendet...
+        String sql = "SELECT k.*,p.username FROM knowledge k left join person p on k.owner = p.id where k.uuid = :uuid";
+        Map<String, Object> params = new HashMap<>();
 
-		params.put("uuid",view.getUuid());
+        params.put("uuid", view.getUuid());
 
-		try {
+        try {
 
-			return template.queryForObject(sql, params, new KnowledgeRowMapper());
+            return template.queryForObject(sql, params, new KnowledgeRowMapper());
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new SDAException(e.getMessage());
-		}
-	}
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SDAException(e.getMessage());
+        }
+    }
 
-	public ArrayList<KnowledgeView> getAllKnowledge() throws SDAException {
-		// statt ? wird :uuid verwendet...
-		String sql = "SELECT k.*,p.username FROM knowledge k left join person p on k.owner = p.id";
-		Map<String, Object> params = new HashMap<>();
+    public List<KnowledgeView> getKnowledgeFromWord(String word) throws SDAException {
+        // statt ? wird :uuid verwendet...
+        String sql = "SELECT k.*,p.username FROM knowledge k left join person p on k.owner = p.id where k.word = :word";
+        Map<String, Object> params = new HashMap<>();
 
-		ArrayList<KnowledgeView> res;
-		try {
+        params.put("word", word);
 
-			res = new ArrayList<>(template.query(sql, params, new KnowledgeRowMapper()));
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new SDAException(e.getMessage());
-		}
-		
-		return res;
-	}
+        try {
 
-	public boolean saveKnowledge(KnowledgeView view) throws SDAException {
+            return template.query(sql, params, new KnowledgeRowMapper());
 
-		//language=MySQL
-		String sql = "insert into knowledge values(:uuid,:word,:category,:knowledge_text,:knowledge_data,:modify_date,:owner,:subcategory)";
-		Map<String, Object> parameters = new HashMap<>();
-		parameters.put("uuid", SDAUtil.generateUuid());
-		parameters.put("word", view.getWord());
-		parameters.put("category", view.getDfXCategory().name());
-		parameters.put("knowledge_text", view.getKnowledge_text());
-		parameters.put("knowledge_data", view.getFilename());
-		parameters.put("modify_date", new Date());
-		parameters.put("owner", view.getOwnerID());
-		parameters.put("subcategory", view.getDfXSubCategory() != null ? view.getDfXSubCategory().name() : null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SDAException(e.getMessage());
+        }
+    }
 
-		boolean res;
-		try {
+    public ArrayList<KnowledgeView> getAllKnowledge() throws SDAException {
+        // statt ? wird :uuid verwendet...
+        String sql = "SELECT k.*,p.username FROM knowledge k left join person p on k.owner = p.id";
+        Map<String, Object> params = new HashMap<>();
 
-			res = template.update(sql, parameters) == 1;
+        ArrayList<KnowledgeView> res;
+        try {
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new SDAException(e.getMessage());
-		}
+            res = new ArrayList<>(template.query(sql, params, new KnowledgeRowMapper()));
 
-		return res;
-	}
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SDAException(e.getMessage());
+        }
 
-    public ArrayList<KnowledgeView> selectQuickResultsByInput(String input)
-    {
-        if(input != null && input.length() > 0)
-        {
+        return res;
+    }
+
+    public boolean saveKnowledge(KnowledgeView view) throws SDAException {
+
+
+        boolean res;
+        try {
+            //language=MySQL
+            String sql = "insert into knowledge values(:uuid,:word,:category,:knowledge_text,:knowledge_data,:modify_date,:owner,:subcategory)";
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("uuid", SDAUtil.generateUuid());
+            parameters.put("word", view.getWord());
+            parameters.put("category", view.getDfXCategory().name());
+            parameters.put("knowledge_text", view.getKnowledge_text());
+            parameters.put("knowledge_data", view.getFileUpload() == null ? null : view.getFileUpload());
+            parameters.put("modify_date", new Date());
+            parameters.put("owner", view.getOwnerID());
+            parameters.put("subcategory", view.getDfXSubCategory() != null ? view.getDfXSubCategory().name() : null);
+
+            res = template.update(sql, parameters) == 1;
+            log.info("update result: " + res);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SDAException(e.getMessage());
+        }
+
+        return res;
+    }
+
+    public ArrayList<KnowledgeView> selectQuickResultsByInput(String input) {
+        if (input != null && input.length() > 0) {
             //template = new NamedParameterJdbcTemplate(schuljahrDatasource);
 //			input = input.replace(" ", "%");
             String[] allinputs = input.split("\\s");
@@ -99,11 +117,9 @@ public class KnowledgeDAO {
 
             int counter = 0;
 
-            for(String oneinput : allinputs)
-            {
-                if(oneinput != null && !oneinput.equals(" ") && !oneinput.equals(""))
-                {
-                    if(counter != 0)
+            for (String oneinput : allinputs) {
+                if (oneinput != null && !oneinput.equals(" ") && !oneinput.equals("")) {
+                    if (counter != 0)
                         sql = sql + " or ";
                     sql = sql + " lower(word) like :input" + counter;
 
@@ -120,20 +136,84 @@ public class KnowledgeDAO {
 
 
             //Absetzen der Query und Ergebnis erhalten
-            return (ArrayList<KnowledgeView>)template.query(sql, params, new KnowledgeRowQSMapper());
-        }
-        else
+            return (ArrayList<KnowledgeView>) template.query(sql, params, new KnowledgeRowQSMapper());
+        } else
             return new ArrayList<>();
     }
 
-    private String generateQuickSearchSQL(){
+    private String generateQuickSearchSQL() {
 
-	    StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
 
-	    sb.append(" SELECT * from knowledge where ");
+        sb.append(" SELECT * from knowledge where ");
 
-	    return sb.toString();
+        return sb.toString();
     }
 
+    public ArrayList<KnowledgeView> selectSearchResultsByInput(KnowledgeView view) {
+
+        Map<String, Object> params = new HashMap<>();
+        String sql = generateQuickSearchSQL();
+
+        if(view.getDfXCategory() != null)
+        {
+            sql += "category = :category " + (view.getDfXSubCategory() != null || (view.getWord() != null && !view.getWord().isEmpty()) ? "and " :"");
+            params.put("category",view.getDfXCategory().name());
+        }
+
+        if(view.getDfXSubCategory() != null)
+        {
+            sql += "subcategory = :subcategory " + (view.getWord() != null && !view.getWord().isEmpty() ? "and " :"");
+            params.put("subcategory",view.getDfXSubCategory().name());
+        }
+
+        if (view.getWord() != null && view.getWord().length() > 0) {
+//			input = input.replace(" ", "%");
+            String[] allinputs = view.getWord().split("\\s");
+
+            int counter = 0;
+            int end = allinputs.length;
+
+            for (String oneinput : allinputs) {
+                if (oneinput != null && !oneinput.equals(" ") && !oneinput.equals("")) {
+                    sql += counter != 0 ? " or " : "(";
+                    sql = sql + " lower(word) like :input" + counter;
+                    sql += counter == end-1 ? ")" : "";
+
+                    //Params für namedQuery setzen!
+                    params.put("input" + counter, "%" + oneinput.toLowerCase().trim() + "%");
+
+                    counter++;
+                }
+            }
+
+        }
+
+        sql = sql + " order by word";
+
+        log.info(sql);
+        try {
+            return (ArrayList<KnowledgeView>) template.query(sql, params, new KnowledgeRowQSMapper());
+        } catch (EmptyResultDataAccessException e) {
+
+            return new ArrayList<>();
+        }
+    }
+
+    public void deleteKnowledge(String uuid) throws SDAException {
+        String sql = "delete from knowledge where uuid = :uuid";
+        Map<String, Object> params = new HashMap<>();
+        params.put("uuid",uuid);
+
+        try {
+
+            int res = template.update(sql, params);
+            log.info("Knowledge has been deleted! "+(res ==1));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SDAException(e.getMessage());
+        }
+    }
 
 }

@@ -22,12 +22,36 @@
 
 			<b:panel title="Knowledge details for the word : #{knowledgeBean.view.word}" collapsible="false" look="success">
 
-				<b:inputText span="6" id="dfx" value="#{knowledgeBean.view.dfXCategory.longText}" label="DfX Category" />
-				<b:inputText span="6" id="sub" value="#{knowledgeBean.view.dfXSubCategory.longText}" label="DfX Sub-Category" />
-				<b:inputTextarea span="12" id="text" value="#{knowledgeBean.view.knowledge_text}" label="Description" />
-				<b:inputText span="6" id="ownerID" value="#{knowledgeBean.view.ownerUsername}" label="Knowledge owner" disabled="true"/>
+				<b:commandButton span="2" offset="10" value="Update" look="info" actionListener="#{knowledgeBean.setUpdateActive(true)}"
+								 rendered="#{!knowledgeBean.updateActive}"
+								 update="@form"/>
+
+				<b:commandButton span="2" offset="10" value="Save" look="success" actionListener="#{knowledgeBean.setUpdateActive(false)}"
+								 rendered="#{knowledgeBean.updateActive}"
+								 update="@form"/>
+
+				<b:inputText span="6" id="dfx" value="#{knowledgeBean.view.dfXCategory.longText}" label="DfX Category" disabled="true"/>
+				<b:inputText span="6" id="sub" value="#{knowledgeBean.view.dfXSubCategoryValue}" label="DfX Sub-Category" disabled="true"/>
+				<b:inputTextarea span="12" id="text" value="#{knowledgeBean.view.knowledge_text}" label="Description" disabled="#{!knowledgeBean.updateActive}"/>
+				<b:inputText span="6" id="ownerID" value="#{knowledgeBean.view.ownerUsername}"  label="Knowledge owner" disabled="true"/>
 				<b:inputText span="6" id="date" value="#{knowledgeBean.view.modifyDate}" label="Modify Date" disabled="true"/>
+
+				<b:label span="12" id="seperator" style="margin-bottom:10px;padding:.1em .1em .1em" value=""/>
+				<p:commandButton value="Document" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);"
+								 style="margin-left: 15px" rendered="#{knowledgeBean.view.fileUpload != null}"
+								 icon="fa fa-cloud-download">
+					<p:fileDownload value="#{knowledgeBean.view.fileDownload}" />
+				</p:commandButton>
+
 			</b:panel>
+			<p:commandButton value="Delete" action="#{knowledgeBean.processDeleteKnowledge}">
+				<p:confirm header="Confirmation" message="Are you sure to delete this knowledge?" icon="fa fa-exclamation-triangle" />
+			</p:commandButton>
+
+			<p:confirmDialog id="deleteDlg" global="true" showEffect="fade" hideEffect="fade">
+				<p:commandButton value="Yes" styleClass="ui-confirmdialog-yes" icon="fa fa-check" />
+				<p:commandButton value="No" styleClass="ui-confirmdialog-no" icon="fa fa-times" onclick="PF('deleteDlg').hide();"/>
+			</p:confirmDialog>
 
 		</b:container>
 	</h:form>
