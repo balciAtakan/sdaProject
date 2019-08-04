@@ -200,6 +200,29 @@ public class KnowledgeDAO {
         }
     }
 
+    public void updateKnowledge(KnowledgeView view) throws SDAException {
+        String sql = "update knowledge set knowledge_text = :ktext, category = :category,subcategory =:subcategory, modify_date =:mdate, owner =:ownerId " +
+                " where uuid = :uuid";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("uuid",view.getUuid());
+        params.put("ktext",view.getKnowledge_text());
+        params.put("category",view.getDfXCategory().name());
+        params.put("subcategory",view.getDfXSubCategory() != null ? view.getDfXSubCategory().name() : null);
+        params.put("mdate",new Date());
+        params.put("ownerId",view.getOwnerID());
+
+        try {
+
+            int res = template.update(sql, params);
+            log.info("Knowledge has been updated! "+(res ==1));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SDAException("Error on Knowledge update!");
+        }
+    }
+
     public void deleteKnowledge(String uuid) throws SDAException {
         String sql = "delete from knowledge where uuid = :uuid";
         Map<String, Object> params = new HashMap<>();
