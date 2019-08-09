@@ -59,7 +59,10 @@
                     </p:commandButton>
 
                 </b:panel>
-                <p:commandButton value="Delete" action="#{knowledgeBean.processDeleteKnowledge}">
+                <p:commandButton value="Back" rendered="#{knowledgeBean.backButtonActive}" action="#{knowledgeBean.processBack}"/>
+
+                <p:commandButton value="Delete" style="margin-left: #{knowledgeBean.backButtonActive ? '40%' : '42%'} "
+                                 action="#{knowledgeBean.processDeleteKnowledge}">
                     <p:confirm header="Confirmation" message="Are you sure to delete this knowledge?" icon="fa fa-exclamation-triangle"/>
                 </p:commandButton>
 

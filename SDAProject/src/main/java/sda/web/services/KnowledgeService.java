@@ -28,10 +28,12 @@ public class KnowledgeService {
 
 	private List<KnowledgeView> allKnowledge;
 	private KnowledgeView currentKnowledge;
+
+	private boolean isBackButtonActive = false;
 	
 	public void initAllKnowledge() throws SDAException{
-		
-		allKnowledge = knowledgeDAO.getAllKnowledge();
+		if(allKnowledge == null)
+			allKnowledge = knowledgeDAO.getAllKnowledge();
 		log.info("all knowledge has been loaded! Count : " + (allKnowledge != null ? allKnowledge.size(): " "));
 	}
 
@@ -142,5 +144,13 @@ public class KnowledgeService {
 
 	public void setCurrentKnowledge(KnowledgeView currentKnowledge) {
 		this.currentKnowledge = currentKnowledge;
+	}
+
+	public boolean isBackButtonActive() {
+		return isBackButtonActive;
+	}
+
+	public void setBackButtonActive(boolean backButtonActive) {
+		isBackButtonActive = backButtonActive;
 	}
 }

@@ -43,6 +43,10 @@ public class QuickSearchBean {
 		return "knowledge?faces-redirect=true";
 	}
 
+	public void setBackButtonActive(boolean value){
+		knowledgeService.setBackButtonActive(value);
+	}
+
 	private void reset(){
 		setQuery(null);
 		searchService.setResults(null);

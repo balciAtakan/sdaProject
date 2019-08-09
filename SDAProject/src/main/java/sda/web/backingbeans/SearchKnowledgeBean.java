@@ -1,7 +1,6 @@
 package main.java.sda.web.backingbeans;
 
 import main.java.sda.web.services.KnowledgeService;
-import main.java.sda.web.services.PersonenService;
 import main.java.sda.web.services.SearchService;
 import main.java.sda.web.util.DfXCategory;
 import main.java.sda.web.util.DfXSubCategory;
@@ -74,6 +73,10 @@ public class SearchKnowledgeBean {
         knowledgeService.setCurrentKnowledge(view);
 
         return "knowledge?faces-redirect=true";
+    }
+
+    public void setBackButtonActive(boolean value){
+        knowledgeService.setBackButtonActive(value);
     }
 
     public KnowledgeView getView() {

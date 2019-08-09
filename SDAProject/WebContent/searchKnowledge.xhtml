@@ -49,7 +49,9 @@
 
 					<b:dataTableColumn>
 						<p:commandLink id="Link" action="#{searchKnowledgeBean.processOpenKnowledge}"
-									   value="#{item.word}" />
+									   value="#{item.word}" >
+							<f:setPropertyActionListener target="#{searchKnowledgeBean.backButtonActive}" value="#{false}"/>
+						</p:commandLink>
 					</b:dataTableColumn>
 					<b:dataTableColumn value="#{item.dfXCategory.longText}" label="Category"/>
 					<b:dataTableColumn value="#{item.dfXSubCategoryValue}" label="SubCategory"/>

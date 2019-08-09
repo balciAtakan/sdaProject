@@ -44,6 +44,13 @@ public class KnowledgeBean {
 		setView(knowledgeService.getCurrentKnowledge());
 		dfxCategories = knowledgeService.initCategories();
 	}
+
+	public String processBack() {
+
+		knowledgeService.setCurrentKnowledge(null);
+
+		return "communication?faces-redirect=true";
+	}
 	
 	public String processDeleteKnowledge() {
 
@@ -115,5 +122,9 @@ public class KnowledgeBean {
 
 	public void setSelectedCategory(String selectedCategory) {
 		this.selectedCategory = selectedCategory;
+	}
+
+	public boolean getBackButtonActive(){
+		return knowledgeService.isBackButtonActive();
 	}
 }

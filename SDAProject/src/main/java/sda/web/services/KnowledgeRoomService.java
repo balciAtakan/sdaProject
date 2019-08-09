@@ -1,17 +1,16 @@
 package main.java.sda.web.services;
 
-import java.util.ArrayList;
-
 import main.java.sda.web.daos.KnowledgeRoomReadDAO;
 import main.java.sda.web.daos.KnowledgeRoomWriteDAO;
 import main.java.sda.web.exception.SDAException;
+import main.java.sda.web.util.SDAResult;
+import main.java.sda.web.views.KnowledgeRoomMessageView;
+import main.java.sda.web.views.KnowledgeRoomView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import main.java.sda.web.util.SDAResult;
-import main.java.sda.web.views.KnowledgeRoomMessageView;
-import main.java.sda.web.views.KnowledgeRoomView;
+import java.util.ArrayList;
 
 @Service
 @Scope("session")
@@ -22,6 +21,8 @@ public class KnowledgeRoomService {
 	
 	@Autowired
 	private KnowledgeRoomWriteDAO knowledgeRoomWriteDAO;
+
+	private KnowledgeRoomView currentRoom;
 	
 	public ArrayList<KnowledgeRoomView> getKnowledgeRooms() throws SDAException {
 		
@@ -65,5 +66,18 @@ public class KnowledgeRoomService {
 	public void deleteKnowledgeRoom(String roomname) throws SDAException{
 		
 		knowledgeRoomReadDAO.deleteKnowledgeRoom(roomname);
+	}
+
+	public KnowledgeRoomView getCurrentRoom() {
+		return currentRoom;
+	}
+
+	public void setCurrentRoom(KnowledgeRoomView currentRoom) {
+		this.currentRoom = currentRoom;
+	}
+
+	public void reset(){
+
+		setCurrentRoom(null);
 	}
 }

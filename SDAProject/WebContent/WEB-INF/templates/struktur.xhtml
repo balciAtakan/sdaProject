@@ -29,7 +29,7 @@
 
                 <p:menuitem style="margin-left:20px;" value="Communication" action="#{strukturBean.processCommunication}"/>
 
-                <p:submenu style="margin-left:20px;" label="Knowledge processing">
+                <p:submenu style="margin-left:20px;" label="Knowledge retrieval">
                     <p:menuitem value="Create" action="#{strukturBean.processCreateKnowledge}"/>
                     <p:menuitem value="Update" action="#{strukturBean.processSearchKnowledge}"/>
                 </p:submenu>
@@ -44,7 +44,9 @@
                                      emptyMessage="Noresults found!" style="font-size: 0.85em">
                             <p:column headerText="Word" style="text-align: left;">
                                 <p:commandLink id="quicksearchLinkAntragShort" style="text-align: left;" action="#{quickSearchBean.processOpenKnowledge}"
-                                               value="#{erg.word}" styleClass="quickSearchFontSize"/>
+                                               value="#{erg.word}" styleClass="quickSearchFontSize">
+                                    <f:setPropertyActionListener target="#{quickSearchBean.backButtonActive}" value="#{false}"/>
+                                </p:commandLink>
                             </p:column>
                             <p:column headerText="DfX" style="text-align: left;">
                                 <h:outputText value="#{erg.dfXCategory.longText}"/>

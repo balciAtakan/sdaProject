@@ -20,8 +20,12 @@ public class PersonenService {
 	private PersonView currUser;
 	
 	public PersonView getCurrentPersonDaten(String uuid) throws SDAException {
-		
-		return personDAO.findById(uuid);
+
+		if(currUser == null)
+			currUser = personDAO.findById(uuid);
+
+		return currUser;
+
 	}
 	
 	public void updatePersonView(PersonView personView) {
