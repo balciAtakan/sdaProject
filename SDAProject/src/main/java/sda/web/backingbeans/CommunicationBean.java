@@ -23,7 +23,6 @@ import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
-import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -174,7 +173,7 @@ public class CommunicationBean implements Serializable{
 
 	}
 
-	public void loadRoomData(ActionEvent event)
+	public void loadRoomData()
 	{
 		try
 		{
@@ -187,7 +186,7 @@ public class CommunicationBean implements Serializable{
 
 	}
 
-	public void processMessage(ActionEvent event)
+	public void processMessage()
 	{
 		try
 		{
@@ -444,7 +443,7 @@ public class CommunicationBean implements Serializable{
 	}
 
 	public int getTotalRooms(){
-		return rooms == null ? Integer.valueOf(0): rooms.size();
+		return rooms == null ? 0 : rooms.size();
 	}
 
 	public KnowledgeRoomView getNewRoom() {
