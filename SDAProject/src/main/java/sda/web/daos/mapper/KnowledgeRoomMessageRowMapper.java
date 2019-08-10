@@ -18,8 +18,7 @@ public class KnowledgeRoomMessageRowMapper implements RowMapper<KnowledgeRoomMes
         messageView.setMessage(resultSet.getString("content"));
         messageView.setKnowledgeRoomId(resultSet.getString("knowledge_room"));
 
-        messageView.setMessageOwner(
-                new PersonView(resultSet.getString("owner"), resultSet.getString("username")));
+        messageView.setMessageOwner(new PersonView(resultSet.getString("owner"), resultSet.getString("username")));
 
         messageView.setMessageDate(resultSet.getDate("date"));
 

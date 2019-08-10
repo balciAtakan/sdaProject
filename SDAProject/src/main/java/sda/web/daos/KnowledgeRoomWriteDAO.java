@@ -80,14 +80,12 @@ public class KnowledgeRoomWriteDAO
     public boolean insertKnowledgeRoomRoles(KnowledgeRoomView view) throws SDAException
     {
 
-        StringBuilder sql = new StringBuilder(
-                "INSERT INTO knowledge_room_role(id,role_code,knowledge_room_id) VALUES");
+        StringBuilder sql = new StringBuilder("INSERT INTO knowledge_room_role(id,role_code,knowledge_room_id) VALUES");
 
         for (int i = 0; i < view.getAllowedRoles().size(); i++)
         {
 
-            sql.append(" (:id").append(i).append(",:role_code").append(i).append(
-                    ", :knowledge_room_id").append(i).append(")");
+            sql.append(" (:id").append(i).append(",:role_code").append(i).append(", :knowledge_room_id").append(i).append(")");
             sql.append((i == view.getAllowedRoles().size() - 1) ? ";" : ",");
         }
 

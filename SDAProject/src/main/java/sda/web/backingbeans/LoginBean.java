@@ -56,8 +56,7 @@ public class LoginBean
             } else
             {
                 FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error!",
-                                "Username or password is wrong."));
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error!", "Username or password is wrong."));
                 return null;
             }
         } else return null;

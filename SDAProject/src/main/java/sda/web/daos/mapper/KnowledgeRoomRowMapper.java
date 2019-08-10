@@ -40,8 +40,7 @@ public class KnowledgeRoomRowMapper implements RowMapper<KnowledgeRoomView>
             PersonView owner = new PersonView();
             owner.setUsername(resultSet.getString("owner"));
             KnowledgeRoomMessageView history = new KnowledgeRoomMessageView(resultSet.getString("krm_uuid"),
-                    resultSet.getString("content"), resultSet.getDate("modify_date"), owner,
-                    resultSet.getString("uuid"));
+                    resultSet.getString("content"), resultSet.getDate("modify_date"), owner, resultSet.getString("uuid"));
             list3.add(history);
         }
 

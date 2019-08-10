@@ -163,8 +163,7 @@ public class PersonDAO
             if (e instanceof DataIntegrityViolationException)
             {
                 log.info("Roomowner!!");
-                throw new SDAException(
-                        "This user is a chatroom owner therefore cannot be deleted! Delete the Room First!");
+                throw new SDAException("This user is a chatroom owner therefore cannot be deleted! Delete the Room First!");
             } else
             {
                 e.printStackTrace();

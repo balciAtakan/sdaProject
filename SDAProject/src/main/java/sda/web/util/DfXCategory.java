@@ -2,9 +2,8 @@ package main.java.sda.web.util;
 
 public enum DfXCategory
 {
-    DfA("Design for Assembly"), DfC("Design for Costing"), DfE("Design for Environment"), DfMa(
-        "Design for Maintainability"), DfM("Design for Manufacturability"), DfS(
-        "Design for Serviceability"), DfR("Design for Reuse"), DfQ("Design for Quality");
+    DfA("Design for Assembly"), DfC("Design for Costing"), DfE("Design for Environment"), DfMa("Design for Maintainability"), DfM(
+        "Design for Manufacturability"), DfS("Design for Serviceability"), DfR("Design for Reuse"), DfQ("Design for Quality");
 
     private String longText;
 

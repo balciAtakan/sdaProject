@@ -63,8 +63,7 @@ public class HomeBean
         if ((usernameForDelete == null || usernameForDelete.isEmpty()) && (roomnameForDelete == null || roomnameForDelete.isEmpty()))
         {
             FacesContext.getCurrentInstance().addMessage("dialog_form:dialog_messages",
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            "Please enter a room or username for delete!", ""));
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Please enter a room or username for delete!", ""));
             return null;
         }
 

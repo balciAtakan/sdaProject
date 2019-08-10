@@ -75,8 +75,7 @@ public class SearchKnowledgeBean
     {
 
         FacesContext context = FacesContext.getCurrentInstance();
-        KnowledgeView view = context.getApplication().evaluateExpressionGet(context, "#{item}",
-                KnowledgeView.class);
+        KnowledgeView view = context.getApplication().evaluateExpressionGet(context, "#{item}", KnowledgeView.class);
 
         knowledgeService.setCurrentKnowledge(view);
 

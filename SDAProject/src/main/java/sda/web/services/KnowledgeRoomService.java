@@ -62,8 +62,7 @@ public class KnowledgeRoomService
     {
 
         SDAResult result = new SDAResult();
-        if (knowledgeRoomWriteDAO.saveKnowledgeRoomMessage(view))
-            result.setMessage("Message is successfully saved!");
+        if (knowledgeRoomWriteDAO.saveKnowledgeRoomMessage(view)) result.setMessage("Message is successfully saved!");
         else result.setMessage("Error on message save!");
 
         return result;

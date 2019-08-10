@@ -35,8 +35,7 @@ public class KnowledgeService
     public void initAllKnowledge() throws SDAException
     {
         if (allKnowledge == null) allKnowledge = knowledgeDAO.getAllKnowledge();
-        log.info(
-                "all knowledge has been loaded! Count : " + (allKnowledge != null ? allKnowledge.size() : " "));
+        log.info("all knowledge has been loaded! Count : " + (allKnowledge != null ? allKnowledge.size() : " "));
     }
 
     public boolean saveKnowledge(KnowledgeView view) throws SDAException

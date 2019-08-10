@@ -103,8 +103,7 @@ public class CommunicationBean implements Serializable
         {
             log.info(e.getMessage());
             FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error!",
-                            "Something went wrong on Load Knowledge Rooms"));
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error!", "Something went wrong on Load Knowledge Rooms"));
         }
 
     }
@@ -153,8 +152,7 @@ public class CommunicationBean implements Serializable
         if (selectedRoles.isEmpty())
         {
             FacesContext.getCurrentInstance().addMessage("dialog_form:dialog_messages",
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                            "Please chose atleast one allowed Userrole!", ""));
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Please chose atleast one allowed Userrole!", ""));
             return null;
         }
         log.info("create room");
@@ -206,8 +204,8 @@ public class CommunicationBean implements Serializable
     {
         try
         {
-            KnowledgeRoomMessageView messageView = new KnowledgeRoomMessageView(SDAUtil.generateUuid(),
-                    enteredMessage, new Date(), currUser, activeRoom.getUuid());
+            KnowledgeRoomMessageView messageView = new KnowledgeRoomMessageView(SDAUtil.generateUuid(), enteredMessage,
+                    new Date(), currUser, activeRoom.getUuid());
 
             messageView.copyView(processGivenMessage(messageView));
 
@@ -219,8 +217,7 @@ public class CommunicationBean implements Serializable
 
         } catch (SDAException e)
         {
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), ""));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), ""));
             e.printStackTrace();
             log.info(e.getMessage());
         }
@@ -291,8 +288,7 @@ public class CommunicationBean implements Serializable
         {
             if (message.length() > 2)
             {
-                if (knowledgeService.getAllKnowledge().stream().anyMatch(
-                        a -> a.getWord().equalsIgnoreCase(message)))
+                if (knowledgeService.getAllKnowledge().stream().anyMatch(a -> a.getWord().equalsIgnoreCase(message)))
                 {
                     messageToCheck.copyView(setPrefixAndPostfixOfMessage(messageToCheck, message));
                     messageToCheck.setFoundInDB(true);
@@ -402,9 +398,8 @@ public class CommunicationBean implements Serializable
 
         try
         {
-            if (knowledgeService.saveKnowledge(newKnowledge))
-                FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_INFO, "Knowledge successfuly saved!", ""));
+            if (knowledgeService.saveKnowledge(newKnowledge)) FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Knowledge successfuly saved!", ""));
 			/*
 			*
 			* //execute javascript oncomplete
@@ -429,8 +424,7 @@ public class CommunicationBean implements Serializable
         } catch (SDAException e)
         {
 
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), ""));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), ""));
             e.printStackTrace();
             log.info(e.getMessage());
         }
@@ -446,8 +440,7 @@ public class CommunicationBean implements Serializable
     {
 
         FacesContext context = FacesContext.getCurrentInstance();
-        KnowledgeView view = context.getApplication().evaluateExpressionGet(context, "#{value}",
-                KnowledgeView.class);
+        KnowledgeView view = context.getApplication().evaluateExpressionGet(context, "#{value}", KnowledgeView.class);
 
         knowledgeService.setCurrentKnowledge(view);
 

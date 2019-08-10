@@ -96,8 +96,7 @@ public class CreateKnowledgeBean
         } catch (SDAException e)
         {
 
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), ""));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), ""));
             e.printStackTrace();
             log.info(e.getMessage());
         }

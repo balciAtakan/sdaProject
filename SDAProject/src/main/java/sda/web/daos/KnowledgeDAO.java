@@ -102,8 +102,7 @@ public class KnowledgeDAO
             parameters.put("knowledge_data", view.getFileUpload() == null ? null : view.getFileUpload());
             parameters.put("modify_date", new Date());
             parameters.put("owner", view.getOwnerID());
-            parameters.put("subcategory",
-                    view.getDfXSubCategory() != null ? view.getDfXSubCategory().name() : null);
+            parameters.put("subcategory", view.getDfXSubCategory() != null ? view.getDfXSubCategory().name() : null);
 
             res = template.update(sql, parameters) == 1;
             log.info("update result: " + res);

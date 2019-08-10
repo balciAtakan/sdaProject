@@ -39,8 +39,7 @@ public class QuickSearchBean
         reset();
 
         FacesContext context = FacesContext.getCurrentInstance();
-        KnowledgeView view = context.getApplication().evaluateExpressionGet(context, "#{erg}",
-                KnowledgeView.class);
+        KnowledgeView view = context.getApplication().evaluateExpressionGet(context, "#{erg}", KnowledgeView.class);
 
         knowledgeService.setCurrentKnowledge(view);
 

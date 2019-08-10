@@ -45,8 +45,7 @@ public class KnowledgeRoomReadDAO
                 for (int i = 0; i < res.size(); i++)
                 {
                     String id = res.get(i).getUuid();
-                    KnowledgeRoomView item = temp.stream().filter(
-                            a -> a.getUuid().equals(id)).findFirst().orElse(null);
+                    KnowledgeRoomView item = temp.stream().filter(a -> a.getUuid().equals(id)).findFirst().orElse(null);
                     if (item != null)
                     {
                         if (!res.get(i).getAllowedRoles().isEmpty())
@@ -101,8 +100,7 @@ public class KnowledgeRoomReadDAO
         ArrayList<KnowledgeRoomMessageView> res = null;
         try
         {
-            res = (ArrayList<KnowledgeRoomMessageView>) template.query(sql, params,
-                    new KnowledgeRoomMessageRowMapper());
+            res = (ArrayList<KnowledgeRoomMessageView>) template.query(sql, params, new KnowledgeRoomMessageRowMapper());
 
         } catch (Exception e)
         {

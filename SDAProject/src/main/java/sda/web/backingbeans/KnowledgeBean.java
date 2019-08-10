@@ -67,8 +67,7 @@ public class KnowledgeBean
         } catch (SDAException e)
         {
             // TODO Auto-generated catch block
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), ""));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), ""));
             return null;
         }
 
@@ -103,8 +102,7 @@ public class KnowledgeBean
         } catch (SDAException e)
         {
             // TODO Auto-generated catch block
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), ""));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), ""));
         }
     }
 

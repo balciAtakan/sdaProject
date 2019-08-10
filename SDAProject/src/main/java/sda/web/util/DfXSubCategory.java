@@ -2,8 +2,8 @@ package main.java.sda.web.util;
 
 public enum DfXSubCategory
 {
-    SubDfA("DfA Sub"), SubDfA2("DfA Sub2"), SubDfC("DfC Sub"), SubDfE("DfE Sub"), SubDfMa("DfMa Sub"), SubDfM(
-        "DfM Sub"), SubDfS("DfS Sub"), SubDfR("DfR Sub"), SubDfQ("DfQ Sub");
+    SubDfA("DfA Sub"), SubDfA2("DfA Sub2"), SubDfC("DfC Sub"), SubDfE("DfE Sub"), SubDfMa("DfMa Sub"), SubDfM("DfM Sub"), SubDfS(
+        "DfS Sub"), SubDfR("DfR Sub"), SubDfQ("DfQ Sub");
 
     private String longText;
 
