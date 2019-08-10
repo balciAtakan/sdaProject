@@ -3,7 +3,8 @@ package main.java.sda.web.views;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class KnowledgeRoomMessageView {
+public class KnowledgeRoomMessageView
+{
 
     private String uuid;
 
@@ -19,11 +20,13 @@ public class KnowledgeRoomMessageView {
     private String prefixMessage;
     private String postfixMessage;
 
-    public KnowledgeRoomMessageView() {
+    public KnowledgeRoomMessageView()
+    {
 
     }
 
-    public KnowledgeRoomMessageView(String uuid,String message, Date messageDate, PersonView messageOwner, String knowledgeRoomId) {
+    public KnowledgeRoomMessageView(String uuid, String message, Date messageDate, PersonView messageOwner, String knowledgeRoomId)
+    {
         super();
         this.uuid = uuid;
         this.message = message;
@@ -32,7 +35,8 @@ public class KnowledgeRoomMessageView {
         this.knowledgeRoomId = knowledgeRoomId;
     }
 
-    public void copyView(KnowledgeRoomMessageView view) {
+    public void copyView(KnowledgeRoomMessageView view)
+    {
         this.uuid = view.getUuid();
         this.message = view.getMessage();
         this.messageDate = view.getMessageDate();
@@ -46,90 +50,113 @@ public class KnowledgeRoomMessageView {
     }
 
 
-
-    public String getUuid() {
+    public String getUuid()
+    {
         return uuid;
     }
 
-    public void setUuid(String uuid) {
+    public void setUuid(String uuid)
+    {
         this.uuid = uuid;
     }
 
-    public String getMessage() {
+    public String getMessage()
+    {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(String message)
+    {
         this.message = message;
     }
 
-    public Date getMessageDate() {
+    public Date getMessageDate()
+    {
         return messageDate;
     }
 
-    public void setMessageDate(Date messageDate) {
+    public void setMessageDate(Date messageDate)
+    {
         this.messageDate = messageDate;
     }
 
-    public PersonView getMessageOwner() {
+    public PersonView getMessageOwner()
+    {
         return messageOwner;
     }
 
-    public String getOwnerName(){return messageOwner.getUsername();}
+    public String getOwnerName()
+    {
+        return messageOwner.getUsername();
+    }
 
-    public void setMessageOwner(PersonView messageOwner) {
+    public void setMessageOwner(PersonView messageOwner)
+    {
         this.messageOwner = messageOwner;
     }
 
-    public String getKnowledgeRoomId() {
+    public String getKnowledgeRoomId()
+    {
         return knowledgeRoomId;
     }
 
-    public void setKnowledgeRoomId(String knowledgeRoomId) {
+    public void setKnowledgeRoomId(String knowledgeRoomId)
+    {
         this.knowledgeRoomId = knowledgeRoomId;
     }
 
-    public boolean isFoundInDB() {
+    public boolean isFoundInDB()
+    {
         return foundInDB;
     }
 
-    public void setFoundInDB(boolean foundInDB) {
+    public void setFoundInDB(boolean foundInDB)
+    {
         this.foundInDB = foundInDB;
     }
 
-    public boolean isFoundInUsage() {
+    public boolean isFoundInUsage()
+    {
         return foundInUsage;
     }
 
-    public void setFoundInUsage(boolean foundInUsage) {
+    public void setFoundInUsage(boolean foundInUsage)
+    {
         this.foundInUsage = foundInUsage;
     }
 
-    public String getHighlightedWord() {
+    public String getHighlightedWord()
+    {
         return highlightedWord;
     }
 
-    public void setHighlightedWord(String highlightedWord) {
+    public void setHighlightedWord(String highlightedWord)
+    {
         this.highlightedWord = highlightedWord;
     }
 
-    public String getPrefixMessage() {
+    public String getPrefixMessage()
+    {
         return prefixMessage;
     }
 
-    public void setPrefixMessage(String prefixMessage) {
+    public void setPrefixMessage(String prefixMessage)
+    {
         this.prefixMessage = prefixMessage;
     }
 
-    public String getPostfixMessage() {
+    public String getPostfixMessage()
+    {
         return postfixMessage;
     }
 
-    public void setPostfixMessage(String postfixMessage) {
+    public void setPostfixMessage(String postfixMessage)
+    {
         this.postfixMessage = postfixMessage;
     }
 
-    public String getModifyDate(){
+    public String getModifyDate()
+    {
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         String format = formatter.format(messageDate);

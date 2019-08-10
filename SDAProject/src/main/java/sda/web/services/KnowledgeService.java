@@ -1,15 +1,15 @@
 package main.java.sda.web.services;
 
+import main.java.sda.web.daos.KnowledgeDAO;
+import main.java.sda.web.exception.SDAException;
 import main.java.sda.web.util.DfXCategory;
 import main.java.sda.web.util.DfXSubCategory;
+import main.java.sda.web.views.KnowledgeView;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import main.java.sda.web.daos.KnowledgeDAO;
-import main.java.sda.web.exception.SDAException;
-import main.java.sda.web.views.KnowledgeView;
 
 import javax.faces.model.SelectItem;
 import javax.faces.model.SelectItemGroup;
@@ -18,139 +18,157 @@ import java.util.List;
 
 @Service
 @Scope("session")
-public class KnowledgeService {
+public class KnowledgeService
+{
 
-	private static Logger log = LogManager.getLogger(KnowledgeService.class);
+    private static Logger log = LogManager.getLogger(KnowledgeService.class);
 
-	@Autowired
-	private KnowledgeDAO knowledgeDAO;
+    @Autowired
+    private KnowledgeDAO knowledgeDAO;
 
 
-	private List<KnowledgeView> allKnowledge;
-	private KnowledgeView currentKnowledge;
+    private List<KnowledgeView> allKnowledge;
+    private KnowledgeView currentKnowledge;
 
-	private boolean isBackButtonActive = false;
-	
-	public void initAllKnowledge() throws SDAException{
-		if(allKnowledge == null)
-			allKnowledge = knowledgeDAO.getAllKnowledge();
-		log.info("all knowledge has been loaded! Count : " + (allKnowledge != null ? allKnowledge.size(): " "));
-	}
+    private boolean isBackButtonActive = false;
 
-	public boolean saveKnowledge(KnowledgeView view) throws SDAException{
+    public void initAllKnowledge() throws SDAException
+    {
+        if (allKnowledge == null) allKnowledge = knowledgeDAO.getAllKnowledge();
+        log.info(
+                "all knowledge has been loaded! Count : " + (allKnowledge != null ? allKnowledge.size() : " "));
+    }
 
-		return knowledgeDAO.saveKnowledge(view);
-	}
+    public boolean saveKnowledge(KnowledgeView view) throws SDAException
+    {
 
-	public void initKnowledge(){
+        return knowledgeDAO.saveKnowledge(view);
+    }
 
-		try {
-			currentKnowledge = knowledgeDAO.getKnowledge(currentKnowledge);
-		} catch (SDAException e) {
-			e.printStackTrace();
-			currentKnowledge = null;
-		}
-	}
+    public void initKnowledge()
+    {
 
-	public List<KnowledgeView> getKnowledgeFromWord(String word){
-		try {
-			return knowledgeDAO.getKnowledgeFromWord(word);
-		} catch (SDAException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+        try
+        {
+            currentKnowledge = knowledgeDAO.getKnowledge(currentKnowledge);
+        } catch (SDAException e)
+        {
+            e.printStackTrace();
+            currentKnowledge = null;
+        }
+    }
 
-	public void updateKnowledge(KnowledgeView view) throws SDAException {
+    public List<KnowledgeView> getKnowledgeFromWord(String word)
+    {
+        try
+        {
+            return knowledgeDAO.getKnowledgeFromWord(word);
+        } catch (SDAException e)
+        {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
-		knowledgeDAO.updateKnowledge(view);
-	}
+    public void updateKnowledge(KnowledgeView view) throws SDAException
+    {
 
-	public void deleteKnowledge(String uuid) throws SDAException {
+        knowledgeDAO.updateKnowledge(view);
+    }
 
-		knowledgeDAO.deleteKnowledge(uuid);
-	}
+    public void deleteKnowledge(String uuid) throws SDAException
+    {
 
-	public List<SelectItem> initCategories(){
+        knowledgeDAO.deleteKnowledge(uuid);
+    }
 
-		List<SelectItem> dfxCategories= new ArrayList<>();
-		SelectItem[] temp = new SelectItem[]{};
-		SelectItemGroup group1 = new SelectItemGroup(DfXCategory.DfA.getLongText());
-		SelectItemGroup group2 = new SelectItemGroup(DfXCategory.DfC.getLongText());
-		SelectItemGroup group3 = new SelectItemGroup(DfXCategory.DfE.getLongText());
-		SelectItemGroup group4 = new SelectItemGroup(DfXCategory.DfM.getLongText());
-		SelectItemGroup group5 = new SelectItemGroup(DfXCategory.DfMa.getLongText());
-		SelectItemGroup group6 = new SelectItemGroup(DfXCategory.DfQ.getLongText());
-		SelectItemGroup group7 = new SelectItemGroup(DfXCategory.DfR.getLongText());
-		SelectItemGroup group8 = new SelectItemGroup(DfXCategory.DfS.getLongText());
+    public List<SelectItem> initCategories()
+    {
 
-		SelectItem group00 = new SelectItem( "No SubCategory DfA");
-		SelectItem group11 = new SelectItem(DfXSubCategory.SubDfA.getLongText());
-		SelectItem group12 = new SelectItem(DfXSubCategory.SubDfA2.getLongText());
+        List<SelectItem> dfxCategories = new ArrayList<>();
+        SelectItem[] temp = new SelectItem[]{};
+        SelectItemGroup group1 = new SelectItemGroup(DfXCategory.DfA.getLongText());
+        SelectItemGroup group2 = new SelectItemGroup(DfXCategory.DfC.getLongText());
+        SelectItemGroup group3 = new SelectItemGroup(DfXCategory.DfE.getLongText());
+        SelectItemGroup group4 = new SelectItemGroup(DfXCategory.DfM.getLongText());
+        SelectItemGroup group5 = new SelectItemGroup(DfXCategory.DfMa.getLongText());
+        SelectItemGroup group6 = new SelectItemGroup(DfXCategory.DfQ.getLongText());
+        SelectItemGroup group7 = new SelectItemGroup(DfXCategory.DfR.getLongText());
+        SelectItemGroup group8 = new SelectItemGroup(DfXCategory.DfS.getLongText());
 
-		SelectItem group20 = new SelectItem("No SubCategory DfC");
-		SelectItem group21 = new SelectItem(DfXSubCategory.SubDfC.getLongText());
+        SelectItem group00 = new SelectItem("No SubCategory DfA");
+        SelectItem group11 = new SelectItem(DfXSubCategory.SubDfA.getLongText());
+        SelectItem group12 = new SelectItem(DfXSubCategory.SubDfA2.getLongText());
 
-		SelectItem group30 = new SelectItem("No SubCategory DfE");
-		SelectItem group31 = new SelectItem(DfXSubCategory.SubDfE.getLongText());
+        SelectItem group20 = new SelectItem("No SubCategory DfC");
+        SelectItem group21 = new SelectItem(DfXSubCategory.SubDfC.getLongText());
 
-		SelectItem group40 = new SelectItem("No SubCategory DfM");
-		SelectItem group41 = new SelectItem(DfXSubCategory.SubDfM.getLongText());
+        SelectItem group30 = new SelectItem("No SubCategory DfE");
+        SelectItem group31 = new SelectItem(DfXSubCategory.SubDfE.getLongText());
 
-		SelectItem group50 = new SelectItem("No SubCategory DfMa");
-		SelectItem group51 = new SelectItem(DfXSubCategory.SubDfMa.getLongText());
+        SelectItem group40 = new SelectItem("No SubCategory DfM");
+        SelectItem group41 = new SelectItem(DfXSubCategory.SubDfM.getLongText());
 
-		SelectItem group60 = new SelectItem("No SubCategory DfQ");
-		SelectItem group61 = new SelectItem(DfXSubCategory.SubDfQ.getLongText());
+        SelectItem group50 = new SelectItem("No SubCategory DfMa");
+        SelectItem group51 = new SelectItem(DfXSubCategory.SubDfMa.getLongText());
 
-		SelectItem group70 = new SelectItem("No SubCategory DfR");
-		SelectItem group71 = new SelectItem(DfXSubCategory.SubDfR.getLongText());
+        SelectItem group60 = new SelectItem("No SubCategory DfQ");
+        SelectItem group61 = new SelectItem(DfXSubCategory.SubDfQ.getLongText());
 
-		SelectItem group80 = new SelectItem("No SubCategory DfS");
-		SelectItem group81 = new SelectItem(DfXSubCategory.SubDfS.getLongText());
+        SelectItem group70 = new SelectItem("No SubCategory DfR");
+        SelectItem group71 = new SelectItem(DfXSubCategory.SubDfR.getLongText());
 
-		group1.setSelectItems(new SelectItem[]{group00,group11, group12,group21});
-		group2.setSelectItems(new SelectItem[]{group20,group21});
-		group3.setSelectItems(new SelectItem[]{group30,group31});
-		group4.setSelectItems(new SelectItem[]{group40,group41});
-		group5.setSelectItems(new SelectItem[]{group50,group51});
-		group6.setSelectItems(new SelectItem[]{group60,group61});
-		group7.setSelectItems(new SelectItem[]{group70,group71});
-		group8.setSelectItems(new SelectItem[]{group80,group81});
+        SelectItem group80 = new SelectItem("No SubCategory DfS");
+        SelectItem group81 = new SelectItem(DfXSubCategory.SubDfS.getLongText());
 
-		dfxCategories.add(group1);
-		dfxCategories.add(group2);
-		dfxCategories.add(group3);
-		dfxCategories.add(group4);
-		dfxCategories.add(group5);
-		dfxCategories.add(group6);
-		dfxCategories.add(group7);
-		dfxCategories.add(group8);
+        group1.setSelectItems(new SelectItem[]{group00, group11, group12, group21});
+        group2.setSelectItems(new SelectItem[]{group20, group21});
+        group3.setSelectItems(new SelectItem[]{group30, group31});
+        group4.setSelectItems(new SelectItem[]{group40, group41});
+        group5.setSelectItems(new SelectItem[]{group50, group51});
+        group6.setSelectItems(new SelectItem[]{group60, group61});
+        group7.setSelectItems(new SelectItem[]{group70, group71});
+        group8.setSelectItems(new SelectItem[]{group80, group81});
 
-		return dfxCategories;
-	}
+        dfxCategories.add(group1);
+        dfxCategories.add(group2);
+        dfxCategories.add(group3);
+        dfxCategories.add(group4);
+        dfxCategories.add(group5);
+        dfxCategories.add(group6);
+        dfxCategories.add(group7);
+        dfxCategories.add(group8);
 
-	public List<KnowledgeView> getAllKnowledge() {
-		return allKnowledge;
-	}
+        return dfxCategories;
+    }
 
-	public void setAllKnowledge(List<KnowledgeView> allKnowledge) {
-		this.allKnowledge = allKnowledge;
-	}
+    public List<KnowledgeView> getAllKnowledge()
+    {
+        return allKnowledge;
+    }
 
-	public KnowledgeView getCurrentKnowledge() {
-		return currentKnowledge;
-	}
+    public void setAllKnowledge(List<KnowledgeView> allKnowledge)
+    {
+        this.allKnowledge = allKnowledge;
+    }
 
-	public void setCurrentKnowledge(KnowledgeView currentKnowledge) {
-		this.currentKnowledge = currentKnowledge;
-	}
+    public KnowledgeView getCurrentKnowledge()
+    {
+        return currentKnowledge;
+    }
 
-	public boolean isBackButtonActive() {
-		return isBackButtonActive;
-	}
+    public void setCurrentKnowledge(KnowledgeView currentKnowledge)
+    {
+        this.currentKnowledge = currentKnowledge;
+    }
 
-	public void setBackButtonActive(boolean backButtonActive) {
-		isBackButtonActive = backButtonActive;
-	}
+    public boolean isBackButtonActive()
+    {
+        return isBackButtonActive;
+    }
+
+    public void setBackButtonActive(boolean backButtonActive)
+    {
+        isBackButtonActive = backButtonActive;
+    }
 }

@@ -8,100 +8,124 @@ import org.primefaces.model.StreamedContent;
 import java.io.InputStream;
 import java.util.Date;
 
-public class KnowledgeView {
+public class KnowledgeView
+{
 
-	private String uuid;
-	private String word;
-	private String knowledge_text;
-	private DfXCategory dfXCategory;
-	private DfXSubCategory dfXSubCategory;
-	private Date modifyDate;
-	private String ownerID;
-	private String ownerUsername;
-	private InputStream fileUpload;
+    private String uuid;
+    private String word;
+    private String knowledge_text;
+    private DfXCategory dfXCategory;
+    private DfXSubCategory dfXSubCategory;
+    private Date modifyDate;
+    private String ownerID;
+    private String ownerUsername;
+    private InputStream fileUpload;
 
-	public KnowledgeView() {
-	}
+    public KnowledgeView()
+    {
+    }
 
-	public String getUuid() {
-		return uuid;
-	}
+    public String getUuid()
+    {
+        return uuid;
+    }
 
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
+    public void setUuid(String uuid)
+    {
+        this.uuid = uuid;
+    }
 
-	public String getWord() {
-		return word;
-	}
+    public String getWord()
+    {
+        return word;
+    }
 
-	public void setWord(String word) {
-		this.word = word;
-	}
+    public void setWord(String word)
+    {
+        this.word = word;
+    }
 
-	public String getKnowledge_text() {
-		return knowledge_text;
-	}
+    public String getKnowledge_text()
+    {
+        return knowledge_text;
+    }
 
-	public void setKnowledge_text(String knowledge_text) {
-		this.knowledge_text = knowledge_text;
-	}
+    public void setKnowledge_text(String knowledge_text)
+    {
+        this.knowledge_text = knowledge_text;
+    }
 
-	public DfXCategory getDfXCategory() {
-		return dfXCategory;
-	}
+    public DfXCategory getDfXCategory()
+    {
+        return dfXCategory;
+    }
 
-	public void setDfXCategory(DfXCategory dfXCategory) {
-		this.dfXCategory = dfXCategory;
-	}
+    public void setDfXCategory(DfXCategory dfXCategory)
+    {
+        this.dfXCategory = dfXCategory;
+    }
 
-	public DfXSubCategory getDfXSubCategory() {
-		return dfXSubCategory;
-	}
+    public DfXSubCategory getDfXSubCategory()
+    {
+        return dfXSubCategory;
+    }
 
-	public String getDfXSubCategoryValue() {
-		return dfXSubCategory == null ? "" : dfXSubCategory.getLongText();
-	}
+    public String getDfXSubCategoryValue()
+    {
+        return dfXSubCategory == null ? "" : dfXSubCategory.getLongText();
+    }
 
-	public void setDfXSubCategoryValue(String dummy){}
+    public void setDfXSubCategoryValue(String dummy)
+    {
+    }
 
-	public void setDfXSubCategory(DfXSubCategory dfXSubCategory) {
-		this.dfXSubCategory = dfXSubCategory;
-	}
+    public void setDfXSubCategory(DfXSubCategory dfXSubCategory)
+    {
+        this.dfXSubCategory = dfXSubCategory;
+    }
 
-	public Date getModifyDate() {
-		return modifyDate;
-	}
+    public Date getModifyDate()
+    {
+        return modifyDate;
+    }
 
-	public void setModifyDate(Date modifyDate) {
-		this.modifyDate = modifyDate;
-	}
+    public void setModifyDate(Date modifyDate)
+    {
+        this.modifyDate = modifyDate;
+    }
 
-	public String getOwnerID() {
-		return ownerID;
-	}
+    public String getOwnerID()
+    {
+        return ownerID;
+    }
 
-	public void setOwnerID(String ownerID) {
-		this.ownerID = ownerID;
-	}
+    public void setOwnerID(String ownerID)
+    {
+        this.ownerID = ownerID;
+    }
 
-	public InputStream getFileUpload() {
-		return fileUpload;
-	}
+    public InputStream getFileUpload()
+    {
+        return fileUpload;
+    }
 
-	public void setFileUpload(InputStream fileUpload) {
-		this.fileUpload = fileUpload;
-	}
+    public void setFileUpload(InputStream fileUpload)
+    {
+        this.fileUpload = fileUpload;
+    }
 
-	public String getOwnerUsername() {
-		return ownerUsername;
-	}
+    public String getOwnerUsername()
+    {
+        return ownerUsername;
+    }
 
-	public void setOwnerUsername(String ownerUsername) {
-		this.ownerUsername = ownerUsername;
-	}
+    public void setOwnerUsername(String ownerUsername)
+    {
+        this.ownerUsername = ownerUsername;
+    }
 
-	public StreamedContent getFileDownload(){
-		return new DefaultStreamedContent(fileUpload,"application/pdf",this.word.concat("_document.pdf"));
-	}
+    public StreamedContent getFileDownload()
+    {
+        return new DefaultStreamedContent(fileUpload, "application/pdf", this.word.concat("_document.pdf"));
+    }
 }

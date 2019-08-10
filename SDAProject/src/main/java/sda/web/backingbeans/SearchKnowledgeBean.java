@@ -19,7 +19,8 @@ import java.util.List;
 
 @Component
 @Scope("view")
-public class SearchKnowledgeBean {
+public class SearchKnowledgeBean
+{
 
     private static Logger log = LogManager.getLogger(SearchKnowledgeBean.class);
 
@@ -37,7 +38,8 @@ public class SearchKnowledgeBean {
     private List<KnowledgeView> results;
 
     @PostConstruct
-    public void init() {
+    public void init()
+    {
         log.info("Search Knowledge bean init!");
         view = new KnowledgeView();
         results = new ArrayList<>();
@@ -45,14 +47,18 @@ public class SearchKnowledgeBean {
 
     }
 
-    public String processSearch() {
+    public String processSearch()
+    {
         log.info("search");
-        if(selectedCategory != null && !selectedCategory.isEmpty()) {
-            if (selectedCategory.contains("SubCategory")) {
+        if (selectedCategory != null && !selectedCategory.isEmpty())
+        {
+            if (selectedCategory.contains("SubCategory"))
+            {
                 log.info("chosen no sub category: " + selectedCategory.substring(15));
                 view.setDfXCategory(DfXCategory.getEnum(selectedCategory.substring(15)));
                 view.setDfXSubCategory(null);
-            } else {
+            } else
+            {
                 log.info("chosen category: " + selectedCategory);
                 view.setDfXCategory(DfXCategory.getEnum(selectedCategory.substring(0, 4).trim()));
                 view.setDfXSubCategory(DfXSubCategory.getEnum(selectedCategory, true));
@@ -65,49 +71,60 @@ public class SearchKnowledgeBean {
         return null;
     }
 
-    public String processOpenKnowledge(){
+    public String processOpenKnowledge()
+    {
 
         FacesContext context = FacesContext.getCurrentInstance();
-        KnowledgeView view = context.getApplication().evaluateExpressionGet(context,"#{item}", KnowledgeView.class);
+        KnowledgeView view = context.getApplication().evaluateExpressionGet(context, "#{item}",
+                KnowledgeView.class);
 
         knowledgeService.setCurrentKnowledge(view);
 
         return "knowledge?faces-redirect=true";
     }
 
-    public void setBackButtonActive(boolean value){
+    public void setBackButtonActive(boolean value)
+    {
         knowledgeService.setBackButtonActive(value);
     }
 
-    public KnowledgeView getView() {
+    public KnowledgeView getView()
+    {
         return view;
     }
 
-    public void setView(KnowledgeView view) {
+    public void setView(KnowledgeView view)
+    {
         this.view = view;
     }
 
-    public String getSelectedCategory() {
+    public String getSelectedCategory()
+    {
         return selectedCategory;
     }
 
-    public void setSelectedCategory(String selectedCategory) {
+    public void setSelectedCategory(String selectedCategory)
+    {
         this.selectedCategory = selectedCategory;
     }
 
-    public List<SelectItem> getDfxCategories() {
+    public List<SelectItem> getDfxCategories()
+    {
         return dfxCategories;
     }
 
-    public void setDfxCategories(List<SelectItem> dfxCategories) {
+    public void setDfxCategories(List<SelectItem> dfxCategories)
+    {
         this.dfxCategories = dfxCategories;
     }
 
-    public List<KnowledgeView> getResults() {
+    public List<KnowledgeView> getResults()
+    {
         return results;
     }
 
-    public void setResults(List<KnowledgeView> results) {
+    public void setResults(List<KnowledgeView> results)
+    {
         this.results = results;
     }
 }

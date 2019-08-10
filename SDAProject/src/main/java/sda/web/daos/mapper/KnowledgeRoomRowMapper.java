@@ -1,20 +1,21 @@
 package main.java.sda.web.daos.mapper;
 
+import main.java.sda.web.util.UserRole;
+import main.java.sda.web.views.KnowledgeRoomMessageView;
+import main.java.sda.web.views.KnowledgeRoomView;
+import main.java.sda.web.views.PersonView;
+import org.springframework.jdbc.core.RowMapper;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import main.java.sda.web.util.UserRole;
-import org.springframework.jdbc.core.RowMapper;
-
-import main.java.sda.web.views.KnowledgeRoomMessageView;
-import main.java.sda.web.views.KnowledgeRoomView;
-import main.java.sda.web.views.PersonView;
-
-public class KnowledgeRoomRowMapper implements RowMapper<KnowledgeRoomView> {
+public class KnowledgeRoomRowMapper implements RowMapper<KnowledgeRoomView>
+{
 
     @Override
-    public KnowledgeRoomView mapRow(ResultSet resultSet, int arg1) throws SQLException {
+    public KnowledgeRoomView mapRow(ResultSet resultSet, int arg1) throws SQLException
+    {
         KnowledgeRoomView roomView = new KnowledgeRoomView();
         roomView.setUuid(resultSet.getString("uuid"));
         roomView.setRoomname(resultSet.getString("roomname"));
@@ -33,12 +34,14 @@ public class KnowledgeRoomRowMapper implements RowMapper<KnowledgeRoomView> {
 
         ArrayList<KnowledgeRoomMessageView> list3 = new ArrayList<>();
 
-        if (resultSet.getString("krm_uuid") != null) {
+        if (resultSet.getString("krm_uuid") != null)
+        {
 
             PersonView owner = new PersonView();
             owner.setUsername(resultSet.getString("owner"));
-            KnowledgeRoomMessageView history = new KnowledgeRoomMessageView(resultSet.getString("krm_uuid"), resultSet.getString("content"),
-                    resultSet.getDate("modify_date"), owner, resultSet.getString("uuid"));
+            KnowledgeRoomMessageView history = new KnowledgeRoomMessageView(resultSet.getString("krm_uuid"),
+                    resultSet.getString("content"), resultSet.getDate("modify_date"), owner,
+                    resultSet.getString("uuid"));
             list3.add(history);
         }
 

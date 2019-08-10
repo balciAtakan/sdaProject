@@ -14,53 +14,62 @@ import java.util.List;
 
 @Component
 @Scope("request")
-public class QuickSearchBean {
+public class QuickSearchBean
+{
 
-	private static Logger log = LogManager.getLogger(QuickSearchBean.class);
-	
-	@Autowired
-	private SearchService searchService;
+    private static Logger log = LogManager.getLogger(QuickSearchBean.class);
 
-	@Autowired
-	private KnowledgeService knowledgeService;
+    @Autowired
+    private SearchService searchService;
 
-	private String query;
+    @Autowired
+    private KnowledgeService knowledgeService;
 
-	public void updateKnowledgeSearch(){
+    private String query;
 
-		searchService.selectQuickResultsByInput(query);
-	}
+    public void updateKnowledgeSearch()
+    {
 
-	public String processOpenKnowledge(){
+        searchService.selectQuickResultsByInput(query);
+    }
 
-		reset();
+    public String processOpenKnowledge()
+    {
 
-		FacesContext context = FacesContext.getCurrentInstance();
-		KnowledgeView view = context.getApplication().evaluateExpressionGet(context,"#{erg}", KnowledgeView.class);
+        reset();
 
-		knowledgeService.setCurrentKnowledge(view);
+        FacesContext context = FacesContext.getCurrentInstance();
+        KnowledgeView view = context.getApplication().evaluateExpressionGet(context, "#{erg}",
+                KnowledgeView.class);
 
-		return "knowledge?faces-redirect=true";
-	}
+        knowledgeService.setCurrentKnowledge(view);
 
-	public void setBackButtonActive(boolean value){
-		knowledgeService.setBackButtonActive(value);
-	}
+        return "knowledge?faces-redirect=true";
+    }
 
-	private void reset(){
-		setQuery(null);
-		searchService.setResults(null);
-	}
+    public void setBackButtonActive(boolean value)
+    {
+        knowledgeService.setBackButtonActive(value);
+    }
 
-	public List<KnowledgeView> getResults(){
-		return searchService.getResults();
-	}
+    private void reset()
+    {
+        setQuery(null);
+        searchService.setResults(null);
+    }
 
-	public String getQuery() {
-		return query;
-	}
+    public List<KnowledgeView> getResults()
+    {
+        return searchService.getResults();
+    }
 
-	public void setQuery(String query) {
-		this.query = query;
-	}
+    public String getQuery()
+    {
+        return query;
+    }
+
+    public void setQuery(String query)
+    {
+        this.query = query;
+    }
 }

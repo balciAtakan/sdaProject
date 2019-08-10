@@ -20,111 +20,136 @@ import java.util.List;
 
 @Component
 @Scope("view")
-public class KnowledgeBean {
+public class KnowledgeBean
+{
 
-	private static Logger log = LogManager.getLogger(KnowledgeBean.class);
+    private static Logger log = LogManager.getLogger(KnowledgeBean.class);
 
-	@Autowired
-	private KnowledgeService knowledgeService;
+    @Autowired
+    private KnowledgeService knowledgeService;
 
-	@Autowired
-	private PersonenService personenService;
+    @Autowired
+    private PersonenService personenService;
 
-	private KnowledgeView view;
-	private List<SelectItem> dfxCategories;
-	private String selectedCategory;
+    private KnowledgeView view;
+    private List<SelectItem> dfxCategories;
+    private String selectedCategory;
 
-	private boolean updateActive;
-	
-	@PostConstruct
-	public void init(){
-		log.info("Knowledge bean init!");
+    private boolean updateActive;
 
-		knowledgeService.initKnowledge();
-		setView(knowledgeService.getCurrentKnowledge());
-		dfxCategories = knowledgeService.initCategories();
-	}
+    @PostConstruct
+    public void init()
+    {
+        log.info("Knowledge bean init!");
 
-	public String processBack() {
+        knowledgeService.initKnowledge();
+        setView(knowledgeService.getCurrentKnowledge());
+        dfxCategories = knowledgeService.initCategories();
+    }
 
-		knowledgeService.setCurrentKnowledge(null);
+    public String processBack()
+    {
 
-		return "communication?faces-redirect=true";
-	}
-	
-	public String processDeleteKnowledge() {
+        knowledgeService.setCurrentKnowledge(null);
 
-		try {
+        return "communication?faces-redirect=true";
+    }
 
-			knowledgeService.deleteKnowledge(view.getUuid());
-			FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_INFO,"Knowledge has been deleted",""));
-		} catch (SDAException e) {
-			// TODO Auto-generated catch block
-			FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_ERROR,e.getMessage(),""));
-			return null;
-		}
-		
-		return "home?faces-redirect=true";
-	}
+    public String processDeleteKnowledge()
+    {
 
-	public void processUpdateKnowledge() {
+        try
+        {
 
-		try {
+            knowledgeService.deleteKnowledge(view.getUuid());
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Knowledge has been deleted", ""));
+        } catch (SDAException e)
+        {
+            // TODO Auto-generated catch block
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), ""));
+            return null;
+        }
 
-			if(selectedCategory != null && !selectedCategory.isEmpty()) {
-				if (selectedCategory.contains("SubCategory")) {
-					log.info("chosen no sub category: " + selectedCategory.substring(15));
-					view.setDfXCategory(DfXCategory.getEnum(selectedCategory.substring(15)));
-					view.setDfXSubCategory(null);
-				} else {
-					log.info("chosen category: " + selectedCategory);
-					view.setDfXCategory(DfXCategory.getEnum(selectedCategory.substring(0, 4).trim()));
-					view.setDfXSubCategory(DfXSubCategory.getEnum(selectedCategory, true));
-				}
-			}
+        return "home?faces-redirect=true";
+    }
 
-			view.setOwnerID(personenService.getCurrUser().getUuid());
-			knowledgeService.updateKnowledge(view);
-			FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_INFO,"Knowledge has been updated",""));
-		} catch (SDAException e) {
-			// TODO Auto-generated catch block
-			FacesContext.getCurrentInstance().addMessage(null,new FacesMessage(FacesMessage.SEVERITY_ERROR,e.getMessage(),""));
-		}
-	}
+    public void processUpdateKnowledge()
+    {
 
-	public KnowledgeView getView() {
-		return view;
-	}
+        try
+        {
 
-	public void setView(KnowledgeView view) {
-		this.view = view;
-	}
+            if (selectedCategory != null && !selectedCategory.isEmpty())
+            {
+                if (selectedCategory.contains("SubCategory"))
+                {
+                    log.info("chosen no sub category: " + selectedCategory.substring(15));
+                    view.setDfXCategory(DfXCategory.getEnum(selectedCategory.substring(15)));
+                    view.setDfXSubCategory(null);
+                } else
+                {
+                    log.info("chosen category: " + selectedCategory);
+                    view.setDfXCategory(DfXCategory.getEnum(selectedCategory.substring(0, 4).trim()));
+                    view.setDfXSubCategory(DfXSubCategory.getEnum(selectedCategory, true));
+                }
+            }
 
-	public boolean isUpdateActive() {
-		return updateActive;
-	}
+            view.setOwnerID(personenService.getCurrUser().getUuid());
+            knowledgeService.updateKnowledge(view);
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Knowledge has been updated", ""));
+        } catch (SDAException e)
+        {
+            // TODO Auto-generated catch block
+            FacesContext.getCurrentInstance().addMessage(null,
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), ""));
+        }
+    }
 
-	public void setUpdateActive(boolean updateActive) {
-		this.updateActive = updateActive;
-	}
+    public KnowledgeView getView()
+    {
+        return view;
+    }
 
-	public List<SelectItem> getDfxCategories() {
-		return dfxCategories;
-	}
+    public void setView(KnowledgeView view)
+    {
+        this.view = view;
+    }
 
-	public void setDfxCategories(List<SelectItem> dfxCategories) {
-		this.dfxCategories = dfxCategories;
-	}
+    public boolean isUpdateActive()
+    {
+        return updateActive;
+    }
 
-	public String getSelectedCategory() {
-		return selectedCategory;
-	}
+    public void setUpdateActive(boolean updateActive)
+    {
+        this.updateActive = updateActive;
+    }
 
-	public void setSelectedCategory(String selectedCategory) {
-		this.selectedCategory = selectedCategory;
-	}
+    public List<SelectItem> getDfxCategories()
+    {
+        return dfxCategories;
+    }
 
-	public boolean getBackButtonActive(){
-		return knowledgeService.isBackButtonActive();
-	}
+    public void setDfxCategories(List<SelectItem> dfxCategories)
+    {
+        this.dfxCategories = dfxCategories;
+    }
+
+    public String getSelectedCategory()
+    {
+        return selectedCategory;
+    }
+
+    public void setSelectedCategory(String selectedCategory)
+    {
+        this.selectedCategory = selectedCategory;
+    }
+
+    public boolean getBackButtonActive()
+    {
+        return knowledgeService.isBackButtonActive();
+    }
 }
