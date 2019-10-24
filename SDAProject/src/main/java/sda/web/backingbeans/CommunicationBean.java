@@ -275,7 +275,8 @@ public class CommunicationBean implements Serializable
         return message;
     }
 
-    /*	This Method checks if the given MESSAGE is already in the DB so the program can show it to user. Only for the words more than 2 letter
+    /*	This Method checks if the given MESSAGE is already in the DB so the program can show it to user.
+     *  Only for the words more than 2 letter and for the words that are not in stopwords array
      * 	@Usage
      * 		- Init
      * 		- Every message push into the active room
@@ -286,7 +287,7 @@ public class CommunicationBean implements Serializable
         String[] allMessage = messageToCheck.getMessage().split("\\s");
         for (String message : allMessage)
         {
-            if (message.length() > 2)
+            if (message.length() > 2 && !SDAConstants.getStopwordsMoreThan2Digits().contains(message.toLowerCase()))
             {
                 if (knowledgeService.getAllKnowledge().stream().anyMatch(a -> a.getWord().equalsIgnoreCase(message)))
                 {
@@ -306,7 +307,6 @@ public class CommunicationBean implements Serializable
      * */
     private KnowledgeRoomMessageView checkWordInHistory(KnowledgeRoomMessageView messageToCheck)
     {
-
         String[] word = messageToCheck.getMessage().toLowerCase().trim().split("\\s+");
 
         ArrayList<KnowledgeRoomMessageView> history = activeRoom.getHistory();
@@ -317,7 +317,7 @@ public class CommunicationBean implements Serializable
             String[] temp = hist.getMessage().toLowerCase().trim().split("\\s+");
 
             for (String entered : word)
-                if (entered.length() > 2) for (String historied : temp)
+                if (entered.length() > 2 && !SDAConstants.getStopwordsMoreThan2Digits().contains(entered.toLowerCase())) for (String historied : temp)
                     if (entered.equalsIgnoreCase(historied))
                     {
                         messageToCheck.copyView(setPrefixAndPostfixOfMessage(messageToCheck, entered));

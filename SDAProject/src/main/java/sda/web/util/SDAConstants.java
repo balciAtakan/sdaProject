@@ -1,5 +1,9 @@
 package main.java.sda.web.util;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class SDAConstants
 {
 
@@ -115,4 +119,13 @@ public class SDAConstants
             "ti", "tj", "tl", "tm", "tn", "tp", "tq", "tr", "ts", "tt", "tv", "tx", "ue", "ui", "uj", "uk", "um", "un", "uo",
             "ur", "ut", "va", "wa", "vd", "wi", "vj", "vo", "wo", "vq", "vt", "vu", "x1", "x2", "x3", "xf", "xi", "xj", "xk",
             "xl", "xn", "xo", "xs", "xt", "xv", "xx", "y2", "yj", "yl", "yr", "ys", "yt", "zi", "zz"};
+
+    private static List<String> stopwordsMoreThan2Digits = Arrays.stream(stopwords).filter(stopword -> stopword.length() > 2).collect(
+            Collectors.toList());
+
+    public static List<String> getStopwordsMoreThan2Digits()
+    {
+        return stopwordsMoreThan2Digits;
+    }
+
 }

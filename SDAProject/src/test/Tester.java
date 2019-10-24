@@ -12,6 +12,8 @@ class Tester {
     Assertions.assertNotNull(SDAConstants.stopwords);
     System.out.println("Stopwords size: " + SDAConstants.stopwords.length);
 
+        Assertions.assertNotNull(SDAConstants.getStopwordsMoreThan2Digits());
+        System.out.println("Stopwords with more than 2 digits size: " + SDAConstants.getStopwordsMoreThan2Digits().size());
     }
 }
 
