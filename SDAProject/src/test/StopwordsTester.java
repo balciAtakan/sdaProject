@@ -4,7 +4,8 @@ import main.java.sda.web.util.SDAConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class Tester {
+class StopwordsTester
+{
 
     @Test
     void testStopwordsSize() {

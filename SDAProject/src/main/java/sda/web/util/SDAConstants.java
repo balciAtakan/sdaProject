@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 public class SDAConstants
 {
 
-    public static String[] stopwords = {"a", "about", "above", "after", "again", "against", "ain", "all", "am", "an", "and",
+    public static final String[] stopwords = {"a", "about", "above", "after", "again", "against", "ain", "all", "am", "an", "and",
             "any", "are", "aren", "aren't", "as", "at", "be", "because", "been", "before", "being", "below", "between", "both",
             "but", "by", "can", "couldn", "couldn't", "d", "did", "didn", "didn't", "do", "does", "doesn", "doesn't", "doing",
             "don", "don't", "down", "during", "each", "few", "for", "from", "further", "had", "hadn", "hadn't", "has", "hasn",

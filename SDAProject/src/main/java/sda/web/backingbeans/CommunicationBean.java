@@ -307,7 +307,7 @@ public class CommunicationBean implements Serializable
      * */
     private KnowledgeRoomMessageView checkWordInHistory(KnowledgeRoomMessageView messageToCheck)
     {
-        String[] word = messageToCheck.getMessage().toLowerCase().trim().split("\\s+");
+        String[] wordList = messageToCheck.getMessage().toLowerCase().trim().split("\\s+");
 
         ArrayList<KnowledgeRoomMessageView> history = activeRoom.getHistory();
 
@@ -316,11 +316,11 @@ public class CommunicationBean implements Serializable
         {
             String[] temp = hist.getMessage().toLowerCase().trim().split("\\s+");
 
-            for (String entered : word)
-                if (entered.length() > 2 && !SDAConstants.getStopwordsMoreThan2Digits().contains(entered.toLowerCase())) for (String historied : temp)
-                    if (entered.equalsIgnoreCase(historied))
+            for (String word : wordList)
+                if (word.length() > 2 && !SDAConstants.getStopwordsMoreThan2Digits().contains(word.toLowerCase())) for (String historied : temp)
+                    if (word.equalsIgnoreCase(historied))
                     {
-                        messageToCheck.copyView(setPrefixAndPostfixOfMessage(messageToCheck, entered));
+                        messageToCheck.copyView(setPrefixAndPostfixOfMessage(messageToCheck, word));
                         messageToCheck.setFoundInUsage(true);
                         return messageToCheck;
                     }
