@@ -22,7 +22,9 @@
     <ui:define name="main_content">
 
         <h:form id="knowledgeForm">
-            <p:messages id="messages" showDetail="true" autoUpdate="true" closable="true"/>
+            <p:messages id="messages" showDetail="true" closable="true">
+                <p:autoUpdate/>
+            </p:messages>
             <b:container>
 
                 <b:panel title="Knowledge details for the word : #{knowledgeBean.view.word}" collapsible="false" look="success">

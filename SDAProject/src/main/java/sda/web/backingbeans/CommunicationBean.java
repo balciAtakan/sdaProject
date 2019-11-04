@@ -91,7 +91,10 @@ public class CommunicationBean implements Serializable
             knowledgeService.initAllKnowledge();
 
             if (roomService.getCurrentRoom() != null)
+            {
                 setActiveRoom(roomService.getCurrentRoom());
+                processEnterRoom();
+            }
 
         } catch (SDAException e)
         {
@@ -337,7 +340,7 @@ public class CommunicationBean implements Serializable
         newKnowledge = new KnowledgeView();
     }
 
-    public void addKnowledge()
+    public String addKnowledge()
     {
         if (selectedCategory == null || selectedCategory.isEmpty())
         {
@@ -349,7 +352,7 @@ public class CommunicationBean implements Serializable
 
             PrimeFaces.current().scrollTo("wordPanel:wordUnit");
 
-            return;
+            return null;
         }
         if (selectedCategory.contains("SubCategory"))
         {
@@ -370,14 +373,15 @@ public class CommunicationBean implements Serializable
         try
         {
             if (knowledgeService.saveKnowledge(newKnowledge))
+            {
                 FacesContext.getCurrentInstance().addMessage(null,
                         new FacesMessage(FacesMessage.SEVERITY_INFO, "Knowledge successfuly saved!", ""));
 
-            //execute javascript oncomplete
-            PrimeFaces.current().executeScript("PF('knowledgeDlg').hide();");
+                knowledgeService.reset();
+                return "communication?faces-redirect=true";
+            }
 
-            //update panel
-            PrimeFaces.current().ajax().update("add_knowledge_form:panelTest");
+
             //PrimeFaces.current().ajax().update("wordPanel:wordUnit");
             //PrimeFaces.current().ajax().update("roomPanel:roomUnit");
 
@@ -388,6 +392,12 @@ public class CommunicationBean implements Serializable
             e.printStackTrace();
             log.info(e.getMessage());
         }
+        //execute javascript oncomplete
+        PrimeFaces.current().executeScript("PF('knowledgeDlg').hide();");
+
+        //update panel
+        PrimeFaces.current().ajax().update("add_knowledge_form:panelTest");
+        return null;
 
     }
 
