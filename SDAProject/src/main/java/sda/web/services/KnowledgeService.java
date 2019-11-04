@@ -34,7 +34,8 @@ public class KnowledgeService
 
     public void initAllKnowledge() throws SDAException
     {
-        if (allKnowledge == null) allKnowledge = knowledgeDAO.getAllKnowledge();
+        if (allKnowledge == null)
+            allKnowledge = knowledgeDAO.getAllKnowledge();
         log.info("all knowledge has been loaded! Count : " + (allKnowledge != null ? allKnowledge.size() : " "));
     }
 
@@ -169,5 +170,9 @@ public class KnowledgeService
     public void setBackButtonActive(boolean backButtonActive)
     {
         isBackButtonActive = backButtonActive;
+    }
+
+    public void reset(){
+        setAllKnowledge(null);
     }
 }

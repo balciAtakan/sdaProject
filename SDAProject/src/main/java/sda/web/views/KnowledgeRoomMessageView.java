@@ -1,7 +1,10 @@
 package main.java.sda.web.views;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class KnowledgeRoomMessageView
 {
@@ -9,30 +12,43 @@ public class KnowledgeRoomMessageView
     private String uuid;
 
     private String message;
+    private List<MessageView> words;
+
     private Date messageDate;
     private PersonView messageOwner;
     private String knowledgeRoomId;
 
-    private boolean foundInDB;
-    private boolean foundInUsage;
     private String highlightedWord;
-
-    private String prefixMessage;
-    private String postfixMessage;
 
     public KnowledgeRoomMessageView()
     {
+    }
 
+    public KnowledgeRoomMessageView(String uuid, String message)
+    {
+        this.uuid = uuid;
+        this.message = message;
+        if (message != null && !message.isEmpty())
+            setWordsList(message);
     }
 
     public KnowledgeRoomMessageView(String uuid, String message, Date messageDate, PersonView messageOwner, String knowledgeRoomId)
     {
-        super();
+        if (message != null && !message.isEmpty())
+            setWordsList(message);
         this.uuid = uuid;
         this.message = message;
         this.messageDate = messageDate;
         this.messageOwner = messageOwner;
         this.knowledgeRoomId = knowledgeRoomId;
+    }
+
+    private void setWordsList(String givenMessage)
+    {
+        List<String> li = Arrays.asList(givenMessage.split("\\s"));
+        List<MessageView> words = new ArrayList<>();
+        li.forEach(a -> words.add(new MessageView(a)));
+        setWords(words);
     }
 
     public void copyView(KnowledgeRoomMessageView view)
@@ -42,13 +58,9 @@ public class KnowledgeRoomMessageView
         this.messageDate = view.getMessageDate();
         this.messageOwner = view.getMessageOwner();
         this.knowledgeRoomId = view.getKnowledgeRoomId();
-        this.foundInDB = view.isFoundInDB();
-        this.foundInUsage = view.isFoundInUsage();
         this.highlightedWord = view.getHighlightedWord();
-        this.prefixMessage = view.getPrefixMessage();
-        this.postfixMessage = view.getPostfixMessage();
+        this.words = view.getWords();
     }
-
 
     public String getUuid()
     {
@@ -105,54 +117,20 @@ public class KnowledgeRoomMessageView
         this.knowledgeRoomId = knowledgeRoomId;
     }
 
-    public boolean isFoundInDB()
-    {
-        return foundInDB;
-    }
-
-    public void setFoundInDB(boolean foundInDB)
-    {
-        this.foundInDB = foundInDB;
-    }
-
-    public boolean isFoundInUsage()
-    {
-        return foundInUsage;
-    }
-
-    public void setFoundInUsage(boolean foundInUsage)
-    {
-        this.foundInUsage = foundInUsage;
-    }
-
     public String getHighlightedWord()
     {
         return highlightedWord;
     }
 
-    public void setHighlightedWord(String highlightedWord)
+
+    public List<MessageView> getWords()
     {
-        this.highlightedWord = highlightedWord;
+        return words;
     }
 
-    public String getPrefixMessage()
+    public void setWords(List<MessageView> words)
     {
-        return prefixMessage;
-    }
-
-    public void setPrefixMessage(String prefixMessage)
-    {
-        this.prefixMessage = prefixMessage;
-    }
-
-    public String getPostfixMessage()
-    {
-        return postfixMessage;
-    }
-
-    public void setPostfixMessage(String postfixMessage)
-    {
-        this.postfixMessage = postfixMessage;
+        this.words = words;
     }
 
     public String getModifyDate()

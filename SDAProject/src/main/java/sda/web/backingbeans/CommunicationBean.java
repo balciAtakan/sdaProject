@@ -4,12 +4,8 @@ import main.java.sda.web.exception.SDAException;
 import main.java.sda.web.services.KnowledgeRoomService;
 import main.java.sda.web.services.KnowledgeService;
 import main.java.sda.web.services.PersonenService;
-import main.java.sda.web.services.SessionService;
 import main.java.sda.web.util.*;
-import main.java.sda.web.views.KnowledgeRoomMessageView;
-import main.java.sda.web.views.KnowledgeRoomView;
-import main.java.sda.web.views.KnowledgeView;
-import main.java.sda.web.views.PersonView;
+import main.java.sda.web.views.*;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.primefaces.PrimeFaces;
@@ -43,9 +39,6 @@ public class CommunicationBean implements Serializable
     private PersonenService personenService;
 
     @Autowired
-    private SessionService sessionService;
-
-    @Autowired
     private KnowledgeRoomService roomService;
 
     @Autowired
@@ -65,7 +58,7 @@ public class CommunicationBean implements Serializable
     private KnowledgeRoomView activeRoom;
     private String enteredMessage;
 
-    private KnowledgeRoomMessageView highlightedMessage;
+    private MessageView highlightedMessage;
     private boolean wordPanelOn;
     private KnowledgeView newKnowledge;
     private List<KnowledgeView> knowledgeViewListFromDB;
@@ -97,7 +90,8 @@ public class CommunicationBean implements Serializable
             rooms = roomService.getKnowledgeRooms();
             knowledgeService.initAllKnowledge();
 
-            if (roomService.getCurrentRoom() != null) setActiveRoom(roomService.getCurrentRoom());
+            if (roomService.getCurrentRoom() != null)
+                setActiveRoom(roomService.getCurrentRoom());
 
         } catch (SDAException e)
         {
@@ -237,7 +231,7 @@ public class CommunicationBean implements Serializable
         if (activeRoom != null)
         {
             List<KnowledgeRoomMessageView> history = activeRoom.getHistory();
-            history.sort(Comparator.comparing(KnowledgeRoomMessageView::getModifyDate));
+            history.sort(Comparator.comparing(KnowledgeRoomMessageView::getMessageDate));
             if (!history.isEmpty())
             {
                 for (KnowledgeRoomMessageView view : history)
@@ -270,7 +264,11 @@ public class CommunicationBean implements Serializable
     {
         message.copyView(checkWordInDB(message));
 
-        if (!message.isFoundInDB()) message.copyView(checkWordInHistory(message));
+        for (MessageView word : message.getWords())
+        {
+            if (!word.isFoundInDB())
+                word.setFoundInUsage(checkWordInHistory(word));
+        }
 
         return message;
     }
@@ -284,16 +282,16 @@ public class CommunicationBean implements Serializable
     private KnowledgeRoomMessageView checkWordInDB(KnowledgeRoomMessageView messageToCheck)
     {
 
-        String[] allMessage = messageToCheck.getMessage().split("\\s");
-        for (String message : allMessage)
+        List<MessageView> allMessage = messageToCheck.getWords();
+        for (MessageView message : allMessage)
         {
-            if (message.length() > 2 && !SDAConstants.getStopwordsMoreThan2Digits().contains(message.toLowerCase()))
+            if (message.getWord().length() > 2 && !SDAConstants.getStopwordsMoreThan2Digits().contains(
+                    message.getWord().toLowerCase()))
             {
-                if (knowledgeService.getAllKnowledge().stream().anyMatch(a -> a.getWord().equalsIgnoreCase(message)))
+                if (knowledgeService.getAllKnowledge().stream().anyMatch(a -> a.getWord().equalsIgnoreCase(message.getWord())))
                 {
-                    messageToCheck.copyView(setPrefixAndPostfixOfMessage(messageToCheck, message));
-                    messageToCheck.setFoundInDB(true);
-                    break;
+                    //messageToCheck.copyView(setPrefixAndPostfixOfMessage(messageToCheck, message.getWord()));
+                    message.setFoundInDB(true);
                 }
             }
         }
@@ -305,53 +303,25 @@ public class CommunicationBean implements Serializable
      * 	@Usage
      * 		- Every message push into the active Room
      * */
-    private KnowledgeRoomMessageView checkWordInHistory(KnowledgeRoomMessageView messageToCheck)
+    private boolean checkWordInHistory(MessageView messageToCheck)
     {
-        String[] wordList = messageToCheck.getMessage().toLowerCase().trim().split("\\s+");
+        String givenWord = messageToCheck.getWord().toLowerCase();
 
         ArrayList<KnowledgeRoomMessageView> history = activeRoom.getHistory();
 
-        boolean found = false;
         for (KnowledgeRoomMessageView hist : history)
         {
             String[] temp = hist.getMessage().toLowerCase().trim().split("\\s+");
+            //TODO: REQUIRES OPTIMIZATION!!
 
-            for (String word : wordList)
-                if (word.length() > 2 && !SDAConstants.getStopwordsMoreThan2Digits().contains(word.toLowerCase())) for (String historied : temp)
-                    if (word.equalsIgnoreCase(historied))
+            if (givenWord.length() > 2 && !SDAConstants.getStopwordsMoreThan2Digits().contains(givenWord.toLowerCase()))
+                for (String historied : temp)
+                    if (givenWord.equalsIgnoreCase(historied))
                     {
-                        messageToCheck.copyView(setPrefixAndPostfixOfMessage(messageToCheck, word));
-                        messageToCheck.setFoundInUsage(true);
-                        return messageToCheck;
+                        return true;
                     }
         }
-        return messageToCheck;
-    }
-
-    private KnowledgeRoomMessageView setPrefixAndPostfixOfMessage(KnowledgeRoomMessageView messageToCheck, String foundMessage)
-    {
-        messageToCheck.setHighlightedWord(foundMessage);
-
-        int index = messageToCheck.getMessage().indexOf(foundMessage);
-        if ((index + foundMessage.length()) % messageToCheck.getMessage().length() == 0)
-        {
-            String[] splittedMessage = messageToCheck.getMessage().split(foundMessage);
-            if (splittedMessage.length == 1)
-            {
-                messageToCheck.setPrefixMessage(splittedMessage[0]);
-                messageToCheck.setPostfixMessage("");
-            }
-        } else if (index == 0 && foundMessage.length() == messageToCheck.getMessage().length())
-        {
-            messageToCheck.setPrefixMessage("");
-            messageToCheck.setPostfixMessage("");
-        } else
-        {
-            String[] splittedMessage = messageToCheck.getMessage().split(foundMessage);
-            messageToCheck.setPrefixMessage(splittedMessage[0]);
-            messageToCheck.setPostfixMessage(splittedMessage[1]);
-        }
-        return messageToCheck;
+        return false;
     }
 
     ////////////////////////////////////////////////
@@ -372,10 +342,10 @@ public class CommunicationBean implements Serializable
         if (selectedCategory == null || selectedCategory.isEmpty())
         {
             FacesContext context = FacesContext.getCurrentInstance();
-            KnowledgeRoomMessageView view = context.getApplication().evaluateExpressionGet(context, "#{mes}",
-                    KnowledgeRoomMessageView.class);
+            MessageView view = context.getApplication().evaluateExpressionGet(context, "#{word}",
+                    MessageView.class);
 
-            getKnowledgeListFromWord(view.getHighlightedWord());
+            getKnowledgeListFromWord(view.getWord());
 
             PrimeFaces.current().scrollTo("wordPanel:wordUnit");
 
@@ -392,26 +362,16 @@ public class CommunicationBean implements Serializable
             newKnowledge.setDfXSubCategory(DfXSubCategory.getEnum(selectedCategory, true));
         }
 
-        newKnowledge.setWord(highlightedMessage.getHighlightedWord());
+        newKnowledge.setWord(highlightedMessage.getWord());
         newKnowledge.setOwnerID(currUser.getUuid());
-        if (stream != null) newKnowledge.setFileUpload(stream);
+        if (stream != null)
+            newKnowledge.setFileUpload(stream);
 
         try
         {
-            if (knowledgeService.saveKnowledge(newKnowledge)) FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO, "Knowledge successfuly saved!", ""));
-			/*
-			*
-			* //execute javascript oncomplete
-        PrimeFaces.current().executeScript("PrimeFaces.info('Hello from the Backing Bean');");
-
-        //update panel
-        PrimeFaces.current().ajax().update("form:panel");
-
-        //scroll to panel
-        PrimeFaces.current().scrollTo("form:panel");
-			*
-			* */
+            if (knowledgeService.saveKnowledge(newKnowledge))
+                FacesContext.getCurrentInstance().addMessage(null,
+                        new FacesMessage(FacesMessage.SEVERITY_INFO, "Knowledge successfuly saved!", ""));
 
             //execute javascript oncomplete
             PrimeFaces.current().executeScript("PF('knowledgeDlg').hide();");
@@ -483,7 +443,8 @@ public class CommunicationBean implements Serializable
 
     public KnowledgeRoomView getNewRoom()
     {
-        if (newRoom == null) return new KnowledgeRoomView();
+        if (newRoom == null)
+            return new KnowledgeRoomView();
         return newRoom;
     }
 
@@ -552,12 +513,12 @@ public class CommunicationBean implements Serializable
         this.enteredMessage = enteredMessage;
     }
 
-    public KnowledgeRoomMessageView getHighlightedMessage()
+    public MessageView getHighlightedMessage()
     {
         return highlightedMessage;
     }
 
-    public void setHighlightedMessage(KnowledgeRoomMessageView highlightedMessage)
+    public void setHighlightedMessage(MessageView highlightedMessage)
     {
         this.highlightedMessage = highlightedMessage;
     }

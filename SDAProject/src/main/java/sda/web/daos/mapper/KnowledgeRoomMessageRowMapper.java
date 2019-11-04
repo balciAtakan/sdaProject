@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 public class KnowledgeRoomMessageRowMapper implements RowMapper<KnowledgeRoomMessageView>
 {
@@ -13,15 +14,16 @@ public class KnowledgeRoomMessageRowMapper implements RowMapper<KnowledgeRoomMes
     @Override
     public KnowledgeRoomMessageView mapRow(ResultSet resultSet, int arg1) throws SQLException
     {
-        KnowledgeRoomMessageView messageView = new KnowledgeRoomMessageView();
-        messageView.setUuid(resultSet.getString("uuid"));
-        messageView.setMessage(resultSet.getString("content"));
+        KnowledgeRoomMessageView messageView = new KnowledgeRoomMessageView(resultSet.getString("uuid"),
+                resultSet.getString("content"));
+
         messageView.setKnowledgeRoomId(resultSet.getString("knowledge_room"));
 
         messageView.setMessageOwner(new PersonView(resultSet.getString("owner"), resultSet.getString("username")));
 
-        messageView.setMessageDate(resultSet.getDate("date"));
-
+        Timestamp timestamp = resultSet.getTimestamp("date");
+        if (timestamp != null)
+            messageView.setMessageDate(new java.util.Date(timestamp.getTime()));
 
         return messageView;
 

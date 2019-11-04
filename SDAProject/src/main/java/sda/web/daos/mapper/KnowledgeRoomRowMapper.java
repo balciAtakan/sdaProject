@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 public class KnowledgeRoomRowMapper implements RowMapper<KnowledgeRoomView>
@@ -39,8 +40,10 @@ public class KnowledgeRoomRowMapper implements RowMapper<KnowledgeRoomView>
 
             PersonView owner = new PersonView();
             owner.setUsername(resultSet.getString("owner"));
+            Timestamp timestamp = resultSet.getTimestamp("modify_date");
             KnowledgeRoomMessageView history = new KnowledgeRoomMessageView(resultSet.getString("krm_uuid"),
-                    resultSet.getString("content"), resultSet.getDate("modify_date"), owner, resultSet.getString("uuid"));
+                    resultSet.getString("content"), timestamp != null ? new java.util.Date(timestamp.getTime()) : null,
+                    owner, resultSet.getString("uuid"));
             list3.add(history);
         }
 

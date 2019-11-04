@@ -51,19 +51,18 @@
                                  emptyMessage="No Message"
                                  paginated="false" searching="false" info="false">
                         <b:dataTableColumn id="userColumn" value="#{mes.ownerName}" style="width:10%" label="User"/>
-                        <b:dataTableColumn id="messageDate" value="#{mes.modifyDate}" style="width:5%" label="Date"/>
+                        <b:dataTableColumn id="messageDate" value="#{mes.modifyDate}" style="width:13%" label="Date"/>
 
                         <b:dataTableColumn  id="messageOut" label="Message">
-                            <h:outputText rendered="#{!mes.foundInDB and !mes.foundInUsage}" value=" #{mes.message}" id="messageText"/>
-
-                            <h:outputText rendered="#{mes.foundInDB or mes.foundInUsage}" value=" #{mes.prefixMessage}" id="messagePrefixText"/>
-                            <p:commandLink value=" #{mes.highlightedWord}" id="addKnowledgeLink" update="wordPanel:wordUnit"
-                                           rendered="#{mes.foundInDB or mes.foundInUsage}"
-                                           style="background:#dff0d8" actionListener="#{communicationBean.addKnowledge}">
-                                <f:setPropertyActionListener target="#{communicationBean.wordPanelOn}" value="#{true}"/>
-                                <f:setPropertyActionListener target="#{communicationBean.highlightedMessage}" value="#{mes}"/>
-                            </p:commandLink>
-                            <h:outputText rendered="#{mes.foundInDB or mes.foundInUsage}" value=" #{mes.postfixMessage}" id="messagePostfixText"/>
+                            <ui:repeat value="#{mes.words}" var="word">
+                                <h:outputText rendered="#{!word.foundInUsage and !word.foundInDB}" value="#{word.word} " />
+                                <p:commandLink value=" #{word.word} " update="wordPanel:wordUnit"
+                                               rendered="#{word.foundInDB or word.foundInUsage}"
+                                               style="background:#dff0d8" actionListener="#{communicationBean.addKnowledge}">
+                                    <f:setPropertyActionListener target="#{communicationBean.wordPanelOn}" value="#{true}"/>
+                                    <f:setPropertyActionListener target="#{communicationBean.highlightedMessage}" value="#{word}"/>
+                                </p:commandLink>
+                            </ui:repeat>
 
                         </b:dataTableColumn>
 
@@ -91,18 +90,19 @@
             <b:panel id="wordUnit" title="Words" collapsed="#{!communicationBean.wordPanelOn}"
                      rendered="#{communicationBean.activeRoom.history != null}">
                 <b:panelGrid colSpans="12" rendered="#{communicationBean.highlightedMessage.foundInUsage}">
-                    <h:outputText value="&lt;u&gt;#{communicationBean.highlightedMessage.highlightedWord}&lt;/u&gt; is a frequently used Word. Do you have any &lt;u&gt;Knowledge&lt;/u&gt; to add?" escape="false"/>
+                    <h:outputText value="&lt;u&gt;#{communicationBean.highlightedMessage.word}&lt;/u&gt; is a frequently used Word. Do you have any &lt;u&gt;Knowledge&lt;/u&gt; to add?" escape="false"/>
                     <br/>
                     <p:commandButton id="addKnowledgeButton" value="Add" style="background:#dff0d8;float: right;" actionListener="#{communicationBean.initNewRoom}"
                                      update="add_knowledge_form:add_knowledge_dialog"
                                      oncomplete="PF('knowledgeDlg').show();"/>
                 </b:panelGrid>
                 <b:panelGrid colSpans="12" rendered="#{communicationBean.highlightedMessage.foundInDB}">
-                    <h:outputText value="&lt;u&gt;#{communicationBean.highlightedMessage.highlightedWord}&lt;/u&gt; is in Database." escape="false"/>
+                    <h:outputText value="&lt;u&gt;#{communicationBean.highlightedMessage.word}&lt;/u&gt; is in Database." escape="false"/>
                     <h:panelGrid columns="1" style="width:100%">
                         <ui:repeat value="#{communicationBean.knowledgeViewListFromDB}" var="value">
                             <br/>
-                            <p:commandButton value="#{value.dfXCategory.longText}" style="float:left;background-color:aliceblue" action="#{communicationBean.processOpenKnowledge}">
+                            <p:commandButton value="#{value.dfXCategory.longText}" style="float:left;background-color:aliceblue"
+                                             action="#{communicationBean.processOpenKnowledge}">
                                 <f:setPropertyActionListener target="#{communicationBean.backButtonActive}" value="#{true}"/>
                             </p:commandButton>
                         </ui:repeat>
@@ -125,7 +125,9 @@
         <h:form id="dialog_form">
             <p:dialog id="addRoomDialog" widgetVar="roomDlg" modal="true" height="620" width="550" header="Add New Knowledge Room" closable="false">
 
-                <p:messages id="dialog_messages" autoUpdate="true" closable="false"/>
+                <p:messages id="dialog_messages" closable="false">
+                    <p:autoUpdate/>
+                </p:messages>
 
                 <p:outputLabel style="text-align:center;margin-right:5px;" value="Room name*  "/>
                 <p:inputText value="#{communicationBean.newRoom.roomname}"/>
@@ -179,12 +181,14 @@
         <h:form id="add_knowledge_form">
             <p:dialog id="add_knowledge_dialog" widgetVar="knowledgeDlg" modal="true" height="50%" width="60%" header="Add New Knowledge" closable="false">
 
-                <p:messages id="knowledge_dialog_messages" autoUpdate="true" closable="false" showDetail="true"/>
+                <p:messages id="knowledge_dialog_messages" closable="false" showDetail="true">
+                    <p:autoUpdate/>
+                </p:messages>
 
                 <h:panelGrid id="panelTest" columns="2" style="width:100%">
                     <p:outputLabel style="text-align:center;" value="Knowledge*  " />
-                    <p:inputText value="#{communicationBean.highlightedMessage.highlightedWord}" disabled="true"
-                                 placeholder="#{communicationBean.highlightedMessage.highlightedWord}" style="width: 100%"/>
+                    <p:inputText value="#{communicationBean.highlightedMessage.word}" disabled="true"
+                                 placeholder="#{communicationBean.highlightedMessage.word}" style="width: 100%"/>
 
                     <p:spacer/>
                     <p:spacer/>
@@ -211,13 +215,14 @@
                 </h:panelGrid>
 
                 <br/>
+                <br/>
 
                 <h:panelGrid columns="2" style="width:100%">
                     <p:commandButton value="Cancel" style="float:left;background-color:aliceblue" oncomplete="PF('knowledgeDlg').hide();">
                         <f:setPropertyActionListener target="#{communicationBean.selectedCategory}" value="#{null}"/>
                     </p:commandButton>
                     <p:commandButton value="Create" style="float:right;background-color:aliceblue"
-                                     action="#{communicationBean.addKnowledge}" update="@all"/>
+                                     action="#{communicationBean.addKnowledge}"/>
                 </h:panelGrid>
 
             </p:dialog>

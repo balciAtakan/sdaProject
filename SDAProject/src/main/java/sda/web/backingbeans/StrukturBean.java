@@ -1,6 +1,7 @@
 package main.java.sda.web.backingbeans;
 
 import main.java.sda.web.services.KnowledgeRoomService;
+import main.java.sda.web.services.KnowledgeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,9 @@ public class StrukturBean
     @Autowired
     private KnowledgeRoomService knowledgeRoomService;
 
+    @Autowired
+    private KnowledgeService knowledgeService;
+
     public String logout()
     {
         //personenService.setCurrUser(null);
@@ -21,7 +25,7 @@ public class StrukturBean
 
     public String processHome()
     {
-
+        knowledgeService.reset();
         knowledgeRoomService.reset();
         return "home?faces-redirect=true";
     }

@@ -92,7 +92,8 @@ public class KnowledgeRoomReadDAO
 
     public ArrayList<KnowledgeRoomMessageView> getKnowledgeRoomData(String roomId) throws SDAException
     {
-        String sql = "SELECT * FROM knowledge_room_message krm, person p where knowledge_room = :roomId and krm.owner=p.id order by krm.modify_date asc";
+        String sql = "SELECT * FROM knowledge_room_message krm, person p where knowledge_room = :roomId and krm.owner=p.id " +
+                "order by krm.modify_date asc";
 
         Map<String, Object> params = new HashMap<>();
 
