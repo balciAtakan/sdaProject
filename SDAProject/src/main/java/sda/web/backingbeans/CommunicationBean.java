@@ -207,7 +207,7 @@ public class CommunicationBean implements Serializable
 
             messageView.copyView(processGivenMessage(messageView));
 
-            activeRoom.getHistory().add(messageView);
+            activeRoom.getHistory().add(0,messageView);
 
             SDAResult res = roomService.saveKnowledgeRoomMessage(messageView);
 
@@ -239,7 +239,7 @@ public class CommunicationBean implements Serializable
         if (activeRoom != null)
         {
             List<KnowledgeRoomMessageView> history = activeRoom.getHistory();
-            history.sort(Comparator.comparing(KnowledgeRoomMessageView::getMessageDate));
+            history.sort(Comparator.comparing(KnowledgeRoomMessageView::getMessageDate).reversed());
             if (!history.isEmpty())
             {
                 for (KnowledgeRoomMessageView view : history)
