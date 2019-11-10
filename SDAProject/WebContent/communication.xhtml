@@ -41,14 +41,17 @@
                 </h:panelGrid>
             </b:panel>
         </h:form>
+
         <h:form id="roomPanel" style="position: absolute;left:20%;top:44px;width: 50%;height:100%;">
+            <p:poll rendered="#{communicationBean.activeRoom.history != null}"
+                    interval="4" listener="#{communicationBean.getActiveRoomMessages}"/>
             <b:panel id="roomUnit" position="center" collapsed="false" rendered="#{communicationBean.activeRoom.history != null}"
                      title="#{communicationBean.activeRoom.roomname}">
                 <b:alert severity="success" id="baseAlert" closable="true"> Welcome to <strong>#{communicationBean.activeRoom.roomname}!</strong>
                 </b:alert>
                 <div>
                     <b:dataTable id="messageTable" var="mes" value="#{communicationBean.activeRoom.history}"
-                                 emptyMessage="No Message"
+                                 emptyMessage="No Message" scrollX="true" scroll-size="450px"
                                  paginated="false" searching="false" info="false">
                         <b:dataTableColumn id="userColumn" value="#{mes.ownerName}" style="width:10%" label="User"/>
                         <b:dataTableColumn id="messageDate" value="#{mes.modifyDate}" style="width:13%" label="Date"/>

@@ -21,7 +21,7 @@ public class KnowledgeRoomMessageRowMapper implements RowMapper<KnowledgeRoomMes
 
         messageView.setMessageOwner(new PersonView(resultSet.getString("owner"), resultSet.getString("username")));
 
-        Timestamp timestamp = resultSet.getTimestamp("date");
+        Timestamp timestamp = resultSet.getTimestamp("modify_date");
         if (timestamp != null)
             messageView.setMessageDate(new java.util.Date(timestamp.getTime()));
 

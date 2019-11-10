@@ -58,6 +58,11 @@ public class KnowledgeRoomService
         return knowledgeRoomReadDAO.getKnowledgeRoomData(roomId);
     }
 
+    public int getKnowledgeRoomMessageCount(String roomId) throws SDAException
+    {
+        return knowledgeRoomReadDAO.getKnowledgeRoomMessageCount(roomId);
+    }
+
     public SDAResult saveKnowledgeRoomMessage(KnowledgeRoomMessageView view) throws SDAException
     {
 

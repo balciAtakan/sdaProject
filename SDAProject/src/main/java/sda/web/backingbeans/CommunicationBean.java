@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Component
@@ -212,11 +213,15 @@ public class CommunicationBean implements Serializable
 
             log.info(res.getMessage());
 
+            //messagingService.sendMessageToQueue(activeChannel,activeRoom.getRoomname(),messageView.getMessage());
+
         } catch (SDAException e)
         {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, e.getMessage(), ""));
+            log.error(e.getMessage());
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Something went wrong during sending your message!", ""));
             e.printStackTrace();
-            log.info(e.getMessage());
+
         }
     }
 
@@ -246,7 +251,22 @@ public class CommunicationBean implements Serializable
 
             //we set here in roomservice the active room for the back button!
             roomService.setCurrentRoom(activeRoom);
+
+            /*try
+            {
+                if(activeChannel != null)
+                    messagingService.closeConnection(activeChannel);
+
+                activeChannel = messagingService.openConnection(activeRoom.getRoomname());
+
+            } catch (IOException | TimeoutException e)
+            {
+                e.printStackTrace();
+                log.error("Failed to open RabbitMQ Connection!");
+            }*/
         }
+
+
         // todo!!!!
 		/*
 		if(activeRoom.getAllowedRoles().stream().anyMatch(role -> role.name().equals(currUser.getRole())))
@@ -275,6 +295,45 @@ public class CommunicationBean implements Serializable
 
         return message;
     }
+
+    public void getActiveRoomMessages()
+    {
+
+        log.info("getQueMEssage Method! " + LocalDateTime.now() +" username: " + currUser.getUsername());
+        int messageCount = activeRoom.getHistory().size();
+
+        try
+        {
+            if (messageCount != roomService.getKnowledgeRoomMessageCount(activeRoom.getUuid()))
+            {
+                loadRoomData();
+                processEnterRoom();
+                PrimeFaces.current().ajax().update("roomPanel");
+            }
+
+
+        }catch (Exception e){
+            log.error("Fail here!");
+            e.printStackTrace();
+        }
+    }
+
+    /*public String consumeMessageFromQueue(Channel channel, String queuename) throws IOException, TimeoutException
+    {
+        //channel.queueDeclare(queuename, false, false, false, null);
+        AtomicReference<String> incomingMessage = new AtomicReference<>("");
+
+        channel.basicConsume(queuename, false,(consumerTag, message) -> {
+
+            incomingMessage.set(new String(message.getBody(), "UTF-8"));
+            System.out.println("Message received: " + incomingMessage + "\nfrom the queue: " + queuename +
+                    "\n username: " + currUser.getUsername());
+
+        }, consumerTag -> {
+        });
+
+        return incomingMessage.get();
+    }*?
 
     /*	This Method checks if the given MESSAGE is already in the DB so the program can show it to user.
      *  Only for the words more than 2 letter and for the words that are not in stopwords array

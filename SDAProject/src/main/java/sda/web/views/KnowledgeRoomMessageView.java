@@ -136,7 +136,7 @@ public class KnowledgeRoomMessageView
     public String getModifyDate()
     {
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
         String format = formatter.format(messageDate);
 
         return format;

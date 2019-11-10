@@ -92,7 +92,7 @@ public class KnowledgeRoomReadDAO
 
     public ArrayList<KnowledgeRoomMessageView> getKnowledgeRoomData(String roomId) throws SDAException
     {
-        String sql = "SELECT * FROM knowledge_room_message krm, person p where knowledge_room = :roomId and krm.owner=p.id " +
+        String sql = "SELECT * FROM knowledge_room_message krm, person p where knowledge_room = :roomId and krm.owner=p.username " +
                 "order by krm.modify_date asc";
 
         Map<String, Object> params = new HashMap<>();
@@ -111,6 +111,25 @@ public class KnowledgeRoomReadDAO
         }
 
         return res;
+    }
+
+    public int getKnowledgeRoomMessageCount(String roomId) throws SDAException
+    {
+        String sql = "SELECT count(*) FROM knowledge_room_message krm where knowledge_room = :roomId";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("roomId", roomId);
+        try
+        {
+            Integer res = template.queryForObject(sql, params, Integer.class);
+            return res == null ? 0 : res;
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+            log.info(e.getMessage());
+            throw new SDAException(e.getMessage());
+        }
     }
 
     public boolean deleteKnowledgeRoom(String roomname) throws SDAException
