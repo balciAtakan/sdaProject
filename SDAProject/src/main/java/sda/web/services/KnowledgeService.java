@@ -41,16 +41,32 @@ public class KnowledgeService
 
     public boolean saveKnowledge(KnowledgeView view) throws SDAException
     {
+        view = knowledgeDAO.saveKnowledge(view);
+            if(view.getSynonyms() != null && !view.getSynonyms().isEmpty())
+                return knowledgeDAO.saveSynonyms(view.getSynonyms(), view.getUuid());
 
-        return knowledgeDAO.saveKnowledge(view);
+        return false;
     }
 
     public void initKnowledge()
     {
-
         try
         {
-            currentKnowledge = knowledgeDAO.getKnowledge(currentKnowledge);
+            List<KnowledgeView> res =  knowledgeDAO.getKnowledge(currentKnowledge);
+            List<KnowledgeView> temp = new ArrayList<>();
+            for (KnowledgeView element : res) {
+                if (temp.isEmpty())
+                    temp.add(element);
+                else{
+                    KnowledgeView knowledge = temp.stream().filter(a->a.getUuid().equals(element.getUuid())).findFirst().orElse(null);
+                    if (knowledge == null) {
+                        temp.add(element);
+                    } else {
+                        knowledge.getSynonyms().addAll(element.getSynonyms());
+                    }
+                }
+            }
+            currentKnowledge = res.get(0);
         } catch (SDAException e)
         {
             e.printStackTrace();
@@ -62,7 +78,21 @@ public class KnowledgeService
     {
         try
         {
-            return knowledgeDAO.getKnowledgeFromWord(word);
+            List<KnowledgeView> res =  knowledgeDAO.getKnowledgeFromWord(word);
+            List<KnowledgeView> temp = new ArrayList<>();
+            for (KnowledgeView element : res) {
+                if (temp.isEmpty())
+                    temp.add(element);
+                else{
+                    KnowledgeView knowledge = temp.stream().filter(a->a.getUuid().equals(element.getUuid())).findFirst().orElse(null);
+                    if (knowledge == null) {
+                        temp.add(element);
+                    } else {
+                        knowledge.getSynonyms().addAll(element.getSynonyms());
+                    }
+                }
+            }
+            return temp;
         } catch (SDAException e)
         {
             e.printStackTrace();

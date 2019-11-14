@@ -7,20 +7,17 @@ public class WordView
 {
     private String word;
     private int score;
-    private List<WordView> synonyms;
 
     public WordView(String word, int score)
     {
         this.word = word;
         this.score = score;
-        synonyms = new ArrayList<>();
     }
 
     public WordView(String word)
     {
         this.word = word;
         this.score = 0;
-        synonyms = new ArrayList<>();
     }
 
     public String getWord()
@@ -41,15 +38,5 @@ public class WordView
     public void setScore(int score)
     {
         this.score = score;
-    }
-
-    public List<WordView> getSynonyms()
-    {
-        return synonyms;
-    }
-
-    public void setSynonyms(List<WordView> synonyms)
-    {
-        this.synonyms = synonyms;
     }
 }

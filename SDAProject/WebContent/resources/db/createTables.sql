@@ -81,3 +81,13 @@ CREATE TABLE knowledge(
     REFERENCES person(id)
 );
 
+create table knowledge_synonym(
+                                  uuid varchar(16) not null primary key,
+                                  word varchar(255) not null,
+                                  score int not null,
+                                  knowledge_id varchar(16) not null,
+                                  FOREIGN KEY (knowledge_id)
+                                      REFERENCES knowledge(uuid)
+                                      ON DELETE CASCADE
+);
+

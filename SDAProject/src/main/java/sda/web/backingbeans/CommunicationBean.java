@@ -1,6 +1,7 @@
 package main.java.sda.web.backingbeans;
 
 import main.java.sda.web.exception.SDAException;
+import main.java.sda.web.services.APIService;
 import main.java.sda.web.services.KnowledgeRoomService;
 import main.java.sda.web.services.KnowledgeService;
 import main.java.sda.web.services.PersonenService;
@@ -44,6 +45,9 @@ public class CommunicationBean implements Serializable
 
     @Autowired
     private KnowledgeService knowledgeService;
+
+    @Autowired
+    private APIService apiService;
 
     private PersonView currUser;
     private ArrayList<KnowledgeRoomView> rooms;
@@ -202,9 +206,15 @@ public class CommunicationBean implements Serializable
     {
         try
         {
+
             KnowledgeRoomMessageView messageView = new KnowledgeRoomMessageView(SDAUtil.generateUuid(), enteredMessage,
                     new Date(), currUser, activeRoom.getUuid());
 
+            //todo: search synonyms
+            for(MessageView word : messageView.getWords()) {
+                if (checkWordUsefull(word.getWord()))
+                    word.copyView(apiService.findSynonymsWithDataMuse(word.getWord()));
+            }
             messageView.copyView(processGivenMessage(messageView));
 
             activeRoom.getHistory().add(0,messageView);
@@ -212,8 +222,6 @@ public class CommunicationBean implements Serializable
             SDAResult res = roomService.saveKnowledgeRoomMessage(messageView);
 
             log.info(res.getMessage());
-
-            //messagingService.sendMessageToQueue(activeChannel,activeRoom.getRoomname(),messageView.getMessage());
 
         } catch (SDAException e)
         {
@@ -251,19 +259,6 @@ public class CommunicationBean implements Serializable
 
             //we set here in roomservice the active room for the back button!
             roomService.setCurrentRoom(activeRoom);
-
-            /*try
-            {
-                if(activeChannel != null)
-                    messagingService.closeConnection(activeChannel);
-
-                activeChannel = messagingService.openConnection(activeRoom.getRoomname());
-
-            } catch (IOException | TimeoutException e)
-            {
-                e.printStackTrace();
-                log.error("Failed to open RabbitMQ Connection!");
-            }*/
         }
 
 
@@ -318,23 +313,6 @@ public class CommunicationBean implements Serializable
         }
     }
 
-    /*public String consumeMessageFromQueue(Channel channel, String queuename) throws IOException, TimeoutException
-    {
-        //channel.queueDeclare(queuename, false, false, false, null);
-        AtomicReference<String> incomingMessage = new AtomicReference<>("");
-
-        channel.basicConsume(queuename, false,(consumerTag, message) -> {
-
-            incomingMessage.set(new String(message.getBody(), "UTF-8"));
-            System.out.println("Message received: " + incomingMessage + "\nfrom the queue: " + queuename +
-                    "\n username: " + currUser.getUsername());
-
-        }, consumerTag -> {
-        });
-
-        return incomingMessage.get();
-    }*?
-
     /*	This Method checks if the given MESSAGE is already in the DB so the program can show it to user.
      *  Only for the words more than 2 letter and for the words that are not in stopwords array
      * 	@Usage
@@ -343,14 +321,13 @@ public class CommunicationBean implements Serializable
      * */
     private KnowledgeRoomMessageView checkWordInDB(KnowledgeRoomMessageView messageToCheck)
     {
-
         List<MessageView> allMessage = messageToCheck.getWords();
         for (MessageView message : allMessage)
         {
-            if (message.getWord().length() > 2 && !SDAConstants.getStopwordsMoreThan2Digits().contains(
-                    message.getWord().toLowerCase()))
+            if (checkWordUsefull(message.getWord()))
             {
-                if (knowledgeService.getAllKnowledge().stream().anyMatch(a -> a.getWord().equalsIgnoreCase(message.getWord())))
+                if (knowledgeService.getAllKnowledge().stream().anyMatch(a -> a.getWord().equalsIgnoreCase(message.getWord()))
+                        || knowledgeService.getAllKnowledge().stream().anyMatch(a -> a.getSynonyms().stream().anyMatch(b->b.getWord().equalsIgnoreCase(message.getWord()))))
                 {
                     //messageToCheck.copyView(setPrefixAndPostfixOfMessage(messageToCheck, message.getWord()));
                     message.setFoundInDB(true);
@@ -358,6 +335,10 @@ public class CommunicationBean implements Serializable
             }
         }
         return messageToCheck;
+    }
+
+    private boolean checkWordUsefull(String word){
+        return word.length() > 2 && !SDAConstants.getStopwordsMoreThan2Digits().contains(word.toLowerCase());
     }
 
     /*	This Method checks if the given MESSAGE in the room history,
@@ -426,6 +407,7 @@ public class CommunicationBean implements Serializable
 
         newKnowledge.setWord(highlightedMessage.getWord());
         newKnowledge.setOwnerID(currUser.getUuid());
+        newKnowledge.setSynonyms(highlightedMessage.getSynonyms());
         if (stream != null)
             newKnowledge.setFileUpload(stream);
 

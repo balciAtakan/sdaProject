@@ -6,7 +6,9 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class KnowledgeView
 {
@@ -20,6 +22,8 @@ public class KnowledgeView
     private String ownerID;
     private String ownerUsername;
     private InputStream fileUpload;
+
+    private List<WordView> synonyms = new ArrayList<>();
 
     public KnowledgeView()
     {
@@ -127,5 +131,13 @@ public class KnowledgeView
     public StreamedContent getFileDownload()
     {
         return new DefaultStreamedContent(fileUpload, "application/pdf", this.word.concat("_document.pdf"));
+    }
+
+    public List<WordView> getSynonyms() {
+        return synonyms;
+    }
+
+    public void setSynonyms(List<WordView> synonyms) {
+        this.synonyms = synonyms;
     }
 }

@@ -5,6 +5,7 @@ import main.java.sda.web.daos.mapper.KnowledgeRowQSMapper;
 import main.java.sda.web.exception.SDAException;
 import main.java.sda.web.util.SDAUtil;
 import main.java.sda.web.views.KnowledgeView;
+import main.java.sda.web.views.WordView;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +25,12 @@ public class KnowledgeDAO
     @Autowired
     private NamedParameterJdbcTemplate template;
 
-    public KnowledgeView getKnowledge(KnowledgeView view) throws SDAException
+    public List<KnowledgeView> getKnowledge(KnowledgeView view) throws SDAException
     {
         // statt ? wird :uuid verwendet...
-        String sql = "SELECT k.*,p.username FROM knowledge k left join person p on k.owner = p.id where k.uuid = :uuid";
+        String sql = "SELECT k.*,p.username, syn.word as syn_word, syn.score FROM knowledge k " +
+                "left join person p on k.owner = p.id " +
+                "left join knowledge_synonym syn on syn.knowledge_id = k.uuid where k.uuid = :uuid";
         Map<String, Object> params = new HashMap<>();
 
         params.put("uuid", view.getUuid());
@@ -35,7 +38,7 @@ public class KnowledgeDAO
         try
         {
 
-            return template.queryForObject(sql, params, new KnowledgeRowMapper());
+            return template.query(sql, params, new KnowledgeRowMapper());
 
         } catch (Exception e)
         {
@@ -47,7 +50,9 @@ public class KnowledgeDAO
     public List<KnowledgeView> getKnowledgeFromWord(String word) throws SDAException
     {
         // statt ? wird :uuid verwendet...
-        String sql = "SELECT k.*,p.username FROM knowledge k left join person p on k.owner = p.id where k.word = :word";
+        String sql = "SELECT k.*,p.username,sy.score, sy.word as syn_word, sy.knowledge_id FROM knowledge k " +
+                "left join person p on k.owner = p.id " +
+                "left join knowledge_synonym sy on k.uuid = sy.knowledge_id where k.word = :word ";
         Map<String, Object> params = new HashMap<>();
 
         params.put("word", word);
@@ -67,7 +72,9 @@ public class KnowledgeDAO
     public ArrayList<KnowledgeView> getAllKnowledge() throws SDAException
     {
         // statt ? wird :uuid verwendet...
-        String sql = "SELECT k.*,p.username FROM knowledge k left join person p on k.owner = p.id";
+        String sql = "SELECT k.*,p.username, syn.word as syn_word, syn.score FROM knowledge k " +
+                "left join person p on k.owner = p.id " +
+                "left join knowledge_synonym syn on syn.knowledge_id = k.uuid";
         Map<String, Object> params = new HashMap<>();
 
         ArrayList<KnowledgeView> res;
@@ -85,7 +92,7 @@ public class KnowledgeDAO
         return res;
     }
 
-    public boolean saveKnowledge(KnowledgeView view) throws SDAException
+    public KnowledgeView saveKnowledge(KnowledgeView view) throws SDAException
     {
 
 
@@ -95,17 +102,46 @@ public class KnowledgeDAO
             //language=MySQL
             String sql = "insert into knowledge values(:uuid,:word,:category,:knowledge_text,:knowledge_data,:modify_date,:owner,:subcategory)";
             Map<String, Object> parameters = new HashMap<>();
-            parameters.put("uuid", SDAUtil.generateUuid());
+            view.setUuid(SDAUtil.generateUuid());
+            parameters.put("uuid", view.getUuid());
             parameters.put("word", view.getWord());
             parameters.put("category", view.getDfXCategory().name());
             parameters.put("knowledge_text", view.getKnowledge_text());
-            parameters.put("knowledge_data", view.getFileUpload() == null ? null : view.getFileUpload());
+            parameters.put("knowledge_data", view.getFileUpload());
             parameters.put("modify_date", new Date());
             parameters.put("owner", view.getOwnerID());
             parameters.put("subcategory", view.getDfXSubCategory() != null ? view.getDfXSubCategory().name() : null);
 
             res = template.update(sql, parameters) == 1;
             log.info("update result: " + res);
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+            throw new SDAException(e.getMessage());
+        }
+
+        return view;
+    }
+
+    public boolean saveSynonyms(List<WordView> views, String knowledge_id) throws SDAException
+    {
+
+        boolean res = true;
+        try
+        {
+            for ( WordView view: views) {
+                //language=MySQL
+                String sql = "insert into knowledge_synonym values(:uuid,:word,:score,:knowledge_id)";
+                Map<String, Object> parameters = new HashMap<>();
+                parameters.put("uuid", SDAUtil.generateUuid());
+                parameters.put("word", view.getWord());
+                parameters.put("score", view.getScore());
+                parameters.put("knowledge_id", knowledge_id);
+
+                res = template.update(sql, parameters) == 1;
+                log.info("synonym save result: " + res);
+            }
 
         } catch (Exception e)
         {

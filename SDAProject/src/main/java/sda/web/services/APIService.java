@@ -1,5 +1,6 @@
 package main.java.sda.web.services;
 
+import main.java.sda.web.views.MessageView;
 import main.java.sda.web.views.WordView;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -16,8 +17,7 @@ import java.util.List;
 
 @Service
 @Scope("session")
-public class APIService
-{
+public class APIService {
 
     //private static Logger log = LogManager.getLogger(APIService.class);
 
@@ -29,20 +29,17 @@ public class APIService
      *      - No Synonym with 500 points, result returns the highest scored synonym
      *
      * */
-    public List<WordView> findSynonymsWithDataMuse(String word)
-    {
+    public MessageView findSynonymsWithDataMuse(String word) {
 
         URL url;
-        List<WordView> resultList = new ArrayList<>();
+        MessageView result = new MessageView(word);
 
-        try
-        {
+        try {
             url = new URL("https://api.datamuse.com/words?rel_syn=" + word + "&max=10");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.connect();
             int rc = connection.getResponseCode();
-            if (rc == 200)
-            {
+            if (rc == 200) {
                 BufferedReader reader = new BufferedReader(new java.io.InputStreamReader(connection.getInputStream()));
 
                 StringBuilder sb = new StringBuilder();
@@ -52,47 +49,40 @@ public class APIService
 
                 JSONArray array = (JSONArray) JSONValue.parse(sb.toString());
 
-                if (!array.isEmpty())
-                {
-                    WordView resultWord = new WordView(word);
+                if (!array.isEmpty()) {
 
-                    if (array.size() == 1)
-                    {
-                        resultWord.getSynonyms().add(parseToWord((JSONObject) array.get(0)));
-                        resultList.add(resultWord);
-                        System.out.println("Only Result : " + resultList.get(0).getWord());
-                        return resultList;
+                    if (array.size() == 1) {
+                        result.getSynonyms().add(parseToWord((JSONObject) array.get(0)));
+                        System.out.println("Only Result : " + result.getSynonyms().get(0));
+                        return result;
                     }
-                    for (Object obj : array)
-                    {
+                    for (Object obj : array) {
                         System.out.println(((JSONObject) obj).get("score") + ":" + ((JSONObject) obj).get("word"));
                         if (parseToWord((JSONObject) obj).getScore() < 500)
                             continue;
 
-                        resultWord.getSynonyms().add(parseToWord((JSONObject) obj));
+                        result.getSynonyms().add(parseToWord((JSONObject) obj));
                     }
 
-                    if (resultWord.getSynonyms().isEmpty())
-                        resultWord.getSynonyms().add(parseToWord((JSONObject) array.get(0)));
+                    if (result.getSynonyms().isEmpty())
+                        result.getSynonyms().add(parseToWord((JSONObject) array.get(0)));
 
-                    resultList.add(resultWord);
-                }
+                } else
+                    System.out.println("Empty set of results from api!");
             } else
                 System.out.println("HTTP error:" + rc);
 
             connection.disconnect();
-        } catch (IOException e)
-
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
-        System.out.println("Result size: " + resultList.size());
-        return resultList;
+        System.out.println("Result size: " + result.getSynonyms().size());
+        return result;
     }
 
-    private WordView parseToWord(JSONObject result)
-    {
+    private WordView parseToWord(JSONObject result) {
+
         return new WordView(result.get("word").toString(), Integer.parseInt(result.get("score").toString()));
     }
 }

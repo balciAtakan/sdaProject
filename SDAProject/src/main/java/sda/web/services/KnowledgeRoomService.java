@@ -14,8 +14,7 @@ import java.util.ArrayList;
 
 @Service
 @Scope("session")
-public class KnowledgeRoomService
-{
+public class KnowledgeRoomService {
 
     @Autowired
     private KnowledgeRoomReadDAO knowledgeRoomReadDAO;
@@ -25,26 +24,22 @@ public class KnowledgeRoomService
 
     private KnowledgeRoomView currentRoom;
 
-    public ArrayList<KnowledgeRoomView> getKnowledgeRooms() throws SDAException
-    {
+    public ArrayList<KnowledgeRoomView> getKnowledgeRooms() throws SDAException {
 
         return knowledgeRoomReadDAO.getKnowledgeRooms();
     }
 
-    public SDAResult saveKnowledgeRoom(KnowledgeRoomView view) throws SDAException
-    {
+    public SDAResult saveKnowledgeRoom(KnowledgeRoomView view) throws SDAException {
 
         SDAResult result = new SDAResult();
-        try
-        {
+        try {
 
             view = knowledgeRoomWriteDAO.saveKnowledgeRoom(view);
             knowledgeRoomWriteDAO.insertKnowledgeRoomRoles(view);
             knowledgeRoomWriteDAO.saveKnowledgeRoomUser(view, view.getNewUser());
 
             result.setMessage("The KnowledgeRoom is successfully created!");
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
 
             result.setMessage("Error on KnowledgeRoom save!");
         }
@@ -52,45 +47,40 @@ public class KnowledgeRoomService
         return result;
     }
 
-    public ArrayList<KnowledgeRoomMessageView> getKnowledgeRoomData(String roomId) throws SDAException
-    {
+    public ArrayList<KnowledgeRoomMessageView> getKnowledgeRoomData(String roomId) throws SDAException {
 
         return knowledgeRoomReadDAO.getKnowledgeRoomData(roomId);
     }
 
-    public int getKnowledgeRoomMessageCount(String roomId) throws SDAException
-    {
+    public int getKnowledgeRoomMessageCount(String roomId) throws SDAException {
         return knowledgeRoomReadDAO.getKnowledgeRoomMessageCount(roomId);
     }
 
-    public SDAResult saveKnowledgeRoomMessage(KnowledgeRoomMessageView view) throws SDAException
-    {
+    public SDAResult saveKnowledgeRoomMessage(KnowledgeRoomMessageView view) throws SDAException {
 
         SDAResult result = new SDAResult();
-        if (knowledgeRoomWriteDAO.saveKnowledgeRoomMessage(view)) result.setMessage("Message is successfully saved!");
-        else result.setMessage("Error on message save!");
+        if (knowledgeRoomWriteDAO.saveKnowledgeRoomMessage(view))
+            result.setMessage("Message is successfully saved!");
+        else
+            result.setMessage("Error on message save!");
 
         return result;
     }
 
-    public void deleteKnowledgeRoom(String roomname) throws SDAException
-    {
+    public void deleteKnowledgeRoom(String roomname) throws SDAException {
 
         knowledgeRoomReadDAO.deleteKnowledgeRoom(roomname);
     }
 
-    public KnowledgeRoomView getCurrentRoom()
-    {
+    public KnowledgeRoomView getCurrentRoom() {
         return currentRoom;
     }
 
-    public void setCurrentRoom(KnowledgeRoomView currentRoom)
-    {
+    public void setCurrentRoom(KnowledgeRoomView currentRoom) {
         this.currentRoom = currentRoom;
     }
 
-    public void reset()
-    {
+    public void reset() {
 
         setCurrentRoom(null);
     }

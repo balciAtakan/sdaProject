@@ -1,6 +1,7 @@
 package test;
 
 import main.java.sda.web.services.APIService;
+import main.java.sda.web.views.MessageView;
 import main.java.sda.web.views.WordView;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -65,14 +66,16 @@ class ThesaurusAPITester
     {
 
         APIService api = new APIService();
-        String word = "mechanic";
+        String word = "helicopter";
 
-        List<WordView> results = api.findSynonymsWithDataMuse(word);
-        WordView res = results.get(0);
-
-        for (WordView result : res.getSynonyms())
+        MessageView result = api.findSynonymsWithDataMuse(word);
+        if(result.getSynonyms().isEmpty()) {
+            System.out.println("No Results found!");
+            return;
+        }
+        for (WordView res : result.getSynonyms())
         {
-            System.out.println("Synonym: " + result.getWord() +" {" + result.getScore() + "}");
+            System.out.println("Synonym: " + res.getWord() +" {" + res.getScore() + "}");
         }
 
     }
