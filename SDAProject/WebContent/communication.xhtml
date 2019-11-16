@@ -100,10 +100,10 @@
                                      oncomplete="PF('knowledgeDlg').show();"/>
                 </b:panelGrid>
                 <b:panelGrid colSpans="12" rendered="#{communicationBean.highlightedMessage.foundInDB}">
-                    <h:outputText value="&lt;u&gt;#{communicationBean.highlightedMessage.word}&lt;/u&gt; is in Database." escape="false"/>
+                    <h:outputText value="&lt;u&gt;#{communicationBean.highlightedMessage.origin != null ? communicationBean.highlightedMessage.origin  :
+                    communicationBean.highlightedMessage.word}&lt;/u&gt; is in Database." escape="false"/>
                     <h:panelGrid columns="1" style="width:100%">
                         <ui:repeat value="#{communicationBean.knowledgeViewListFromDB}" var="value">
-                            <br/>
                             <p:commandButton value="#{value.dfXCategory.longText}" style="float:left;background-color:aliceblue"
                                              action="#{communicationBean.processOpenKnowledge}">
                                 <f:setPropertyActionListener target="#{communicationBean.backButtonActive}" value="#{true}"/>

@@ -45,6 +45,7 @@ public class KnowledgeRowMapper implements RowMapper<KnowledgeView>
         if(synonym != null && !synonym.isEmpty()) {
             WordView syn = new WordView(synonym);
             syn.setScore(resultSet.getInt("score"));
+            synonyms.add(syn);
         }
         view.setSynonyms(synonyms);
 

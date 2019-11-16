@@ -11,6 +11,8 @@ public class MessageView
 
     private List<WordView> synonyms;
 
+    private String origin;
+
     public MessageView(String word)
     {
         this.word = word;
@@ -61,5 +63,13 @@ public class MessageView
 
     public void setSynonyms(List<WordView> synonyms) {
         this.synonyms = synonyms;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
     }
 }

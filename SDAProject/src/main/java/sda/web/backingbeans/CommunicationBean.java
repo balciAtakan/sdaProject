@@ -301,6 +301,8 @@ public class CommunicationBean implements Serializable
         {
             if (messageCount != roomService.getKnowledgeRoomMessageCount(activeRoom.getUuid()))
             {
+                knowledgeService.reset();
+                knowledgeService.initAllKnowledge();
                 loadRoomData();
                 processEnterRoom();
                 PrimeFaces.current().ajax().update("roomPanel");
@@ -326,11 +328,20 @@ public class CommunicationBean implements Serializable
         {
             if (checkWordUsefull(message.getWord()))
             {
-                if (knowledgeService.getAllKnowledge().stream().anyMatch(a -> a.getWord().equalsIgnoreCase(message.getWord()))
-                        || knowledgeService.getAllKnowledge().stream().anyMatch(a -> a.getSynonyms().stream().anyMatch(b->b.getWord().equalsIgnoreCase(message.getWord()))))
+                if (knowledgeService.getAllKnowledge().stream().anyMatch(a -> a.getWord().equalsIgnoreCase(message.getWord())))
                 {
-                    //messageToCheck.copyView(setPrefixAndPostfixOfMessage(messageToCheck, message.getWord()));
                     message.setFoundInDB(true);
+                    return messageToCheck;
+                }
+                for (KnowledgeView view : knowledgeService.getAllKnowledge())
+                {
+                    WordView looked = view.getSynonyms().stream().filter(b -> b.getWord().equalsIgnoreCase(message.getWord())).findFirst().orElse(null);
+                    if(looked != null)
+                    {
+                        message.setOrigin(view.getWord());
+                        message.setFoundInDB(true);
+                        return messageToCheck;
+                    }
                 }
             }
         }
@@ -388,7 +399,7 @@ public class CommunicationBean implements Serializable
             MessageView view = context.getApplication().evaluateExpressionGet(context, "#{word}",
                     MessageView.class);
 
-            getKnowledgeListFromWord(view.getWord());
+            getKnowledgeListFromWord(view.getOrigin() != null ? view.getOrigin() : view.getWord());
 
             PrimeFaces.current().scrollTo("wordPanel:wordUnit");
 

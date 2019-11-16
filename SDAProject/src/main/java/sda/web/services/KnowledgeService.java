@@ -34,9 +34,26 @@ public class KnowledgeService
 
     public void initAllKnowledge() throws SDAException
     {
-        if (allKnowledge == null)
-            allKnowledge = knowledgeDAO.getAllKnowledge();
-        log.info("all knowledge has been loaded! Count : " + (allKnowledge != null ? allKnowledge.size() : " "));
+        if (allKnowledge == null) {
+
+            List<KnowledgeView> res =  knowledgeDAO.getAllKnowledge();
+            List<KnowledgeView> temp = new ArrayList<>();
+            for (KnowledgeView element : res) {
+                if (temp.isEmpty())
+                    temp.add(element);
+                else{
+                    KnowledgeView knowledge = temp.stream().filter(a->a.getUuid().equals(element.getUuid())).findFirst().orElse(null);
+                    if (knowledge == null) {
+                        temp.add(element);
+                    } else {
+                        knowledge.getSynonyms().addAll(element.getSynonyms());
+                    }
+                }
+            }
+
+            allKnowledge = temp;
+        }
+        log.info("all knowledge has been loaded! Count : " + allKnowledge.size());
     }
 
     public boolean saveKnowledge(KnowledgeView view) throws SDAException
