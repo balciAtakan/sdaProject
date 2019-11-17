@@ -2,6 +2,10 @@ package main.java.sda.web.util;
 
 import main.java.sda.web.views.PersonView;
 
+import java.time.Instant;
+import java.time.Month;
+import java.time.Year;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -15,6 +19,16 @@ public final class SDAUtil
     private SDAUtil()
     {
 
+    }
+
+/*    //TemporalQuery<R> { R queryFrom(TemporalAccessor temporal) }
+    public static Boolean isCurrentMonth(TemporalAccessor temporal) {
+        Instant ref = Instant.now();
+        return Month.from(temporal) == Month.from(ref) && Year.from(temporal).equals(Year.from(ref));
+    }*/
+
+    public static String trimStringFormCharacters(String givenText){
+        return givenText.replaceAll("[^-\\w\\s+/]", "");
     }
 
     public static String generateUuid()

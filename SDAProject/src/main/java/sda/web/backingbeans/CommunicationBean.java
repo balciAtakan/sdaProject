@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Scope("view")
@@ -207,8 +208,8 @@ public class CommunicationBean implements Serializable
                     new Date(), currUser, activeRoom.getUuid());
 
             for(MessageView word : messageView.getWords()) {
-                if (checkWordUsefull(word.getWord()))
-                    word.copyView(apiService.findSynonymsWithDataMuse(word.getWord()));
+                if (checkWordUseful(word.getWord()))
+                    word.copyView(apiService.findSynonymsWithDataMuse(SDAUtil.trimStringFormCharacters(word.getWord())));
             }
             messageView.copyView(processGivenMessage(messageView));
 
@@ -250,8 +251,6 @@ public class CommunicationBean implements Serializable
     ///////////////////////////////////////////////
     public void processEnterRoom()
     {
-        //todo: find all the messages which have knowledge inside them
-
         if (activeRoom != null)
         {
             List<KnowledgeRoomMessageView> history = activeRoom.getHistory();
@@ -259,9 +258,7 @@ public class CommunicationBean implements Serializable
             if (!history.isEmpty())
             {
                 for (KnowledgeRoomMessageView view : history)
-                {
                     view.copyView(checkWordInDB(view));
-                }
             }
             setHighlightedMessage(null);
 
@@ -334,8 +331,9 @@ public class CommunicationBean implements Serializable
         List<MessageView> allMessage = messageToCheck.getWords();
         for (MessageView message : allMessage)
         {
-            if (checkWordUsefull(message.getWord()))
+            if (checkWordUseful(message.getWord()))
             {
+
                 if (knowledgeService.getAllKnowledge().stream().anyMatch(a -> a.getWord().equalsIgnoreCase(message.getWord())))
                 {
                     message.setFoundInDB(true);
@@ -356,7 +354,12 @@ public class CommunicationBean implements Serializable
         return messageToCheck;
     }
 
-    private boolean checkWordUsefull(String word){
+    private List<KnowledgeRoomMessageView> getHistoryRule(List<KnowledgeRoomMessageView> history)
+    {
+        return history.stream().limit(SDAConstants.HISTORY_LIMIT).collect(Collectors.toList());
+    }
+
+    private boolean checkWordUseful(String word){
         return word.length() > 2 && !SDAConstants.getStopwordsMoreThan2Digits().contains(word.toLowerCase());
     }
 
@@ -369,19 +372,17 @@ public class CommunicationBean implements Serializable
     {
         String givenWord = messageToCheck.getWord().toLowerCase();
 
-        ArrayList<KnowledgeRoomMessageView> history = activeRoom.getHistory();
+        List<KnowledgeRoomMessageView> history = activeRoom.getHistory();
+
+        history = getHistoryRule(history);
 
         for (KnowledgeRoomMessageView hist : history)
         {
-            String[] temp = hist.getMessage().toLowerCase().trim().split("\\s+");
-            //TODO: REQUIRES OPTIMIZATION!!
-
-            if (givenWord.length() > 2 && !SDAConstants.getStopwordsMoreThan2Digits().contains(givenWord.toLowerCase()))
-                for (String historied : temp)
-                    if (givenWord.equalsIgnoreCase(historied))
-                    {
-                        return true;
-                    }
+            for(MessageView word :hist.getWords())
+            {
+                if(givenWord.equalsIgnoreCase(word.getWord()) || word.getSynonyms().stream().anyMatch(a->a.getWord().equalsIgnoreCase(word.getWord())))
+                    return true;
+            }
         }
         return false;
     }

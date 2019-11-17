@@ -128,4 +128,6 @@ public class SDAConstants
         return stopwordsMoreThan2Digits;
     }
 
+    public static final int HISTORY_LIMIT = 20;
+
 }

@@ -1,5 +1,7 @@
 package main.java.sda.web.views;
 
+import main.java.sda.web.util.SDAUtil;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,10 +36,10 @@ public class KnowledgeRoomMessageView
 
     public KnowledgeRoomMessageView(String uuid, String message, Date messageDate, PersonView messageOwner, String knowledgeRoomId)
     {
-        if (message != null && !message.isEmpty())
-            setWordsList(message);
         this.uuid = uuid;
         this.message = message;
+        if (message != null && !message.isEmpty())
+            setWordsList(message);
         this.messageDate = messageDate;
         this.messageOwner = messageOwner;
         this.knowledgeRoomId = knowledgeRoomId;
@@ -45,6 +47,7 @@ public class KnowledgeRoomMessageView
 
     private void setWordsList(String givenMessage)
     {
+        givenMessage = SDAUtil.trimStringFormCharacters(givenMessage);
         List<String> li = Arrays.asList(givenMessage.split("\\s"));
         List<MessageView> words = new ArrayList<>();
         li.forEach(a -> words.add(new MessageView(a)));
