@@ -189,6 +189,10 @@ public class KnowledgeService
         return dfxCategories;
     }
 
+    public int getKnowledgeCount() throws SDAException {
+        return knowledgeDAO.getKnowledgeCount();
+    }
+
     public List<KnowledgeView> getAllKnowledge()
     {
         return allKnowledge;

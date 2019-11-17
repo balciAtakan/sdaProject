@@ -301,4 +301,23 @@ public class KnowledgeDAO
         }
     }
 
+    public int getKnowledgeCount() throws SDAException
+    {
+        String sql = "SELECT count(*) FROM knowledge";
+
+        Map<String, Object> params = new HashMap<>();
+
+        try
+        {
+            Integer res = template.queryForObject(sql, params, Integer.class);
+            return res == null ? 0 : res;
+
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+            log.info(e.getMessage());
+            throw new SDAException(e.getMessage());
+        }
+    }
+
 }

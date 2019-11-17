@@ -111,12 +111,9 @@ public class CommunicationBean implements Serializable
     }
 
     /**
-     * @soundtrack
-     * @since
-     * @deprecated
      */
     //TODO: asny loading!!
-    public void loadAsyncKnowledge()
+/*    public void loadAsyncKnowledge()
     {
 
         log.info("Load async knowledge!");
@@ -129,7 +126,7 @@ public class CommunicationBean implements Serializable
             log.info("Error on Load async knowledge !");
         }
 
-    }
+    }*/
 
 
     private void addRoom()
@@ -206,11 +203,9 @@ public class CommunicationBean implements Serializable
     {
         try
         {
-
             KnowledgeRoomMessageView messageView = new KnowledgeRoomMessageView(SDAUtil.generateUuid(), enteredMessage,
                     new Date(), currUser, activeRoom.getUuid());
 
-            //todo: search synonyms
             for(MessageView word : messageView.getWords()) {
                 if (checkWordUsefull(word.getWord()))
                     word.copyView(apiService.findSynonymsWithDataMuse(word.getWord()));
@@ -220,6 +215,19 @@ public class CommunicationBean implements Serializable
             activeRoom.getHistory().add(0,messageView);
 
             SDAResult res = roomService.saveKnowledgeRoomMessage(messageView);
+
+            //todo: check if any knowledge since last message have been added into system
+            int knowledgeSize = knowledgeService.getAllKnowledge().size();
+            int knowledgeSizeControl = knowledgeService.getKnowledgeCount();
+
+            if(knowledgeSize != knowledgeSizeControl)
+            {
+                log.info("change method! " + LocalDateTime.now() +" username: " + currUser.getUsername()+
+                        " knowledge size: "+ knowledgeService.getAllKnowledge().size());
+                knowledgeService.reset();
+                knowledgeService.initAllKnowledge();
+                processEnterRoom();
+            }
 
             log.info(res.getMessage());
 
@@ -294,7 +302,7 @@ public class CommunicationBean implements Serializable
     public void getActiveRoomMessages()
     {
 
-        log.info("getQueMEssage Method! " + LocalDateTime.now() +" username: " + currUser.getUsername());
+        log.info("getQueMEssage Method! " + LocalDateTime.now() +" username: " + currUser.getUsername()+ " knowledge size: "+ knowledgeService.getAllKnowledge().size());
         int messageCount = activeRoom.getHistory().size();
 
         try
