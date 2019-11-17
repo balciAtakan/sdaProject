@@ -99,7 +99,7 @@ public class CommunicationBean implements Serializable {
             if (roomService.getCurrentRoom() != null)
             {
                 setActiveRoom(roomService.getCurrentRoom());
-                processEnterRoom();
+                processEnterRoom(false);
             }
 
         } catch (SDAException e)
@@ -220,7 +220,7 @@ public class CommunicationBean implements Serializable {
                         "change method! " + LocalDateTime.now() + " username: " + currUser.getUsername() + " knowledge size: " + knowledgeService.getAllKnowledge().size());
                 knowledgeService.reset();
                 knowledgeService.initAllKnowledge();
-                processEnterRoom();
+                processEnterRoom(false);
             }
 
             log.info(res.getMessage());
@@ -241,7 +241,7 @@ public class CommunicationBean implements Serializable {
     //											 //
     // 											 //
     ///////////////////////////////////////////////
-    public void processEnterRoom()
+    public void processEnterRoom(boolean controlUsage)
     {
         if (activeRoom != null)
         {
@@ -259,6 +259,7 @@ public class CommunicationBean implements Serializable {
             roomService.setCurrentRoom(activeRoom);
 
 
+            int usageControlCounter = 0;
             //only the firs found keywords highlight!!!
             for (KnowledgeRoomMessageView view : history)
             {
@@ -282,6 +283,14 @@ public class CommunicationBean implements Serializable {
                         } else
                         {
                             word.setFoundInDB(false);
+                        }
+                    }
+                    else if(controlUsage)
+                    {
+                        if (checkWordUseful(word.getWord()) && usageControlCounter < 4)
+                        {
+                            word.setFoundInUsage(checkWordInHistory(word));
+                            usageControlCounter++;
                         }
                     }
                 }
@@ -332,7 +341,7 @@ public class CommunicationBean implements Serializable {
                 knowledgeService.reset();
                 knowledgeService.initAllKnowledge();
                 loadRoomData();
-                processEnterRoom();
+                processEnterRoom(true);
                 PrimeFaces.current().ajax().update("roomPanel");
             }
 

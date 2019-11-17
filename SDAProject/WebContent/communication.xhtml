@@ -27,7 +27,7 @@
                                     <p:commandButton id="newRoomButton" style="background:azure" icon="fa fa-plus" value="New Room" oncomplete="PF('roomDlg').show();"/>
                                 </f:facet>
                                 <p:column>
-                                    <b:commandButton id="roomnameButton" value="#{room.roomname}" action="#{communicationBean.processEnterRoom}">
+                                    <b:commandButton id="roomnameButton" value="#{room.roomname}" action="#{communicationBean.processEnterRoom(false)}">
                                         <f:setPropertyActionListener target="#{communicationBean.activeRoom}" value="#{room}"/>
                                     </b:commandButton>
                                 </p:column>
