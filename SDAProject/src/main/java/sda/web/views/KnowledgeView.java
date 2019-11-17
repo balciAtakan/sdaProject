@@ -29,6 +29,11 @@ public class KnowledgeView
     {
     }
 
+    public KnowledgeView(String word)
+    {
+        this.word = word;
+    }
+
     public String getUuid()
     {
         return uuid;

@@ -31,8 +31,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Scope("view")
-public class CommunicationBean implements Serializable
-{
+public class CommunicationBean implements Serializable {
 
     private static Logger log = LogManager.getLogger(CommunicationBean.class);
 
@@ -75,10 +74,11 @@ public class CommunicationBean implements Serializable
     private UploadedFile fileUpload;
     private InputStream stream;
 
+    private List<KnowledgeView> uniqueKnowledgeList;
+
     @PostConstruct
     public void init()
     {
-
         log.info("Communication bean init!");
 
         dfxCategories = knowledgeService.initCategories();
@@ -91,8 +91,8 @@ public class CommunicationBean implements Serializable
         {
             //load currentUser from processor
             setCurrUser(personenService.getCurrentPersonDaten(personenService.getCurrUser().getUuid()));
-            //load all rooms
 
+            //load all rooms
             rooms = roomService.getKnowledgeRooms();
             knowledgeService.initAllKnowledge();
 
@@ -105,13 +105,13 @@ public class CommunicationBean implements Serializable
         } catch (SDAException e)
         {
             log.info(e.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error!", "Something went wrong on Load Knowledge Rooms"));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Error!", "Something went wrong on Load Knowledge Rooms"));
         }
 
     }
 
     /**
+     *
      */
     //TODO: asny loading!!
 /*    public void loadAsyncKnowledge()
@@ -128,11 +128,8 @@ public class CommunicationBean implements Serializable
         }
 
     }*/
-
-
     private void addRoom()
     {
-
         UserRole[] roles = UserRole.values();
         //log.info("name: "+userRole.name() + " role: "+userRole.role());
         this.roles.addAll(Arrays.asList(roles));
@@ -144,15 +141,14 @@ public class CommunicationBean implements Serializable
     {
         if (newRoom.getRoomname() != null && newRoom.getRoomname().isEmpty())
         {
-            FacesContext.getCurrentInstance().addMessage("dialog_form:dialog_messages",
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Please enter a room name!", ""));
+            FacesContext.getCurrentInstance().addMessage("dialog_form:dialog_messages", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Please enter a room name!", ""));
             return null;
         }
 
         if (selectedRoles.isEmpty())
         {
             FacesContext.getCurrentInstance().addMessage("dialog_form:dialog_messages",
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Please chose atleast one allowed Userrole!", ""));
+                                                         new FacesMessage(FacesMessage.SEVERITY_ERROR, "Please chose atleast one allowed Userrole!", ""));
             return null;
         }
         log.info("create room");
@@ -167,19 +163,16 @@ public class CommunicationBean implements Serializable
 
         try
         {
-
             SDAResult res = roomService.saveKnowledgeRoom(newRoom);
 
-            FacesContext.getCurrentInstance().addMessage(null,
-                    new FacesMessage(FacesMessage.SEVERITY_INFO, res.getMessage(), ""));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, res.getMessage(), ""));
             ExternalContext ec = FacesContext.getCurrentInstance().getExternalContext();
             ec.redirect(((HttpServletRequest) ec.getRequest()).getRequestURI());
         } catch (SDAException e)
         {
 
             log.info(e.getMessage());
-            FacesContext.getCurrentInstance().addMessage("dialog_form:dialog_messages",
-                    new FacesMessage(FacesMessage.SEVERITY_ERROR, "Unknown error!", ""));
+            FacesContext.getCurrentInstance().addMessage("dialog_form:dialog_messages", new FacesMessage(FacesMessage.SEVERITY_ERROR, "Unknown error!", ""));
             return null;
         }
         return null;
@@ -196,24 +189,24 @@ public class CommunicationBean implements Serializable
             e.printStackTrace();
             log.info(e.getMessage());
         }
-
-
     }
 
     public void processMessage()
     {
         try
         {
-            KnowledgeRoomMessageView messageView = new KnowledgeRoomMessageView(SDAUtil.generateUuid(), enteredMessage,
-                    new Date(), currUser, activeRoom.getUuid());
+            KnowledgeRoomMessageView messageView = new KnowledgeRoomMessageView(SDAUtil.generateUuid(), enteredMessage, new Date(), currUser, activeRoom.getUuid());
 
-            for(MessageView word : messageView.getWords()) {
+            for (MessageView word : messageView.getWords())
+            {
                 if (checkWordUseful(word.getWord()))
+                {
                     word.copyView(apiService.findSynonymsWithDataMuse(SDAUtil.trimStringFormCharacters(word.getWord())));
+                }
             }
             messageView.copyView(processGivenMessage(messageView));
 
-            activeRoom.getHistory().add(0,messageView);
+            activeRoom.getHistory().add(0, messageView);
 
             SDAResult res = roomService.saveKnowledgeRoomMessage(messageView);
 
@@ -221,10 +214,10 @@ public class CommunicationBean implements Serializable
             int knowledgeSize = knowledgeService.getAllKnowledge().size();
             int knowledgeSizeControl = knowledgeService.getKnowledgeCount();
 
-            if(knowledgeSize != knowledgeSizeControl)
+            if (knowledgeSize != knowledgeSizeControl)
             {
-                log.info("change method! " + LocalDateTime.now() +" username: " + currUser.getUsername()+
-                        " knowledge size: "+ knowledgeService.getAllKnowledge().size());
+                log.info(
+                        "change method! " + LocalDateTime.now() + " username: " + currUser.getUsername() + " knowledge size: " + knowledgeService.getAllKnowledge().size());
                 knowledgeService.reset();
                 knowledgeService.initAllKnowledge();
                 processEnterRoom();
@@ -235,8 +228,7 @@ public class CommunicationBean implements Serializable
         } catch (SDAException e)
         {
             log.error(e.getMessage());
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR,
-                    "Something went wrong during sending your message!", ""));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "Something went wrong during sending your message!", ""));
             e.printStackTrace();
 
         }
@@ -253,6 +245,7 @@ public class CommunicationBean implements Serializable
     {
         if (activeRoom != null)
         {
+            uniqueKnowledgeList = new ArrayList<>();
             List<KnowledgeRoomMessageView> history = activeRoom.getHistory();
             history.sort(Comparator.comparing(KnowledgeRoomMessageView::getMessageDate).reversed());
             if (!history.isEmpty())
@@ -264,9 +257,36 @@ public class CommunicationBean implements Serializable
 
             //we set here in roomservice the active room for the back button!
             roomService.setCurrentRoom(activeRoom);
+
+
+            //only the firs found keywords highlight!!!
+            for (KnowledgeRoomMessageView view : history)
+            {
+                for (MessageView word : view.getWords())
+                {
+                    if (word.isFoundInDB())
+                    {
+                        if (uniqueKnowledgeList.stream().noneMatch(a -> a.getWord().equalsIgnoreCase(word.getWord())))
+                        {
+                            KnowledgeView knowledge = knowledgeService.getAllKnowledge().stream().filter(
+                                    a -> a.getWord().equalsIgnoreCase(word.getWord())).findFirst().orElse(null);
+                            if (knowledge != null)
+                            {
+                                uniqueKnowledgeList.add(knowledge);
+                            }
+                            else{
+                                KnowledgeView knowledgeSynonym =new KnowledgeView(word.getWord());
+                                uniqueKnowledgeList.add(knowledgeSynonym);
+                            }
+
+                        } else
+                        {
+                            word.setFoundInDB(false);
+                        }
+                    }
+                }
+            }
         }
-
-
         // todo!!!!
 		/*
 		if(activeRoom.getAllowedRoles().stream().anyMatch(role -> role.name().equals(currUser.getRole())))
@@ -290,7 +310,9 @@ public class CommunicationBean implements Serializable
         for (MessageView word : message.getWords())
         {
             if (!word.isFoundInDB())
+            {
                 word.setFoundInUsage(checkWordInHistory(word));
+            }
         }
 
         return message;
@@ -299,7 +321,8 @@ public class CommunicationBean implements Serializable
     public void getActiveRoomMessages()
     {
 
-        log.info("getQueMEssage Method! " + LocalDateTime.now() +" username: " + currUser.getUsername()+ " knowledge size: "+ knowledgeService.getAllKnowledge().size());
+        log.info(
+                "getQueMEssage Method! " + LocalDateTime.now() + " username: " + currUser.getUsername() + " knowledge size: " + knowledgeService.getAllKnowledge().size());
         int messageCount = activeRoom.getHistory().size();
 
         try
@@ -314,7 +337,8 @@ public class CommunicationBean implements Serializable
             }
 
 
-        }catch (Exception e){
+        } catch (Exception e)
+        {
             log.error("Fail here!");
             e.printStackTrace();
         }
@@ -342,7 +366,7 @@ public class CommunicationBean implements Serializable
                 for (KnowledgeView view : knowledgeService.getAllKnowledge())
                 {
                     WordView looked = view.getSynonyms().stream().filter(b -> b.getWord().equalsIgnoreCase(message.getWord())).findFirst().orElse(null);
-                    if(looked != null)
+                    if (looked != null)
                     {
                         message.setOrigin(view.getWord());
                         message.setFoundInDB(true);
@@ -359,7 +383,8 @@ public class CommunicationBean implements Serializable
         return history.stream().limit(SDAConstants.HISTORY_LIMIT).collect(Collectors.toList());
     }
 
-    private boolean checkWordUseful(String word){
+    private boolean checkWordUseful(String word)
+    {
         return word.length() > 2 && !SDAConstants.getStopwordsMoreThan2Digits().contains(word.toLowerCase());
     }
 
@@ -378,10 +403,12 @@ public class CommunicationBean implements Serializable
 
         for (KnowledgeRoomMessageView hist : history)
         {
-            for(MessageView word :hist.getWords())
+            for (MessageView word : hist.getWords())
             {
-                if(givenWord.equalsIgnoreCase(word.getWord()) || word.getSynonyms().stream().anyMatch(a->a.getWord().equalsIgnoreCase(word.getWord())))
+                if (givenWord.equalsIgnoreCase(word.getWord()) || word.getSynonyms().stream().anyMatch(a -> a.getWord().equalsIgnoreCase(word.getWord())))
+                {
                     return true;
+                }
             }
         }
         return false;
@@ -405,8 +432,7 @@ public class CommunicationBean implements Serializable
         if (selectedCategory == null || selectedCategory.isEmpty())
         {
             FacesContext context = FacesContext.getCurrentInstance();
-            MessageView view = context.getApplication().evaluateExpressionGet(context, "#{word}",
-                    MessageView.class);
+            MessageView view = context.getApplication().evaluateExpressionGet(context, "#{word}", MessageView.class);
 
             getKnowledgeListFromWord(view.getOrigin() != null ? view.getOrigin() : view.getWord());
 
@@ -429,14 +455,15 @@ public class CommunicationBean implements Serializable
         newKnowledge.setOwnerID(currUser.getUuid());
         newKnowledge.setSynonyms(highlightedMessage.getSynonyms());
         if (stream != null)
+        {
             newKnowledge.setFileUpload(stream);
+        }
 
         try
         {
             if (knowledgeService.saveKnowledge(newKnowledge))
             {
-                FacesContext.getCurrentInstance().addMessage(null,
-                        new FacesMessage(FacesMessage.SEVERITY_INFO, "Knowledge successfuly saved!", ""));
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Knowledge successfuly saved!", ""));
 
                 knowledgeService.reset();
                 return "communication?faces-redirect=true";
@@ -515,7 +542,9 @@ public class CommunicationBean implements Serializable
     public KnowledgeRoomView getNewRoom()
     {
         if (newRoom == null)
+        {
             return new KnowledgeRoomView();
+        }
         return newRoom;
     }
 
