@@ -309,7 +309,7 @@ public class CommunicationBean implements Serializable {
 
         for (MessageView word : message.getWords())
         {
-            if (!word.isFoundInDB())
+            if (!word.isFoundInDB() && checkWordUseful(word.getWord()))
             {
                 word.setFoundInUsage(checkWordInHistory(word));
             }

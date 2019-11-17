@@ -9,5 +9,8 @@
         <module name="SDAProject" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="SDAProject" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
